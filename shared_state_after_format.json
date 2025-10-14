@@ -2,126 +2,41 @@
     "pdf_text": null,
     "chapters": [
         {
-            "id": "ch1",
-            "title": "K-Means Clustering",
-            "description": "An overview of the K-Means clustering algorithm, its process, how to select the number of clusters, and its practical applications.",
+            "id": "ch01",
+            "title": "Principal Component Analysis (PCA) and Eigenvalues",
+            "description": "An overview of Principal Component Analysis (PCA), a technique for transforming high-dimensional feature spaces into lower-dimensional ones by identifying key directions of variance using eigenvalues and eigenvectors.",
             "topics": [
                 {
-                    "id": "ch1_t1",
-                    "title": "What is K-Means Clustering?",
-                    "summary": "K-Means is an unsupervised learning algorithm that partitions a dataset into 'k' distinct, non-overlapping clusters. It aims to group similar data points together by minimizing the distance between data points and their assigned cluster's centroid.",
+                    "id": "t01",
+                    "title": "How PCA Works",
+                    "summary": "PCA operates by transforming a dataset into a new set of uncorrelated variables called principal components. This is achieved by first calculating the covariance matrix of the data, then finding its eigenvectors and eigenvalues. The eigenvectors with the highest eigenvalues represent the directions of maximum variance and become the new principal components.",
                     "key_points": [
-                        "Clustering partitions a dataset into subsets (clusters) based on shared traits.",
-                        "K-Means is an algorithm that clusters 'n' objects into 'k' partitions, where 'k' is a positive integer.",
-                        "The goal is to find the centers of natural clusters in the data.",
-                        "Grouping is achieved by minimizing the sum of squared distances to the cluster centroid."
+                        "First, calculate the covariance matrix of the dataset.",
+                        "Next, calculate the eigenvectors and eigenvalues of the covariance matrix.",
+                        "The eigenvector with the highest eigenvalue points in the direction of the highest variance, becoming the first principal component.",
+                        "The top 'k' eigenvectors are selected to form the new 'k' dimensional feature space."
                     ],
                     "quiz_questions": [
-                        "What is the primary goal of the K-Means algorithm?",
-                        "What does the 'K' in K-Means represent?"
+                        "What does the eigenvector with the highest eigenvalue represent in PCA?",
+                        "What is the first matrix you need to calculate when performing PCA?"
                     ],
-                    "image_hint": "scatter plot showing distinct data clusters"
+                    "image_hint": "diagram showing data points with principal component axes"
                 },
                 {
-                    "id": "ch1_t2",
-                    "title": "How the K-Means Algorithm Works",
-                    "summary": "The algorithm works iteratively. It starts by choosing 'k' initial centroids, assigns each data point to the nearest centroid, and then recalculates the centroids of the newly formed clusters. This process repeats until the cluster assignments no longer change.",
+                    "id": "t02",
+                    "title": "Applications of PCA",
+                    "summary": "PCA is a powerful tool used in machine learning and data analysis for various purposes. Its applications range from visualizing complex, high-dimensional data to resizing images, analyzing financial data, and identifying important factors in healthcare research.",
                     "key_points": [
-                        "Step 1: Decide on the number of clusters, 'k'.",
-                        "Step 2: Initialize 'k' centroids, either randomly or by picking initial data points.",
-                        "Step 3: Assign each data point to the cluster with the nearest centroid and update centroids.",
-                        "Step 4: Repeat the assignment and update steps until convergence is achieved (no new assignments)."
+                        "Used to visualize multidimensional data by reducing it to 2D or 3D.",
+                        "Helps resize images by capturing their most important features.",
+                        "Applied in healthcare to explore risk factors for chronic diseases.",
+                        "Utilized to analyze stock data, forecast trends, and find patterns in high-dimensional datasets."
                     ],
                     "quiz_questions": [
-                        "What is the first step in the K-Means algorithm?",
-                        "When does the K-Means algorithm stop iterating?"
+                        "Name two practical applications of Principal Component Analysis.",
+                        "How can PCA be used in the field of image processing?"
                     ],
-                    "image_hint": "animated gif showing k-means convergence"
-                },
-                {
-                    "id": "ch1_t3",
-                    "title": "Choosing the Optimal Number of Clusters (K)",
-                    "summary": "The Elbow Method is a popular technique for finding the optimal number of clusters (k). It involves running the K-Means algorithm for a range of k values and calculating the Within Cluster Sum of Squares (WCSS). The optimal 'k' is found at the 'elbow' point of the plot where the rate of WCSS decrease sharply changes.",
-                    "key_points": [
-                        "The Elbow Method is a popular technique to find the optimal 'k'.",
-                        "It uses the Within Cluster Sum of Squares (WCSS) metric to measure variation within a cluster.",
-                        "The algorithm is run for different values of 'k' and the WCSS is plotted.",
-                        "The optimal 'k' is the point on the plot that looks like an elbow, indicating diminishing returns."
-                    ],
-                    "quiz_questions": [
-                        "What does WCSS stand for?",
-                        "In the Elbow Method plot, what does the 'elbow' point signify?"
-                    ],
-                    "image_hint": "graph of the elbow method for k-means"
-                },
-                {
-                    "id": "ch1_t4",
-                    "title": "Advantages and Disadvantages",
-                    "summary": "K-Means is known for its simplicity and speed with large datasets. However, it has disadvantages, including the difficulty of predicting 'k', sensitivity to initial centroid placement, and the impact of data order and scaling.",
-                    "key_points": [
-                        "Advantages: Easy to implement, fast for large datasets, and forms tight clusters.",
-                        "Disadvantages: Difficult to predict the value of 'k', sensitive to initial conditions.",
-                        "The order of the data and rescaling can significantly impact the final output."
-                    ],
-                    "quiz_questions": [
-                        "Name one advantage of K-Means over Hierarchical clustering.",
-                        "Why is the initial selection of centroids important in K-Means?"
-                    ],
-                    "image_hint": "comparison table of pros and cons"
-                },
-                {
-                    "id": "ch1_t5",
-                    "title": "Applications of K-Means",
-                    "summary": "K-Means clustering is widely used in various fields for tasks like customer segmentation, document categorization, and image compression. Its ability to group similar items makes it valuable for market analysis and data pattern recognition.",
-                    "key_points": [
-                        "Market segmentation: Grouping customers based on purchasing behavior.",
-                        "Document clustering: Organizing text documents by topic.",
-                        "Image segmentation: Partitioning a digital image into multiple segments.",
-                        "Customer segmentation: Identifying distinct groups within a customer base."
-                    ],
-                    "quiz_questions": [
-                        "How can K-Means be used in marketing?",
-                        "What is image segmentation in the context of K-Means?"
-                    ],
-                    "image_hint": "collage of K-Means applications"
-                }
-            ]
-        },
-        {
-            "id": "ch2",
-            "title": "Apriori Algorithm",
-            "description": "An introduction to the Apriori algorithm, a classic algorithm used for frequent itemset mining and learning association rules.",
-            "topics": [
-                {
-                    "id": "ch2_t1",
-                    "title": "Understanding Itemsets",
-                    "summary": "An itemset is a collection of one or more items in a dataset. A frequent itemset is an itemset that appears more often than a specified minimum support threshold. The goal of frequent itemset mining is to discover these commonly co-occurring items.",
-                    "key_points": [
-                        "An itemset is a set of items that appear together, like {Bread, Butter}.",
-                        "A k-itemset is an itemset with 'k' number of items.",
-                        "A frequent itemset is one that occurs more often than a predefined minimum support threshold.",
-                        "Frequent itemset mining identifies items that often occur together."
-                    ],
-                    "quiz_questions": [
-                        "What is the difference between an itemset and a frequent itemset?",
-                        "Give an example of a 2-itemset."
-                    ],
-                    "image_hint": "shopping cart with common item pairings"
-                },
-                {
-                    "id": "ch2_t2",
-                    "title": "Advantages and Disadvantages of Apriori",
-                    "summary": "The Apriori algorithm is simple to understand and effective at finding large itemsets. However, its main drawback is its computational expense, as it requires multiple scans of the entire database and can generate a very large number of candidate rules.",
-                    "key_points": [
-                        "Advantage: It is simple to understand, easy to implement, and can be used to find large itemsets.",
-                        "Disadvantage: It is computationally expensive as it requires multiple passes over the entire database.",
-                        "Disadvantage: It can generate a huge number of candidate rules, which can be slow to process."
-                    ],
-                    "quiz_questions": [
-                        "What is the main advantage of the Apriori algorithm?",
-                        "Why can the Apriori algorithm be slow?"
-                    ],
-                    "image_hint": "icon of a slow computer processing a large database"
+                    "image_hint": "montage of PCA applications like face recognition and data plots"
                 }
             ]
         }
@@ -136,127 +51,46 @@
         {
             "id": "slide_2",
             "type": "chapter_title",
-            "title": "K-Means Clustering",
-            "subtitle": "An overview of the K-Means clustering algorithm, its process, how to select the number of clusters, and its practical applications."
+            "title": "Principal Component Analysis (PCA) and Eigenvalues",
+            "subtitle": "An overview of Principal Component Analysis (PCA), a technique for transforming high-dimensional feature spaces into lower-dimensional ones by identifying key directions of variance using eigenvalues and eigenvectors."
         },
         {
             "id": "slide_3",
             "type": "content",
-            "title": "What is K-Means Clustering?",
+            "title": "How PCA Works",
             "bullets": [
-                "Clustering partitions a dataset into subsets (clusters) based on shared traits.",
-                "K-Means is an algorithm that clusters 'n' objects into 'k' partitions, where 'k' is a positive integer.",
-                "The goal is to find the centers of natural clusters in the data.",
-                "Grouping is achieved by minimizing the sum of squared distances to the cluster centroid."
+                "First, calculate the covariance matrix of the dataset.",
+                "Next, calculate the eigenvectors and eigenvalues of the covariance matrix.",
+                "The eigenvector with the highest eigenvalue points in the direction of the highest variance, becoming the first principal component.",
+                "The top 'k' eigenvectors are selected to form the new 'k' dimensional feature space."
             ],
-            "image_hint": "scatter plot showing distinct data clusters"
+            "image_hint": "diagram showing data points with principal component axes"
         },
         {
             "id": "slide_4",
             "type": "content",
-            "title": "How the K-Means Algorithm Works",
+            "title": "Applications of PCA",
             "bullets": [
-                "Step 1: Decide on the number of clusters, 'k'.",
-                "Step 2: Initialize 'k' centroids, either randomly or by picking initial data points.",
-                "Step 3: Assign each data point to the cluster with the nearest centroid and update centroids.",
-                "Step 4: Repeat the assignment and update steps until convergence is achieved (no new assignments)."
+                "Used to visualize multidimensional data by reducing it to 2D or 3D.",
+                "Helps resize images by capturing their most important features.",
+                "Applied in healthcare to explore risk factors for chronic diseases.",
+                "Utilized to analyze stock data, forecast trends, and find patterns in high-dimensional datasets."
             ],
-            "image_hint": "animated gif showing k-means convergence"
+            "image_hint": "montage of PCA applications like face recognition and data plots"
         },
         {
             "id": "slide_5",
-            "type": "content",
-            "title": "Choosing the Optimal Number of Clusters (K)",
-            "bullets": [
-                "The Elbow Method is a popular technique to find the optimal 'k'.",
-                "It uses the Within Cluster Sum of Squares (WCSS) metric to measure variation within a cluster.",
-                "The algorithm is run for different values of 'k' and the WCSS is plotted.",
-                "The optimal 'k' is the point on the plot that looks like an elbow, indicating diminishing returns."
-            ],
-            "image_hint": "graph of the elbow method for k-means"
-        },
-        {
-            "id": "slide_6",
-            "type": "content",
-            "title": "Advantages and Disadvantages",
-            "bullets": [
-                "Advantages: Easy to implement, fast for large datasets, and forms tight clusters.",
-                "Disadvantages: Difficult to predict the value of 'k', sensitive to initial conditions.",
-                "The order of the data and rescaling can significantly impact the final output."
-            ],
-            "image_hint": "comparison table of pros and cons"
-        },
-        {
-            "id": "slide_7",
-            "type": "content",
-            "title": "Applications of K-Means",
-            "bullets": [
-                "Market segmentation: Grouping customers based on purchasing behavior.",
-                "Document clustering: Organizing text documents by topic.",
-                "Image segmentation: Partitioning a digital image into multiple segments.",
-                "Customer segmentation: Identifying distinct groups within a customer base."
-            ],
-            "image_hint": "collage of K-Means applications"
-        },
-        {
-            "id": "slide_8",
             "type": "quiz",
             "title": "Chapter 1 Quiz",
             "bullets": [
-                "What is the primary goal of the K-Means algorithm?",
-                "What does the 'K' in K-Means represent?",
-                "What is the first step in the K-Means algorithm?",
-                "When does the K-Means algorithm stop iterating?",
-                "What does WCSS stand for?",
-                "In the Elbow Method plot, what does the 'elbow' point signify?",
-                "Name one advantage of K-Means over Hierarchical clustering.",
-                "Why is the initial selection of centroids important in K-Means?",
-                "How can K-Means be used in marketing?",
-                "What is image segmentation in the context of K-Means?"
+                "What does the eigenvector with the highest eigenvalue represent in PCA?",
+                "What is the first matrix you need to calculate when performing PCA?",
+                "Name two practical applications of Principal Component Analysis.",
+                "How can PCA be used in the field of image processing?"
             ]
         },
         {
-            "id": "slide_9",
-            "type": "chapter_title",
-            "title": "Apriori Algorithm",
-            "subtitle": "An introduction to the Apriori algorithm, a classic algorithm used for frequent itemset mining and learning association rules."
-        },
-        {
-            "id": "slide_10",
-            "type": "content",
-            "title": "Understanding Itemsets",
-            "bullets": [
-                "An itemset is a set of items that appear together, like {Bread, Butter}.",
-                "A k-itemset is an itemset with 'k' number of items.",
-                "A frequent itemset is one that occurs more often than a predefined minimum support threshold.",
-                "Frequent itemset mining identifies items that often occur together."
-            ],
-            "image_hint": "shopping cart with common item pairings"
-        },
-        {
-            "id": "slide_11",
-            "type": "content",
-            "title": "Advantages and Disadvantages of Apriori",
-            "bullets": [
-                "Advantage: It is simple to understand, easy to implement, and can be used to find large itemsets.",
-                "Disadvantage: It is computationally expensive as it requires multiple passes over the entire database.",
-                "Disadvantage: It can generate a huge number of candidate rules, which can be slow to process."
-            ],
-            "image_hint": "icon of a slow computer processing a large database"
-        },
-        {
-            "id": "slide_12",
-            "type": "quiz",
-            "title": "Chapter 2 Quiz",
-            "bullets": [
-                "What is the difference between an itemset and a frequent itemset?",
-                "Give an example of a 2-itemset.",
-                "What is the main advantage of the Apriori algorithm?",
-                "Why can the Apriori algorithm be slow?"
-            ]
-        },
-        {
-            "id": "slide_13",
+            "id": "slide_6",
             "type": "thank_you",
             "title": "Thank You!",
             "subtitle": "Any Questions?"
@@ -265,5 +99,5 @@
     "design": {},
     "media": [],
     "output_path": null,
-    "input_pdf_path": "data/syllabus.pdf"
+    "input_pdf_path": "temp_uploads\\ML_ppt_7_PCA.pdf"
 }
