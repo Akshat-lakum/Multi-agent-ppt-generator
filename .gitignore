@@ -1,0 +1,13 @@
+# Ignore Python's cache
+__pycache__/
+
+# Ignore secret API keys
+.env
+
+# Ignore downloaded images and output files
+/assets/
+/output/
+
+# Ignore test files (optional)
+test_content_agent.py
+check_models.py

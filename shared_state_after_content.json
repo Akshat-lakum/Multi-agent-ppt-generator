@@ -1,0 +1,136 @@
+{
+    "pdf_text": null,
+    "chapters": [
+        {
+            "id": "ch01",
+            "title": "K-MEANS CLUSTERING",
+            "description": "An introduction to K-Means, an unsupervised learning algorithm used for partitioning a dataset into a pre-determined number of clusters based on feature similarity.",
+            "topics": [
+                {
+                    "id": "ch01_tp01",
+                    "title": "Introduction to K-Means Clustering",
+                    "summary": "K-Means is an algorithm that partitions n objects into k clusters. It aims to group similar data points together by minimizing the sum of squared distances between each point and its cluster's centroid. It's an iterative process to find the centers of natural clusters within data.",
+                    "key_points": [
+                        "Clustering classifies objects into groups where data in each group shares a common trait.",
+                        "K-Means partitions data into a predefined number of clusters, 'K'.",
+                        "The algorithm works by minimizing the sum of squared distances between data points and their assigned cluster's centroid.",
+                        "It is similar to the expectation-maximization algorithm for mixtures of Gaussians."
+                    ],
+                    "quiz_questions": [
+                        "What is the main objective of the K-Means algorithm?",
+                        "What does the 'K' in K-Means represent?"
+                    ],
+                    "image_hint": "Illustration of data points grouped into distinct clusters with centroids"
+                },
+                {
+                    "id": "ch01_tp02",
+                    "title": "The K-Means Algorithm Steps",
+                    "summary": "The K-Means algorithm works in an iterative four-step process. It starts by deciding on 'k' clusters and initializing their centroids. It then repeatedly assigns each data point to the nearest centroid and recalculates the centroids' positions until the cluster assignments no longer change.",
+                    "key_points": [
+                        "Step 1: Decide on the number of clusters, k.",
+                        "Step 2: Initialize k cluster centroids, either randomly or systematically.",
+                        "Step 3: Assign each data point to the cluster with the nearest centroid and update the centroids of the affected clusters.",
+                        "Step 4: Repeat step 3 until convergence is achieved, meaning no data points change clusters."
+                    ],
+                    "quiz_questions": [
+                        "What is the first step you must take when using the K-Means algorithm?",
+                        "When does the K-Means algorithm stop iterating?"
+                    ],
+                    "image_hint": "Flowchart diagram of the K-Means algorithm steps"
+                },
+                {
+                    "id": "ch01_tp03",
+                    "title": "Choosing the Optimal K: The Elbow Method",
+                    "summary": "The Elbow Method is a popular heuristic for determining the optimal number of clusters (k). It involves running K-Means for a range of k values and calculating the Within Cluster Sum of Squares (WCSS). The optimal k is found at the 'elbow' point of the plot where the rate of WCSS decrease sharply slows down.",
+                    "key_points": [
+                        "The Elbow Method helps find the optimal number of clusters for a given dataset.",
+                        "It uses a metric called WCSS (Within Cluster Sum of Squares), which measures variation within a cluster.",
+                        "The K-Means algorithm is run for different values of K, and the WCSS is plotted for each.",
+                        "The 'elbow' of the curve, where the WCSS decrease slows significantly, suggests the best value for K."
+                    ],
+                    "quiz_questions": [
+                        "What does WCSS stand for in the context of K-Means?",
+                        "How do you identify the optimal K value on an Elbow Method plot?"
+                    ],
+                    "image_hint": "Graph showing WCSS vs. Number of Clusters for the Elbow method"
+                },
+                {
+                    "id": "ch01_tp04",
+                    "title": "Advantages and Disadvantages of K-Means",
+                    "summary": "K-Means is popular for its simplicity and speed with large datasets. However, its performance is sensitive to the initial choice of 'k', the initial placement of centroids, data ordering, and feature scaling, which can significantly impact the final output.",
+                    "key_points": [
+                        "Advantage: It is easy to understand, implement, and generally faster than hierarchical clustering on large datasets.",
+                        "Advantage: It tends to form tighter clusters as instances can be reassigned during iterations.",
+                        "Disadvantage: It is difficult to predict the optimal number of clusters (k) beforehand.",
+                        "Disadvantage: The final result is highly sensitive to initial centroid placement, data order, and feature scaling."
+                    ],
+                    "quiz_questions": [
+                        "Name one major advantage of K-Means clustering.",
+                        "What is a significant drawback related to the setup of the K-Means algorithm?"
+                    ],
+                    "image_hint": "Simple table with two columns: Advantages and Disadvantages"
+                },
+                {
+                    "id": "ch01_tp05",
+                    "title": "Applications of K-Means",
+                    "summary": "K-Means clustering is widely used across various fields for data grouping. Common applications include customer segmentation for targeted marketing, document clustering for organizing text, and image segmentation for identifying distinct objects or regions in an image.",
+                    "key_points": [
+                        "Market and customer segmentation for business analytics.",
+                        "Document clustering to group similar articles, news, or texts.",
+                        "Image segmentation to partition a digital image into multiple segments.",
+                        "Analyzing trends on dynamic data to identify patterns."
+                    ],
+                    "quiz_questions": [
+                        "How can a retail company use K-Means clustering?",
+                        "What is image segmentation and how does K-Means help?"
+                    ],
+                    "image_hint": "Montage of application icons: market segments, clustered documents, segmented image"
+                }
+            ]
+        },
+        {
+            "id": "ch02",
+            "title": "Apriori Algorithm",
+            "description": "An introduction to the Apriori algorithm, a classic algorithm used in data mining for frequent itemset mining and learning association rules.",
+            "topics": [
+                {
+                    "id": "ch02_tp01",
+                    "title": "Understanding Itemsets",
+                    "summary": "An itemset is a collection of one or more items. A frequent itemset is a set of items that appear together often in a dataset, exceeding a user-defined minimum threshold for support. This technique is used to identify items that frequently co-occur, like bread and butter.",
+                    "key_points": [
+                        "An itemset is a set of items that appear together in a transaction.",
+                        "A frequent itemset is an itemset that occurs more often than a specified minimum support threshold.",
+                        "The goal of frequent itemset mining is to find items that often occur together.",
+                        "The frequency of an itemset is determined by metrics like minimum support."
+                    ],
+                    "quiz_questions": [
+                        "What is the difference between an itemset and a frequent itemset?",
+                        "Give a real-world example of a frequent 2-itemset in a supermarket."
+                    ],
+                    "image_hint": "Shopping cart with common items like bread and milk circled"
+                },
+                {
+                    "id": "ch02_tp02",
+                    "title": "Advantages and Disadvantages of Apriori",
+                    "summary": "The Apriori algorithm is straightforward to understand and implement. However, its main drawback is its computational expense, as it requires multiple scans of the entire database and can generate a very large number of candidate rules, which can be memory-intensive.",
+                    "key_points": [
+                        "Advantage: The algorithm is simple to understand and easy to apply.",
+                        "Advantage: It is effective for calculating and identifying large, frequent itemsets.",
+                        "Disadvantage: It is computationally expensive because it requires multiple full passes through the database.",
+                        "Disadvantage: Generating a huge number of candidate rules can be slow and require significant memory."
+                    ],
+                    "quiz_questions": [
+                        "What makes the Apriori algorithm computationally expensive?",
+                        "What is a key advantage of the Apriori algorithm in terms of usability?"
+                    ],
+                    "image_hint": "A simple table with two columns for Apriori's pros and cons"
+                }
+            ]
+        }
+    ],
+    "slides": [],
+    "design": {},
+    "media": [],
+    "output_path": null,
+    "input_pdf_path": "data/syllabus.pdf"
+}
