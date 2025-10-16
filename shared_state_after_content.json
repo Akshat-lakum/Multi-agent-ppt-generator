@@ -2,431 +2,507 @@
     "pdf_text": null,
     "chapters": [
         {
-            "id": "ch1",
-            "title": "Foundations of Principal Component Analysis",
-            "description": "An introduction to the core concepts of PCA, its purpose, and the fundamental linear algebra behind it.",
+            "id": "ch_01",
+            "title": "Introduction to K-Nearest Neighbors",
+            "description": "Understand the fundamental concepts behind the K-NN algorithm, its core principles, and what makes it unique among machine learning models.",
             "topics": [
                 {
-                    "id": "ch1_tp1",
-                    "title": "What is Principal Component Analysis (PCA)?",
-                    "summary": "PCA is a dimensionality reduction technique used to transform a high-dimensional dataset into a lower-dimensional one. It achieves this by creating a new set of features, called principal components, which are orthogonal and capture the maximum variance in the data.",
+                    "id": "topic_101",
+                    "title": "What is K-Nearest Neighbors (K-NN)?",
+                    "summary": "K-NN is a foundational supervised machine learning algorithm used for both classification and regression. It operates on the principle of 'feature similarity,' classifying a new data point based on the classification of its closest neighbors in the feature space.",
                     "key_points": [
-                        "Reduces the number of features in a dataset.",
-                        "Creates new features called 'principal components'.",
-                        "The new features are uncorrelated (orthogonal).",
-                        "Aims to retain as much of the original data's variance as possible."
+                        "A type of supervised learning algorithm.",
+                        "Assumes similar things exist in close proximity.",
+                        "Classifies new data based on the majority vote of its 'K' nearest neighbors.",
+                        "Primarily used for classification but can be adapted for regression tasks."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "What is the primary goal of PCA?",
+                            "question": "K-NN is an example of which type of machine learning?",
                             "options": [
-                                "To increase the number of features",
-                                "To reduce the dimensionality of the data",
-                                "To classify data points",
-                                "To remove all correlations from the data"
-                            ],
-                            "answer": "To reduce the dimensionality of the data"
-                        }
-                    ],
-                    "image_hint": "High dimensional data cloud being projected onto a lower dimension plane"
-                },
-                {
-                    "id": "ch1_tp2",
-                    "title": "The Core Idea: Transforming Feature Space",
-                    "summary": "PCA works by changing the coordinate system of your data. The original feature space, with 'n' dimensions, is transformed into a new 'm'-dimensional space (where m < n). This new space is defined by directions that best explain the data's variance.",
-                    "key_points": [
-                        "Transforms an n-dimensional space to an m-dimensional space.",
-                        "The new dimensions are the principal components.",
-                        "These new dimensions are orthogonal to each other.",
-                        "This process is a linear transformation of the data."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "In the context of PCA, what does it mean for the new dimensions to be 'orthogonal'?",
-                            "options": [
-                                "They are highly correlated.",
-                                "They are statistically independent or uncorrelated.",
-                                "They have the same length.",
-                                "They point in the same direction."
-                            ],
-                            "answer": "They are statistically independent or uncorrelated."
-                        }
-                    ],
-                    "image_hint": "Axes rotating to align with data spread"
-                },
-                {
-                    "id": "ch1_tp3",
-                    "title": "Understanding Covariance",
-                    "summary": "Before diving into PCA, it's crucial to understand covariance. Covariance is a measure of how two variables change together. A positive covariance means they increase together, while a negative covariance means one increases as the other decreases. The covariance matrix summarizes these relationships for all pairs of variables in the dataset.",
-                    "key_points": [
-                        "Covariance measures the joint variability of two random variables.",
-                        "A positive value indicates a direct relationship.",
-                        "A negative value indicates an inverse relationship.",
-                        "The diagonal of a covariance matrix represents the variance of each individual feature."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "What does the diagonal of a covariance matrix represent?",
-                            "options": [
-                                "The correlation between features",
-                                "The variance of each feature",
-                                "The mean of each feature",
-                                "The number of data points"
-                            ],
-                            "answer": "The variance of each feature"
-                        }
-                    ],
-                    "image_hint": "2D scatter plot showing positive covariance"
-                },
-                {
-                    "id": "ch1_tp4",
-                    "title": "Introduction to Eigenvectors and Eigenvalues",
-                    "summary": "Eigenvectors and eigenvalues are the mathematical foundation of PCA. For a given matrix (like a covariance matrix), an eigenvector is a direction that is only stretched or compressed when the matrix transformation is applied. The eigenvalue is the scalar factor by which the eigenvector is scaled.",
-                    "key_points": [
-                        "Eigenvectors represent directions in space.",
-                        "Eigenvalues are scalars that indicate the magnitude of scaling along the eigenvector's direction.",
-                        "They always come in pairs.",
-                        "In PCA, they are calculated from the covariance matrix."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "An eigenvector of a matrix represents a...",
-                            "options": [
-                                "Magnitude of stretch",
-                                "Random point in space",
-                                "Direction that remains unchanged (except for scaling)",
-                                "The determinant of the matrix"
-                            ],
-                            "answer": "Direction that remains unchanged (except for scaling)"
-                        }
-                    ],
-                    "image_hint": "Vector transformation showing an eigenvector that doesn't change direction"
-                },
-                {
-                    "id": "ch1_tp5",
-                    "title": "The Role of Eigenvalues in PCA",
-                    "summary": "In PCA, the eigenvalues of the covariance matrix have a very specific meaning: they represent the amount of variance in the data along the direction of their corresponding eigenvector. A high eigenvalue means that its eigenvector points in a direction of high variance.",
-                    "key_points": [
-                        "Eigenvalues quantify the variance captured by each principal component.",
-                        "A larger eigenvalue corresponds to more variance.",
-                        "Principal components are ranked based on the magnitude of their eigenvalues.",
-                        "This ranking helps us decide which components to keep."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "In PCA, what does a large eigenvalue signify?",
-                            "options": [
-                                "A direction with low data variance",
-                                "A principal component that should be discarded",
-                                "A direction that captures a large amount of the data's variance",
-                                "A computational error"
-                            ],
-                            "answer": "A direction that captures a large amount of the data's variance"
-                        }
-                    ],
-                    "image_hint": "Bar chart of eigenvalues sorted from largest to smallest"
-                }
-            ]
-        },
-        {
-            "id": "ch2",
-            "title": "The PCA Algorithm: Step-by-Step",
-            "description": "A detailed walkthrough of the procedural steps involved in performing Principal Component Analysis on a dataset.",
-            "topics": [
-                {
-                    "id": "ch2_tp1",
-                    "title": "Step 1: Standardize the Data",
-                    "summary": "The first step in PCA is to standardize the dataset. This is crucial if your features are measured on different scales. Standardization involves rescaling the data to have a mean of 0 and a standard deviation of 1, ensuring that each feature contributes equally to the analysis.",
-                    "key_points": [
-                        "PCA is sensitive to the scale of the features.",
-                        "Standardization gives all features equal weight.",
-                        "Each feature is transformed to have a mean of 0.",
-                        "Each feature is transformed to have a standard deviation of 1."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "Why is it important to standardize data before applying PCA?",
-                            "options": [
-                                "To make the data easier to read",
-                                "To ensure features with larger scales don't dominate the analysis",
-                                "To increase the number of dimensions",
-                                "It is not an important step"
-                            ],
-                            "answer": "To ensure features with larger scales don't dominate the analysis"
-                        }
-                    ],
-                    "image_hint": "Before and after charts showing data standardization"
-                },
-                {
-                    "id": "ch2_tp2",
-                    "title": "Step 2: Calculate the Covariance Matrix",
-                    "summary": "Once the data is standardized, the next step is to compute the covariance matrix. This square matrix describes the variance and covariance between all pairs of features in the dataset, providing a summary of their linear relationships.",
-                    "key_points": [
-                        "The matrix size is n x n, where n is the number of features.",
-                        "Diagonal elements are the variances of each feature.",
-                        "Off-diagonal elements are the covariances between feature pairs.",
-                        "This matrix captures the underlying structure and relationships in the data."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "If you have a dataset with 5 features, what will be the dimensions of its covariance matrix?",
-                            "options": [
-                                "5 x 1",
-                                "1 x 5",
-                                "5 x 5",
-                                "It depends on the number of data points"
-                            ],
-                            "answer": "5 x 5"
-                        }
-                    ],
-                    "image_hint": "Diagram of a 3x3 covariance matrix with labels"
-                },
-                {
-                    "id": "ch2_tp3",
-                    "title": "Step 3: Compute Eigenvectors and Eigenvalues",
-                    "summary": "This is the core mathematical step of PCA. We decompose the covariance matrix to find its eigenvectors and eigenvalues. These will define the new feature space, with eigenvectors representing the directions of the new axes (principal components) and eigenvalues representing their magnitudes.",
-                    "key_points": [
-                        "This process is also known as eigendecomposition.",
-                        "Each eigenvector will be orthogonal to the others.",
-                        "The number of eigenvector-eigenvalue pairs will equal the number of original dimensions.",
-                        "These pairs provide both the direction and magnitude of variance."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "Eigenvectors and eigenvalues are calculated from which matrix in the PCA process?",
-                            "options": [
-                                "The original data matrix",
-                                "The standardized data matrix",
-                                "The covariance matrix",
-                                "The correlation matrix"
-                            ],
-                            "answer": "The covariance matrix"
-                        }
-                    ],
-                    "image_hint": "Mathematical equation showing matrix eigendecomposition"
-                },
-                {
-                    "id": "ch2_tp4",
-                    "title": "Step 4: Sort Eigenvectors by Eigenvalues",
-                    "summary": "The next step is to rank the eigenvectors in order of their corresponding eigenvalues, from highest to lowest. The eigenvector with the highest eigenvalue is the first principal component, as it represents the direction with the most variance in the data.",
-                    "key_points": [
-                        "Eigenvalues are sorted in descending order.",
-                        "The eigenvector with the highest eigenvalue is PC1.",
-                        "The eigenvector with the second-highest eigenvalue is PC2.",
-                        "This ranking is critical for dimensionality reduction."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "The first principal component (PC1) corresponds to the eigenvector with...",
-                            "options": [
-                                "The lowest eigenvalue",
-                                "The highest eigenvalue",
-                                "A negative eigenvalue",
-                                "A zero eigenvalue"
-                            ],
-                            "answer": "The highest eigenvalue"
-                        }
-                    ],
-                    "image_hint": "List of eigenvectors and eigenvalues being sorted"
-                },
-                {
-                    "id": "ch2_tp5",
-                    "title": "Step 5: Select Principal Components",
-                    "summary": "After ranking, we decide how many principal components (k) to keep. This is the dimensionality reduction step. We can choose 'k' by looking at the cumulative variance explained by the components or by setting a threshold (e.g., keep enough components to explain 95% of the variance).",
-                    "key_points": [
-                        "We choose 'k' eigenvectors, where k < n (original dimensions).",
-                        "The top 'k' eigenvectors form a new feature matrix.",
-                        "This choice is a trade-off between dimensionality reduction and information loss.",
-                        "A common tool for this is the 'scree plot'."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "How do you typically decide how many principal components to keep?",
-                            "options": [
-                                "Choose a random number",
-                                "Keep all of them",
-                                "Based on the amount of variance you want to retain",
-                                "Always choose half of the original features"
-                            ],
-                            "answer": "Based on the amount of variance you want to retain"
-                        }
-                    ],
-                    "image_hint": "Scree plot showing explained variance by component"
-                },
-                {
-                    "id": "ch2_tp6",
-                    "title": "Step 6: Transform the Data",
-                    "summary": "The final step is to create the new, lower-dimensional dataset. This is done by taking the dot product of the original, standardized data and the feature matrix created from the top 'k' eigenvectors. The result is your new dataset with 'k' dimensions.",
-                    "key_points": [
-                        "New Dataset = Standardized Original Data \u22c5 Top 'k' Eigenvectors.",
-                        "This projects the original data onto the new principal component axes.",
-                        "The final dataset has fewer columns (features).",
-                        "This new dataset can now be used for machine learning or visualization."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "How is the final lower-dimensional dataset created?",
-                            "options": [
-                                "By deleting random columns from the original data",
-                                "By averaging the original features",
-                                "By projecting the original data onto the selected principal components",
-                                "By selecting the top k rows"
-                            ],
-                            "answer": "By projecting the original data onto the selected principal components"
-                        }
-                    ],
-                    "image_hint": "Matrix multiplication diagram showing data projection"
-                }
-            ]
-        },
-        {
-            "id": "ch3",
-            "title": "Applications and Benefits of PCA",
-            "description": "Exploring the practical use cases of PCA across various domains and summarizing its key advantages.",
-            "topics": [
-                {
-                    "id": "ch3_tp1",
-                    "title": "Application: Visualizing Multidimensional Data",
-                    "summary": "One of the most common applications of PCA is data visualization. Datasets with more than three dimensions are impossible for humans to visualize. By using PCA to reduce the data to two or three principal components, we can create scatter plots that reveal patterns, clusters, and outliers.",
-                    "key_points": [
-                        "Reduces data to 2 or 3 dimensions for plotting.",
-                        "Helps in exploratory data analysis (EDA).",
-                        "Can reveal the underlying structure of the data.",
-                        "Makes complex datasets interpretable."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "Why is PCA particularly useful for data visualization?",
-                            "options": [
-                                "It adds color to the plots.",
-                                "It can reduce many features down to a plottable 2 or 3 dimensions.",
-                                "It makes all data points positive.",
-                                "It guarantees perfect clusters."
-                            ],
-                            "answer": "It can reduce many features down to a plottable 2 or 3 dimensions."
-                        }
-                    ],
-                    "image_hint": "3D data scatter plot being projected onto a 2D plane"
-                },
-                {
-                    "id": "ch3_tp2",
-                    "title": "Application: Healthcare and Risk Analysis",
-                    "summary": "In healthcare, datasets often contain hundreds of variables for each patient. PCA can be used to analyze this data and identify the most important factors that contribute to the risk of a disease. It helps researchers find patterns by combining correlated variables into a single component.",
-                    "key_points": [
-                        "Simplifies complex medical datasets.",
-                        "Helps identify key factors related to disease risk.",
-                        "Can be used in genomic data analysis to find patterns.",
-                        "Improves the performance of predictive models by reducing noise."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "How might PCA be used in analyzing patient data?",
-                            "options": [
-                                "To diagnose diseases directly",
-                                "To reduce many patient metrics into a few key 'risk profiles'",
-                                "To create more variables",
-                                "To replace doctor's opinions"
-                            ],
-                            "answer": "To reduce many patient metrics into a few key 'risk profiles'"
-                        }
-                    ],
-                    "image_hint": "Abstract chart of medical data and patient risk factors"
-                },
-                {
-                    "id": "ch3_tp3",
-                    "title": "Application: Image Compression",
-                    "summary": "PCA can be used to resize or compress images. An image can be treated as a matrix of pixel values. By applying PCA, we can keep only the principal components that capture the most 'variance' (i.e., the most important information) in the image, thereby reducing the data size without losing significant quality.",
-                    "key_points": [
-                        "Treats images as data matrices.",
-                        "Reduces the amount of data needed to store an image.",
-                        "Reconstructs the image from fewer components.",
-                        "A form of 'lossy' compression."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "When used for image compression, PCA is a form of:",
-                            "options": [
-                                "Lossless compression",
-                                "Lossy compression",
-                                "Image enhancement",
-                                "Image rotation"
-                            ],
-                            "answer": "Lossy compression"
-                        }
-                    ],
-                    "image_hint": "Side-by-side comparison of original and PCA compressed image"
-                },
-                {
-                    "id": "ch3_tp4",
-                    "title": "Application: Finance and Stock Market Analysis",
-                    "summary": "In finance, PCA is used to analyze stock data and forecast trends. It can reduce a large number of correlated stock returns into a few key factors that drive market movements. This helps in building more robust trading models and understanding portfolio risk.",
-                    "key_points": [
-                        "Analyzes returns of multiple stocks simultaneously.",
-                        "Identifies underlying factors driving the market.",
-                        "Used in risk management and portfolio optimization.",
-                        "Helps in building predictive models for forecasting."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "In finance, what might a principal component represent?",
-                            "options": [
-                                "The price of a single stock",
-                                "An underlying market factor like 'interest rate sensitivity'",
-                                "The number of shares traded",
-                                "A random fluctuation"
-                            ],
-                            "answer": "An underlying market factor like 'interest rate sensitivity'"
-                        }
-                    ],
-                    "image_hint": "Stock market graph with multiple trend lines"
-                },
-                {
-                    "id": "ch3_tp5",
-                    "title": "Benefit: Overcoming the Curse of Dimensionality",
-                    "summary": "When dealing with high-dimensional data, machine learning models can suffer from the 'curse of dimensionality,' where performance degrades as the number of features increases. PCA helps mitigate this by reducing the feature space, which can lead to simpler, faster, and more effective models.",
-                    "key_points": [
-                        "Reduces computational complexity.",
-                        "Can help prevent model overfitting.",
-                        "Removes redundant and noisy features.",
-                        "Improves the performance of algorithms that are sensitive to high dimensions."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "What is the 'curse of dimensionality'?",
-                            "options": [
-                                "The challenge of visualizing data",
-                                "The degradation of model performance as features increase",
-                                "The difficulty in collecting high-dimensional data",
-                                "A type of data transformation"
-                            ],
-                            "answer": "The degradation of model performance as features increase"
-                        }
-                    ],
-                    "image_hint": "Graph showing model error increasing as number of dimensions grows"
-                },
-                {
-                    "id": "ch3_tp6",
-                    "title": "Summary and Key Takeaways",
-                    "summary": "Principal Component Analysis is a powerful unsupervised learning technique for dimensionality reduction. By transforming data onto a new coordinate system based on variance, it allows us to simplify complex datasets, visualize them, and improve the performance of machine learning models.",
-                    "key_points": [
-                        "PCA finds orthogonal directions of maximum variance.",
-                        "The process involves standardizing data, computing the covariance matrix, and finding its eigenvectors/eigenvalues.",
-                        "It is widely used for visualization, noise reduction, and feature extraction.",
-                        "The choice of how many components to keep is a critical step that balances information retention and dimensionality reduction."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "PCA is considered what type of machine learning technique?",
-                            "options": [
-                                "Supervised Learning",
                                 "Unsupervised Learning",
+                                "Supervised Learning",
                                 "Reinforcement Learning",
-                                "Semi-supervised Learning"
+                                "Deep Learning"
                             ],
-                            "answer": "Unsupervised Learning"
+                            "answer": "Supervised Learning"
+                        },
+                        {
+                            "question": "How does K-NN classify a new data point?",
+                            "options": [
+                                "By creating a decision boundary",
+                                "By finding the average of all data points",
+                                "By a majority vote of its nearest neighbors",
+                                "By using a predefined mathematical formula"
+                            ],
+                            "answer": "By a majority vote of its nearest neighbors"
                         }
                     ],
-                    "image_hint": "Infographic summarizing the PCA process flow"
+                    "image_hint": "Data points of different classes clustered together"
+                },
+                {
+                    "id": "topic_102",
+                    "title": "Core Principles: Instance-Based and Non-Parametric",
+                    "summary": "K-NN is known as a 'lazy learner' or an instance-based algorithm because it doesn't build a general internal model from the training data. Instead, it stores the entire training dataset and makes decisions only when a prediction is required. It's also non-parametric, meaning it makes no assumptions about the underlying data distribution.",
+                    "key_points": [
+                        "It's a 'lazy learner' - all computation is deferred until classification time.",
+                        "It stores the entire training dataset, which can be memory-intensive.",
+                        "It's non-parametric, making it flexible for data that doesn't fit a specific distribution (like a normal distribution).",
+                        "The model's complexity grows with the size of the training data."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "Why is K-NN called a 'lazy learner'?",
+                            "options": [
+                                "It is slow to train",
+                                "It doesn't learn a model from the training data immediately",
+                                "It is computationally inefficient",
+                                "It only works on small datasets"
+                            ],
+                            "answer": "It doesn't learn a model from the training data immediately"
+                        },
+                        {
+                            "question": "What does 'non-parametric' mean in the context of K-NN?",
+                            "options": [
+                                "It has no parameters to tune",
+                                "It uses a fixed number of parameters",
+                                "It makes no assumptions about the data's underlying distribution",
+                                "It is not a valid statistical model"
+                            ],
+                            "answer": "It makes no assumptions about the data's underlying distribution"
+                        }
+                    ],
+                    "image_hint": "A computer sleeping next to a large database icon"
+                }
+            ]
+        },
+        {
+            "id": "ch_02",
+            "title": "The K-NN Algorithm in Action",
+            "description": "A step-by-step breakdown of how the K-NN algorithm works, from selecting the value of K to making a final prediction.",
+            "topics": [
+                {
+                    "id": "topic_201",
+                    "title": "Step 1: Choose the Number of Neighbors (K)",
+                    "summary": "The first and most critical step in the K-NN algorithm is choosing the value of 'K', which represents the number of nearest neighbors to consider when making a prediction. This value is a hyperparameter that you, the data scientist, must select. A good choice for K is crucial for the model's performance.",
+                    "key_points": [
+                        "K is a user-defined hyperparameter.",
+                        "K represents the number of neighbors the algorithm will check.",
+                        "The value of K significantly impacts the prediction outcome.",
+                        "Often, K is chosen to be an odd number to avoid ties in classification."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "What does 'K' in K-NN represent?",
+                            "options": [
+                                "The number of data points",
+                                "The number of features",
+                                "The number of nearest neighbors to consider",
+                                "A constant value of 10"
+                            ],
+                            "answer": "The number of nearest neighbors to consider"
+                        },
+                        {
+                            "question": "Who determines the value of K?",
+                            "options": [
+                                "The algorithm automatically calculates it",
+                                "It is always set to 5",
+                                "The user or data scientist sets it",
+                                "It is determined by the number of classes"
+                            ],
+                            "answer": "The user or data scientist sets it"
+                        }
+                    ],
+                    "image_hint": "A person choosing a number from a list of options"
+                },
+                {
+                    "id": "topic_202",
+                    "title": "Step 2: Calculate Distances",
+                    "summary": "Once K is chosen, the algorithm calculates the distance between the new, unclassified data point and every single data point in the training set. The most common distance metric used is Euclidean distance, which is essentially the straight-line distance between two points in a multi-dimensional space.",
+                    "key_points": [
+                        "The goal is to measure the 'closeness' or 'similarity' between data points.",
+                        "Euclidean distance is the most common metric.",
+                        "The distance is calculated between the new point and all existing points.",
+                        "Other distance metrics like Manhattan or Minkowski can also be used."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "What is the most common method for calculating distance in K-NN?",
+                            "options": [
+                                "Manhattan Distance",
+                                "Cosine Similarity",
+                                "Hamming Distance",
+                                "Euclidean Distance"
+                            ],
+                            "answer": "Euclidean Distance"
+                        },
+                        {
+                            "question": "The algorithm calculates the distance between the new point and...",
+                            "options": [
+                                "...only the points in the same class.",
+                                "...only a random sample of points.",
+                                "...every other point in the training data.",
+                                "...only the points at the edges of clusters."
+                            ],
+                            "answer": "...every other point in the training data."
+                        }
+                    ],
+                    "image_hint": "Euclidean distance formula with a graph showing points A and B"
+                },
+                {
+                    "id": "topic_203",
+                    "title": "Step 3 & 4: Find Neighbors and Count Votes",
+                    "summary": "After calculating all the distances, the algorithm sorts them in ascending order. It then identifies the top 'K' data points with the smallest distances \u2013 these are the 'K-nearest neighbors'. The next step is to analyze the classes of these neighbors and count how many belong to each category.",
+                    "key_points": [
+                        "Distances are sorted from smallest to largest.",
+                        "The algorithm selects the 'K' points with the smallest distances.",
+                        "These 'K' points are the nearest neighbors.",
+                        "The algorithm then tallies the class labels of these K neighbors."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "After calculating distances, what is the immediate next step?",
+                            "options": [
+                                "Assign the class",
+                                "Sort the distances",
+                                "Choose a new K",
+                                "Re-calculate distances"
+                            ],
+                            "answer": "Sort the distances"
+                        },
+                        {
+                            "question": "If K=5, how many neighbors are selected?",
+                            "options": [
+                                "All of them",
+                                "A random number",
+                                "The 5 with the smallest distance",
+                                "The 5 with the largest distance"
+                            ],
+                            "answer": "The 5 with the smallest distance"
+                        }
+                    ],
+                    "image_hint": "A list of numbers being sorted from low to high"
+                },
+                {
+                    "id": "topic_204",
+                    "title": "Step 5: Assign the Class by Majority Vote",
+                    "summary": "The final step is to make a prediction. The new data point is assigned to the class that has the most members among its K-nearest neighbors. For example, if K=5 and three neighbors are 'Class A' and two are 'Class B', the new point is classified as 'Class A'.",
+                    "key_points": [
+                        "The prediction is based on a simple majority vote.",
+                        "The class with the highest frequency among the K neighbors wins.",
+                        "This completes the classification for the new data point.",
+                        "At this point, the model is ready to classify another point."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "How is the final class of a new data point determined in K-NN classification?",
+                            "options": [
+                                "By the class of the single closest neighbor",
+                                "By the average of the neighbors' values",
+                                "By the most frequent class among the K-nearest neighbors",
+                                "By a random assignment"
+                            ],
+                            "answer": "By the most frequent class among the K-nearest neighbors"
+                        },
+                        {
+                            "question": "If K=7, and 4 neighbors are 'Red' and 3 are 'Blue', what is the prediction?",
+                            "options": [
+                                "Red",
+                                "Blue",
+                                "Cannot be determined",
+                                "Both"
+                            ],
+                            "answer": "Red"
+                        }
+                    ],
+                    "image_hint": "A voting box with checkmarks for different categories"
+                }
+            ]
+        },
+        {
+            "id": "ch_03",
+            "title": "A Practical Walkthrough",
+            "description": "Applying the K-NN algorithm to a real-world example to solidify understanding of the process.",
+            "topics": [
+                {
+                    "id": "topic_301",
+                    "title": "Case Study: Paper Tissue Quality",
+                    "summary": "Let's classify a new paper tissue as 'GOOD' or 'BAD' quality based on two features: Acid Durability and Strength. We have a small dataset of existing tissues with known classifications. Our goal is to classify a new tissue, P5, with durability=3 and strength=7.",
+                    "key_points": [
+                        "Problem: Classify paper tissue quality.",
+                        "Features: X1 (Acid Durability), X2 (Strength).",
+                        "Classes: GOOD, BAD.",
+                        "Goal: Predict the class for new data point P5 (3, 7)."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "What are the features (predictors) in this case study?",
+                            "options": [
+                                "GOOD and BAD",
+                                "Acid Durability and Strength",
+                                "P1, P2, P3, P4",
+                                "The Euclidean Distance"
+                            ],
+                            "answer": "Acid Durability and Strength"
+                        },
+                        {
+                            "question": "What is the task for the K-NN algorithm in this example?",
+                            "options": [
+                                "To calculate the average strength",
+                                "To predict the class of a new point P5",
+                                "To find the best value for K",
+                                "To group all points into clusters"
+                            ],
+                            "answer": "To predict the class of a new point P5"
+                        }
+                    ],
+                    "image_hint": "Table of data with X1, X2, and Y columns"
+                },
+                {
+                    "id": "topic_302",
+                    "title": "Applying the Steps with K=3",
+                    "summary": "We'll set K=3. The first step is to calculate the Euclidean distance from our new point P5(3,7) to all other points: P1(7,7), P2(7,4), P3(3,4), and P4(1,4). After calculation, we sort these distances to find the three closest neighbors.",
+                    "key_points": [
+                        "We choose K=3 for this example.",
+                        "Calculate distance from P5 to P1, P2, P3, and P4.",
+                        "The distance to P1(7,7) is 4.0.",
+                        "The distance to P3(3,4) is 3.0.",
+                        "Sort the distances to identify the 3 nearest neighbors."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "What value of K is selected for this specific walkthrough?",
+                            "options": [
+                                "1",
+                                "3",
+                                "5",
+                                "7"
+                            ],
+                            "answer": "3"
+                        },
+                        {
+                            "question": "Which of these points is closest to P5(3,7)? (P1(7,7), P2(7,4), P3(3,4), P4(1,4))",
+                            "options": [
+                                "P1(7,7)",
+                                "P2(7,4)",
+                                "P3(3,4)",
+                                "P4(1,4)"
+                            ],
+                            "answer": "P3(3,4)"
+                        }
+                    ],
+                    "image_hint": "A graph with 5 data points and distance calculation lines"
+                },
+                {
+                    "id": "topic_303",
+                    "title": "The Final Classification",
+                    "summary": "After sorting the distances, we find the three nearest neighbors to P5(3,7) are P3, P4, and P1. We then look at their classes: P3 is 'GOOD', P4 is 'GOOD', and P1 is 'BAD'. With two votes for 'GOOD' and one for 'BAD', the majority vote wins.",
+                    "key_points": [
+                        "The 3 nearest neighbors are P3, P4, and P1.",
+                        "Neighbor Classes: P3 ('GOOD'), P4 ('GOOD'), P1 ('BAD').",
+                        "Vote Count: 2 for 'GOOD', 1 for 'BAD'.",
+                        "Conclusion: The new data point P5 is classified as 'GOOD'."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "Based on the majority vote with K=3, what is the classification for P5?",
+                            "options": [
+                                "GOOD",
+                                "BAD",
+                                "Inconclusive",
+                                "Both GOOD and BAD"
+                            ],
+                            "answer": "GOOD"
+                        },
+                        {
+                            "question": "If K was 1, what would the classification of P5 be?",
+                            "options": [
+                                "GOOD",
+                                "BAD",
+                                "Depends on the second closest point",
+                                "Cannot be determined"
+                            ],
+                            "answer": "GOOD"
+                        }
+                    ],
+                    "image_hint": "A pie chart showing 2/3 GOOD and 1/3 BAD"
+                }
+            ]
+        },
+        {
+            "id": "ch_04",
+            "title": "Applications and Considerations",
+            "description": "Exploring real-world uses of K-NN, its advantages and disadvantages, and important factors to consider when implementing the algorithm.",
+            "topics": [
+                {
+                    "id": "topic_401",
+                    "title": "Real-World Applications of K-NN",
+                    "summary": "K-NN's simplicity and effectiveness make it useful in various domains. In finance, it's used for credit scoring and loan approval predictions. In politics, it can help classify voters. It's also a foundational technique in recommendation systems, image recognition, and handwriting detection.",
+                    "key_points": [
+                        "Banking: Predicting loan defaulters and calculating credit ratings.",
+                        "Politics: Classifying potential voters based on demographic data.",
+                        "Recommendation Engines: Suggesting products based on similar users' preferences.",
+                        "Pattern Recognition: Used in handwriting, speech, and image recognition."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "Which is NOT a common application of K-NN mentioned in the text?",
+                            "options": [
+                                "Calculating Credit Ratings",
+                                "Image Recognition",
+                                "Predicting Stock Market Prices",
+                                "Classifying Voters"
+                            ],
+                            "answer": "Predicting Stock Market Prices"
+                        },
+                        {
+                            "question": "How might K-NN be used in a banking system?",
+                            "options": [
+                                "To calculate interest rates",
+                                "To identify customers with characteristics similar to past defaulters",
+                                "To process transactions faster",
+                                "To design the bank's website"
+                            ],
+                            "answer": "To identify customers with characteristics similar to past defaulters"
+                        }
+                    ],
+                    "image_hint": "Icons representing banking, politics, and image recognition"
+                },
+                {
+                    "id": "topic_402",
+                    "title": "How to Select the Value of K?",
+                    "summary": "Choosing the right K is a balancing act. A very low K (e.g., K=1) makes the model sensitive to noise and outliers. A very high K can be computationally expensive and may oversmooth the decision boundary, blurring distinctions between classes. There's no single best way to find K; it often requires experimentation, though K=5 is a common starting point.",
+                    "key_points": [
+                        "There is no one-size-fits-all answer for the best K.",
+                        "A small K (like 1 or 2) can lead to a noisy and unstable model.",
+                        "A large K provides smoother decision boundaries but is computationally expensive.",
+                        "The value of K is typically found by testing different values and seeing which performs best on a validation set."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "What is a major risk of choosing a very small value for K, such as K=1?",
+                            "options": [
+                                "The model will be too slow",
+                                "The model will be overly sensitive to noise and outliers",
+                                "The model will be too simple",
+                                "The model will always be inaccurate"
+                            ],
+                            "answer": "The model will be overly sensitive to noise and outliers"
+                        },
+                        {
+                            "question": "What is a common practice for finding the optimal K?",
+                            "options": [
+                                "Always using K=5",
+                                "Setting K to the number of classes",
+                                "Experimenting with different values of K",
+                                "Using the largest K possible"
+                            ],
+                            "answer": "Experimenting with different values of K"
+                        }
+                    ],
+                    "image_hint": "A person at a crossroads with signs pointing to K=1, K=5, K=10"
+                },
+                {
+                    "id": "topic_403",
+                    "title": "The Challenge of Feature Scaling",
+                    "summary": "A major drawback of K-NN is its sensitivity to the scale of features. If one feature (e.g., loan amount in dollars) has a much larger range than another (e.g., age in years), the distance calculation will be dominated by the larger-scale feature. To prevent this, it's crucial to normalize or standardize the data so all features contribute equally to the distance calculation.",
+                    "key_points": [
+                        "K-NN is sensitive to the scale of the input features.",
+                        "Features with larger ranges can unfairly dominate the distance metric.",
+                        "This can lead to poor model performance and robustness issues.",
+                        "Standardization (e.g., Z-score normalization) is a common solution to this problem."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "Why is feature scaling important for K-NN?",
+                            "options": [
+                                "It makes the algorithm run faster",
+                                "It ensures all features contribute equally to the distance calculation",
+                                "It reduces the amount of memory needed",
+                                "It is only needed for regression problems"
+                            ],
+                            "answer": "It ensures all features contribute equally to the distance calculation"
+                        },
+                        {
+                            "question": "If you have features 'age' (20-80) and 'income' (20,000-200,000), which will have a greater impact on the Euclidean distance without scaling?",
+                            "options": [
+                                "Age",
+                                "Income",
+                                "They will have an equal impact",
+                                "It's impossible to tell"
+                            ],
+                            "answer": "Income"
+                        }
+                    ],
+                    "image_hint": "Uneven weighing scales with one side much heavier"
+                },
+                {
+                    "id": "topic_404",
+                    "title": "Advantages of K-NN",
+                    "summary": "Despite its simplicity, K-NN has several key advantages. It's incredibly easy to understand and implement, making it a great baseline model. It requires no training time, as all the work happens at prediction time. It's also robust to noisy training data and can be effective if the dataset is large and representative.",
+                    "key_points": [
+                        "Simple to implement and easy to interpret.",
+                        "No explicit training phase is required.",
+                        "Can learn complex, non-linear decision boundaries.",
+                        "Effective when the training data is large."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "Which of the following is a primary advantage of the K-NN algorithm?",
+                            "options": [
+                                "It has a very fast prediction time",
+                                "It is simple to implement",
+                                "It requires very little memory",
+                                "It works well with small datasets"
+                            ],
+                            "answer": "It is simple to implement"
+                        },
+                        {
+                            "question": "When does the main computational work of K-NN occur?",
+                            "options": [
+                                "During the training phase",
+                                "During the prediction/classification phase",
+                                "During data cleaning",
+                                "During model evaluation"
+                            ],
+                            "answer": "During the prediction/classification phase"
+                        }
+                    ],
+                    "image_hint": "A green checkmark or thumbs-up icon"
+                },
+                {
+                    "id": "topic_405",
+                    "title": "Disadvantages of K-NN",
+                    "summary": "K-NN is not without its weaknesses. The need to determine the optimal value of K can be complex. Its major drawback is computational cost: it is very slow during prediction because it must compute distances to all training points. It also requires a large amount of memory to store the entire dataset, which is not feasible for very large-scale applications.",
+                    "key_points": [
+                        "Computationally expensive and slow at prediction time.",
+                        "Requires a large amount of memory to store the entire training dataset.",
+                        "Performance can be poor on high-dimensional data (curse of dimensionality).",
+                        "Determining the optimal value for K can be challenging."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "What is the main reason for K-NN's high computational cost?",
+                            "options": [
+                                "The complex training phase",
+                                "The need to calculate distances to all training samples for each prediction",
+                                "The difficulty of choosing K",
+                                "The need to scale features"
+                            ],
+                            "answer": "The need to calculate distances to all training samples for each prediction"
+                        },
+                        {
+                            "question": "Which of these is a significant disadvantage of K-NN?",
+                            "options": [
+                                "It is difficult to understand",
+                                "It requires a large amount of memory",
+                                "It cannot be used for classification",
+                                "It always overfits the data"
+                            ],
+                            "answer": "It requires a large amount of memory"
+                        }
+                    ],
+                    "image_hint": "A red 'X' or thumbs-down icon"
                 }
             ]
         }
@@ -435,8 +511,8 @@
     "design": {},
     "media": [],
     "output_path": null,
-    "input_pdf_path": "temp_uploads\\ML_ppt_7_PCA.pdf",
+    "input_pdf_path": "temp_uploads\\ML_ppt_3_KNN_classifier.pdf",
     "theme_file": "dark_mode.pptx",
     "tone": "Intermediate",
-    "slide_count": 17
+    "slide_count": 15
 }
