@@ -1,5 +1,5 @@
 # agents/content_agent.py
-# The ContentAgent now uses customization options in its prompt.
+# The ContentAgent now generates Graphviz diagram code.
 
 from .base_agent import BaseAgent
 import fitz
@@ -10,8 +10,8 @@ import json
 
 class ContentAgent(BaseAgent):
     """
-    Reads text from a PDF and uses the Gemini API with custom options (tone, slide_count)
-    to structure the content.
+    Reads text from a PDF and uses the Gemini API to structure content,
+    including generating Graphviz DOT code for diagrams when appropriate.
     """
     def __init__(self, name, state_manager, config=None):
         super().__init__(name, state_manager)
@@ -41,14 +41,14 @@ class ContentAgent(BaseAgent):
             return ""
 
     def _get_structured_content_from_llm(self, text: str, tone: str, slide_count: int) -> dict:
-        """Sends text to the Gemini API with custom instructions."""
+        """Sends text to the Gemini API with instructions to generate diagram code."""
         if not text: return {}
 
         self.log(f"Sending text to Gemini API. Tone: {tone}, Slides: ~{slide_count}")
         
         model = genai.GenerativeModel('models/gemini-2.5-pro')
 
-        # --- THE PROMPT IS NOW UPGRADED ---
+        # --- THE PROMPT IS NOW UPGRADED TO REQUEST DIAGRAM CODE ---
         prompt = f"""
         You are an expert educational content designer. Your task is to analyze the text from a syllabus and create a presentation with the following specifications:
         1.  **Audience Tone**: The content should be tailored for a '{tone}' audience.
@@ -56,9 +56,10 @@ class ContentAgent(BaseAgent):
         3.  **Output Format**: Your output must be ONLY a well-formed JSON object.
 
         The JSON structure is as follows:
-        - A top-level "chapters" key, which is a list of chapter objects.
-        - Each chapter object must have "id", "title", "description", and a "topics" list.
-        - Each topic object must have "id", "title", "summary", "key_points" (a list), "quiz_questions" (a list), and an "image_hint" (a short phrase for image search).
+        - A top-level "chapters" key (a list of chapter objects).
+        - Each chapter object has "id", "title", "description", and a "topics" list.
+        - Each topic object must have "id", "title", "summary", "key_points", "quiz_questions", and an "image_hint".
+        - **IMPORTANT**: If a topic describes a clear process, flow, or relationship (e.g., A -> B -> C), you MUST also include a "diagram_dot_code" field. This field should contain a string of simple Graphviz DOT language code to visualize the flow. For example: 'digraph {{ A -> B -> C; }}'. If no diagram is suitable for a topic, omit this field entirely.
 
         Here is the syllabus text:
         ---
@@ -79,7 +80,6 @@ class ContentAgent(BaseAgent):
     def run(self):
         self.log("Starting real content extraction...")
         
-        # Get all required data from the state
         pdf_path = self.sm.get("input_pdf_path")
         tone = self.sm.get("tone") or "Beginner"
         slide_count = self.sm.get("slide_count") or 10
@@ -99,7 +99,6 @@ class ContentAgent(BaseAgent):
             self.sm.save("shared_state_after_content.json")
         else:
             self.log("ERROR: LLM did not return the expected 'chapters' structure.")
-
 
 
 
