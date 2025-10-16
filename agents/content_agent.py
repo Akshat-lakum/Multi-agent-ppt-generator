@@ -1,8 +1,8 @@
 # agents/content_agent.py
-# The real ContentAgent: Reads a PDF and uses the Gemini API to structure the content.
+# The ContentAgent now uses customization options in its prompt.
 
 from .base_agent import BaseAgent
-import fitz  # PyMuPDF
+import fitz
 import google.generativeai as genai
 from dotenv import load_dotenv
 import os
@@ -10,10 +10,9 @@ import json
 
 class ContentAgent(BaseAgent):
     """
-    Reads text from a syllabus PDF, sends it to the Gemini API, and structures the
-    response into chapters and topics.
+    Reads text from a PDF and uses the Gemini API with custom options (tone, slide_count)
+    to structure the content.
     """
-
     def __init__(self, name, state_manager, config=None):
         super().__init__(name, state_manager)
         load_dotenv()
@@ -21,11 +20,11 @@ class ContentAgent(BaseAgent):
             genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
             self.log("Gemini API configured successfully.")
         except Exception as e:
-            self.log(f"ERROR: Failed to configure Gemini API. Check your GEMINI_API_KEY in the .env file. Details: {e}")
+            self.log(f"ERROR: Failed to configure Gemini API. Details: {e}")
         self.config = config or {}
 
     def _extract_text_from_pdf(self, pdf_path: str) -> str:
-        """Extracts all text content from a given PDF file."""
+        # ... (This function remains unchanged)
         if not os.path.exists(pdf_path):
             self.log(f"ERROR: PDF file not found at {pdf_path}")
             return ""
@@ -41,41 +40,35 @@ class ContentAgent(BaseAgent):
             self.log(f"ERROR: Failed to extract text from PDF. Details: {e}")
             return ""
 
-    def _get_structured_content_from_llm(self, text: str) -> dict:
-        """Sends text to the Gemini API and requests a structured JSON response."""
-        if not text:
-            return {}
+    def _get_structured_content_from_llm(self, text: str, tone: str, slide_count: int) -> dict:
+        """Sends text to the Gemini API with custom instructions."""
+        if not text: return {}
 
-        self.log("Sending text to Gemini API for content structuring...")
+        self.log(f"Sending text to Gemini API. Tone: {tone}, Slides: ~{slide_count}")
         
         model = genai.GenerativeModel('models/gemini-2.5-pro')
 
+        # --- THE PROMPT IS NOW UPGRADED ---
         prompt = f"""
-        You are an expert educational content designer. Your task is to analyze the text from a syllabus chapter and convert it into a structured JSON format suitable for a presentation. Your output must be ONLY the JSON object, with no other text or formatting.
+        You are an expert educational content designer. Your task is to analyze the text from a syllabus and create a presentation with the following specifications:
+        1.  **Audience Tone**: The content should be tailored for a '{tone}' audience.
+        2.  **Length**: Generate enough topics to create approximately {slide_count} content slides.
+        3.  **Output Format**: Your output must be ONLY a well-formed JSON object.
 
-        The JSON output must follow this exact structure:
-        - A top-level key "chapters", which is a list of chapter objects.
+        The JSON structure is as follows:
+        - A top-level "chapters" key, which is a list of chapter objects.
         - Each chapter object must have "id", "title", "description", and a "topics" list.
-        - Each topic object inside the list must have "id", "title", "summary", "key_points" (a list of 3-4 important bullet points), "quiz_questions" (a list of 2 simple questions), and an "image_hint" (a short, descriptive phrase for finding a relevant image, like "diagram of a neural network").
+        - Each topic object must have "id", "title", "summary", "key_points" (a list), "quiz_questions" (a list), and an "image_hint" (a short phrase for image search).
 
         Here is the syllabus text:
         ---
         {text[:12000]} 
         ---
-
-        Please generate the JSON output based on this text. Ensure the JSON is well-formed.
         """
 
         try:
             response = model.generate_content(prompt)
             response_text = response.text.strip().lstrip('```json').rstrip('```')
-            
-            # --- ADD THESE LINES TO PRINT THE RAW JSON ---
-            print("\n--- Raw JSON Response from Gemini ---")
-            print(response_text)
-            print("-------------------------------------\n")
-            # -------------------------------------------
-
             structured_data = json.loads(response_text)
             self.log("Successfully received and parsed structured content from Gemini API.")
             return structured_data
@@ -86,16 +79,19 @@ class ContentAgent(BaseAgent):
     def run(self):
         self.log("Starting real content extraction...")
         
+        # Get all required data from the state
         pdf_path = self.sm.get("input_pdf_path")
+        tone = self.sm.get("tone") or "Beginner"
+        slide_count = self.sm.get("slide_count") or 10
+        
         if not pdf_path:
             self.log("ERROR: No input_pdf_path found in state. Aborting.")
             return
 
         raw_text = self._extract_text_from_pdf(pdf_path)
-        if not raw_text:
-            return
+        if not raw_text: return
 
-        structured_content = self._get_structured_content_from_llm(raw_text)
+        structured_content = self._get_structured_content_from_llm(raw_text, tone, slide_count)
         
         if structured_content and "chapters" in structured_content:
             self.update_state("chapters", structured_content["chapters"])
@@ -103,8 +99,6 @@ class ContentAgent(BaseAgent):
             self.sm.save("shared_state_after_content.json")
         else:
             self.log("ERROR: LLM did not return the expected 'chapters' structure.")
-
-
 
 
 

@@ -1,5 +1,5 @@
 # main.py
-# Refactored pipeline logic to be callable as a function.
+# Updated pipeline logic to handle customization options.
 
 from state_manager import StateManager
 from agents.content_agent import ContentAgent
@@ -10,10 +10,10 @@ from agents.presentation_agent import PresentationAgent
 import os
 import time
 
-# This function now contains the core logic of your application
-def run_full_pipeline(pdf_path: str, progress_callback=None):
+# The function now accepts tone and slide_count
+def run_full_pipeline(pdf_path: str, tone: str, slide_count: int, progress_callback=None):
     """
-    Initializes and runs the complete agent pipeline for a given PDF.
+    Initializes and runs the complete agent pipeline for a given PDF with custom options.
     Returns the path to the final presentation.
     """
     if not os.path.exists(pdf_path):
@@ -22,9 +22,11 @@ def run_full_pipeline(pdf_path: str, progress_callback=None):
         
     start_time = time.time()
     
-    # 1. Initialize the shared state
+    # 1. Initialize the shared state and add all inputs
     sm = StateManager()
     sm.update("input_pdf_path", pdf_path)
+    sm.update("tone", tone) # Add tone to state
+    sm.update("slide_count", slide_count) # Add slide_count to state
 
     # 2. Instantiate all agents
     content_agent = ContentAgent("ContentAgent", sm)
@@ -33,7 +35,7 @@ def run_full_pipeline(pdf_path: str, progress_callback=None):
     media_agent = ExternalMediaAgent("MediaAgent", sm)
     presentation_agent = PresentationAgent("PresentationAgent", sm)
 
-    # 3. Run agents sequentially, with progress updates
+    # 3. Run agents sequentially
     if progress_callback: progress_callback("Step 1/5: Understanding content with AI...")
     content_agent.run()
     
@@ -52,21 +54,17 @@ def run_full_pipeline(pdf_path: str, progress_callback=None):
     end_time = time.time()
     print(f"Pipeline finished in {end_time - start_time:.2f} seconds.")
     
-    # 4. Return the path of the generated file
     return sm.get("output_path")
 
-# This part allows you to still run main.py from the command line if you want
 if __name__ == "__main__":
-    # The default PDF to use when running directly
     default_pdf = "data/syllabus.pdf"
     print("--- Running Multi-Agent PPT Generation Pipeline (from command line) ---")
-    output_file = run_full_pipeline(default_pdf)
+    # Provide default values when running directly
+    output_file = run_full_pipeline(default_pdf, tone="Beginner", slide_count=10) 
     if output_file:
         print(f"\n=== ✅ PIPELINE FINISHED SUCCESSFULLY! ===")
         print(f"Final presentation is available at: {output_file}")
         print("========================================\n")
-    
-    
     
     
     
