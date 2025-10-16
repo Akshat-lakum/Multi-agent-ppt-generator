@@ -3,40 +3,414 @@
     "chapters": [
         {
             "id": "ch01",
-            "title": "Principal Component Analysis (PCA) and Eigenvalues",
-            "description": "An overview of Principal Component Analysis (PCA), a technique for transforming high-dimensional feature spaces into lower-dimensional ones by identifying key directions of variance using eigenvalues and eigenvectors.",
+            "title": "Foundational Concepts of PCA",
+            "description": "An exploration of the theoretical underpinnings of Principal Component Analysis, focusing on its role as a premier technique for linear dimensionality reduction through variance maximization.",
             "topics": [
                 {
-                    "id": "t01",
-                    "title": "How PCA Works",
-                    "summary": "PCA operates by transforming a dataset into a new set of uncorrelated variables called principal components. This is achieved by first calculating the covariance matrix of the data, then finding its eigenvectors and eigenvalues. The eigenvectors with the highest eigenvalues represent the directions of maximum variance and become the new principal components.",
+                    "id": "t101",
+                    "title": "PCA: The Objective of Dimensionality Reduction",
+                    "summary": "This section frames PCA as a technique for transforming a high-dimensional feature space into a lower-dimensional subspace. The core objective is to reduce redundancy and noise while preserving the maximal amount of variance present in the original dataset.",
                     "key_points": [
-                        "First, calculate the covariance matrix of the dataset.",
-                        "Next, calculate the eigenvectors and eigenvalues of the covariance matrix.",
-                        "The eigenvector with the highest eigenvalue points in the direction of the highest variance, becoming the first principal component.",
-                        "The top 'k' eigenvectors are selected to form the new 'k' dimensional feature space."
+                        "PCA is an unsupervised linear transformation technique.",
+                        "Primary goal: Reduce the number of features (dimensions) in a dataset.",
+                        "The transformation seeks to create a new set of uncorrelated variables, known as principal components.",
+                        "This reduction mitigates the 'curse of dimensionality' and can improve model performance."
                     ],
                     "quiz_questions": [
-                        "What does the eigenvector with the highest eigenvalue represent in PCA?",
-                        "What is the first matrix you need to calculate when performing PCA?"
+                        {
+                            "question": "What is the primary objective function that PCA seeks to optimize?",
+                            "options": [
+                                "Minimize the mean squared error",
+                                "Maximize the variance captured",
+                                "Maximize the feature correlation",
+                                "Minimize the number of clusters"
+                            ],
+                            "answer": "Maximize the variance captured"
+                        }
                     ],
-                    "image_hint": "diagram showing data points with principal component axes"
+                    "image_hint": "Abstract high-dimensional data cloud transforming into a 2D plane"
                 },
                 {
-                    "id": "t02",
-                    "title": "Applications of PCA",
-                    "summary": "PCA is a powerful tool used in machine learning and data analysis for various purposes. Its applications range from visualizing complex, high-dimensional data to resizing images, analyzing financial data, and identifying important factors in healthcare research.",
+                    "id": "t102",
+                    "title": "The Geometric Interpretation: Variance Maximization",
+                    "summary": "A geometric review of PCA, illustrating how it identifies a sequence of orthogonal axes in the data space. The first axis (PC1) is oriented along the direction of maximum variance, with each subsequent axis capturing the maximum remaining variance while being orthogonal to all preceding axes.",
                     "key_points": [
-                        "Used to visualize multidimensional data by reducing it to 2D or 3D.",
-                        "Helps resize images by capturing their most important features.",
-                        "Applied in healthcare to explore risk factors for chronic diseases.",
-                        "Utilized to analyze stock data, forecast trends, and find patterns in high-dimensional datasets."
+                        "Principal components are orthogonal projections of the data onto a lower-dimensional subspace.",
+                        "The first principal component (PC1) is the direction that maximizes the variance of the projected data.",
+                        "Each subsequent principal component is orthogonal to the previous ones and maximizes the residual variance.",
+                        "Geometrically, this is equivalent to fitting an n-dimensional ellipsoid to the data, where the principal components are the axes of the ellipsoid."
                     ],
                     "quiz_questions": [
-                        "Name two practical applications of Principal Component Analysis.",
-                        "How can PCA be used in the field of image processing?"
+                        {
+                            "question": "What geometric property must hold between any two distinct principal components?",
+                            "options": [
+                                "They must be parallel",
+                                "They must be orthogonal",
+                                "They must be of equal length",
+                                "They must intersect at the data mean"
+                            ],
+                            "answer": "They must be orthogonal"
+                        }
                     ],
-                    "image_hint": "montage of PCA applications like face recognition and data plots"
+                    "image_hint": "3D scatter plot with orthogonal axes representing principal components"
+                },
+                {
+                    "id": "t103",
+                    "title": "Data Preprocessing: The Imperative of Standardization",
+                    "summary": "An analysis of the critical role of data standardization (mean-centering and scaling to unit variance) before applying PCA. This step is essential because PCA is sensitive to the scale of the original features; failing to standardize can lead to principal components being dominated by high-variance features.",
+                    "key_points": [
+                        "PCA is sensitive to the relative scaling of the original variables.",
+                        "Features with larger variances will disproportionately influence the principal components.",
+                        "Standardization (Z-score normalization) ensures each feature contributes equally to the analysis.",
+                        "The process involves subtracting the mean and dividing by the standard deviation for each feature."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "Why is feature scaling a critical preprocessing step for PCA?",
+                            "options": [
+                                "To convert categorical data to numerical",
+                                "To handle missing values",
+                                "To prevent features with large scales from dominating the analysis",
+                                "To reduce the number of features"
+                            ],
+                            "answer": "To prevent features with large scales from dominating the analysis"
+                        }
+                    ],
+                    "image_hint": "Side-by-side comparison of data plots before and after standardization"
+                },
+                {
+                    "id": "t104",
+                    "title": "Covariance Matrix: Capturing Feature Inter-relationships",
+                    "summary": "This section examines the covariance matrix as the foundational data structure for PCA. The covariance matrix quantifies the degree to which variables in the dataset vary together, providing a compact representation of the data's linear relationships and structure.",
+                    "key_points": [
+                        "The covariance matrix is a square matrix representing the covariance between each pair of features.",
+                        "Diagonal elements represent the variance of each individual feature.",
+                        "Off-diagonal elements represent the covariance between pairs of features.",
+                        "This matrix forms the basis for the eigen-decomposition step in PCA."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "What do the diagonal elements of a covariance matrix represent?",
+                            "options": [
+                                "The mean of each feature",
+                                "The variance of each feature",
+                                "The correlation between features",
+                                "The standard deviation of each feature"
+                            ],
+                            "answer": "The variance of each feature"
+                        }
+                    ],
+                    "image_hint": "Heatmap of a sample covariance matrix"
+                }
+            ]
+        },
+        {
+            "id": "ch02",
+            "title": "The Mathematical Engine: Eigen-decomposition",
+            "description": "A deep dive into the linear algebra at the heart of PCA. This chapter focuses on the eigen-decomposition of the covariance matrix to extract principal components and understand their significance.",
+            "topics": [
+                {
+                    "id": "t201",
+                    "title": "Eigenvectors and Eigenvalues: A Definitive Review",
+                    "summary": "A formal definition of eigenvectors and eigenvalues in the context of linear transformations. For a given covariance matrix, eigenvectors represent the directions that are only scaled by the transformation, and eigenvalues represent the magnitude of that scaling.",
+                    "key_points": [
+                        "For a matrix A, a non-zero vector v is an eigenvector if Av = \u03bbv.",
+                        "\u03bb is the eigenvalue, a scalar that represents the scaling factor.",
+                        "Eigenvectors of the covariance matrix are the principal components.",
+                        "Eigenvectors are unit vectors, defining direction only."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "In the equation Av = \u03bbv, what does the eigenvector 'v' represent?",
+                            "options": [
+                                "A scaling factor",
+                                "A direction that remains unchanged by the transformation A",
+                                "The magnitude of the transformation",
+                                "A random vector"
+                            ],
+                            "answer": "A direction that remains unchanged by the transformation A"
+                        }
+                    ],
+                    "image_hint": "Vector transformation diagram showing an eigenvector"
+                },
+                {
+                    "id": "t202",
+                    "title": "The Core Mechanism: Eigen-decomposition of the Covariance Matrix",
+                    "summary": "This topic details the process of decomposing the covariance matrix into its constituent eigenvectors and eigenvalues. This decomposition reveals the orthogonal basis (eigenvectors) that aligns with the directions of maximum variance in the data.",
+                    "key_points": [
+                        "The goal is to find the eigenvalues and eigenvectors of the feature covariance matrix.",
+                        "This process is the computational core of PCA.",
+                        "The number of eigenvector-eigenvalue pairs is equal to the number of dimensions of the data.",
+                        "The resulting eigenvectors are mutually orthogonal."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "The eigen-decomposition of which matrix is central to the PCA algorithm?",
+                            "options": [
+                                "The raw data matrix",
+                                "The correlation matrix",
+                                "The covariance matrix",
+                                "The identity matrix"
+                            ],
+                            "answer": "The covariance matrix"
+                        }
+                    ],
+                    "image_hint": "Mathematical formula for eigen-decomposition of a matrix"
+                },
+                {
+                    "id": "t203",
+                    "title": "Linking Eigenvalues to Variance Explained",
+                    "summary": "An exploration of the direct relationship between eigenvalues and the amount of variance captured by their corresponding eigenvectors (principal components). The magnitude of each eigenvalue is directly proportional to the variance explained by its associated principal component.",
+                    "key_points": [
+                        "The eigenvalue for a principal component is the variance of the data projected onto that component.",
+                        "Larger eigenvalues correspond to principal components that capture more variance.",
+                        "The sum of all eigenvalues equals the total variance in the original dataset.",
+                        "The proportion of variance explained by a PC is its eigenvalue divided by the sum of all eigenvalues."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "How do you determine the proportion of total variance explained by a single principal component?",
+                            "options": [
+                                "By its corresponding eigenvector's length",
+                                "By its corresponding eigenvalue divided by the sum of all eigenvalues",
+                                "By the number of features it represents",
+                                "By its order in the sequence (PC1, PC2, etc.)"
+                            ],
+                            "answer": "By its corresponding eigenvalue divided by the sum of all eigenvalues"
+                        }
+                    ],
+                    "image_hint": "Bar chart showing variance explained by each principal component"
+                },
+                {
+                    "id": "t204",
+                    "title": "Component Selection: The Scree Plot and Thresholding",
+                    "summary": "This section discusses methodologies for selecting the optimal number of principal components to retain. Techniques include analyzing the 'elbow' in a scree plot and setting a cumulative variance threshold (e.g., retaining components that explain 95% of the total variance).",
+                    "key_points": [
+                        "Ranking eigenvectors by their corresponding eigenvalues in descending order is the first step.",
+                        "A scree plot visualizes the eigenvalues, helping to identify the 'elbow' point of diminishing returns.",
+                        "A common heuristic is to retain components that capture a cumulative variance of 90-99%.",
+                        "The choice of 'k' (number of components) is a trade-off between dimensionality reduction and information loss."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "What is a 'scree plot' used for in the context of PCA?",
+                            "options": [
+                                "Visualizing the covariance matrix",
+                                "Plotting the raw data",
+                                "Helping to determine the optimal number of principal components to retain",
+                                "Displaying the transformed data"
+                            ],
+                            "answer": "Helping to determine the optimal number of principal components to retain"
+                        }
+                    ],
+                    "image_hint": "Example of a scree plot with a distinct elbow"
+                }
+            ]
+        },
+        {
+            "id": "ch03",
+            "title": "Algorithmic Implementation and Projection",
+            "description": "A step-by-step breakdown of the PCA algorithm, from initial data preparation to the final projection of data onto the new principal component subspace.",
+            "topics": [
+                {
+                    "id": "t301",
+                    "title": "Step 1 & 2: Standardization and Covariance Computation",
+                    "summary": "A procedural review of the first two steps of the PCA algorithm. This involves standardizing the dataset to have a mean of zero and a standard deviation of one, followed by the computation of the covariance matrix.",
+                    "key_points": [
+                        "Input: Original n-dimensional dataset.",
+                        "Step 1: Standardize the data (mean-center and scale to unit variance).",
+                        "Step 2: Calculate the (p x p) covariance matrix from the standardized data.",
+                        "These steps prepare the data for identifying the principal axes."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "After standardization, what is the mean of each feature?",
+                            "options": [
+                                "1",
+                                "0",
+                                "-1",
+                                "It varies"
+                            ],
+                            "answer": "0"
+                        }
+                    ],
+                    "image_hint": "Flowchart showing data standardization leading to a covariance matrix"
+                },
+                {
+                    "id": "t302",
+                    "title": "Step 3: Eigen-decomposition and Component Ranking",
+                    "summary": "Detailing the third algorithmic step: performing eigen-decomposition on the computed covariance matrix. This yields the eigenvectors (principal components) and eigenvalues, which are then used to rank the components by their importance (variance explained).",
+                    "key_points": [
+                        "Input: The (p x p) covariance matrix.",
+                        "Step 3: Compute the eigenvectors and eigenvalues of the covariance matrix.",
+                        "Step 4: Sort the eigenvalue-eigenvector pairs in descending order based on the eigenvalues.",
+                        "The sorted eigenvectors form the ordered set of principal components."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "How are principal components ordered?",
+                            "options": [
+                                "Alphabetically",
+                                "Randomly",
+                                "By the magnitude of their corresponding eigenvalues, from highest to lowest",
+                                "By the number of non-zero elements in their eigenvectors"
+                            ],
+                            "answer": "By the magnitude of their corresponding eigenvalues, from highest to lowest"
+                        }
+                    ],
+                    "image_hint": "Diagram showing a list of eigenvalues being sorted"
+                },
+                {
+                    "id": "t303",
+                    "title": "Step 4: Constructing the Projection Matrix",
+                    "summary": "This section explains how to construct the projection matrix (also known as the feature vector or transformation matrix). This matrix is formed by selecting the top 'k' eigenvectors and concatenating them as columns.",
+                    "key_points": [
+                        "Select the top 'k' eigenvectors based on a chosen variance threshold or scree plot analysis.",
+                        "These 'k' eigenvectors form the new feature basis.",
+                        "The projection matrix W is a (p x k) matrix where each column is one of the top 'k' eigenvectors.",
+                        "This matrix defines the transformation from the original p-dimensional space to the new k-dimensional space."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "If you want to reduce your data to 3 principal components, what will be the dimensions of your projection matrix W, given an original dataset with 10 features?",
+                            "options": [
+                                "10 x 3",
+                                "3 x 10",
+                                "3 x 3",
+                                "10 x 10"
+                            ],
+                            "answer": "10 x 3"
+                        }
+                    ],
+                    "image_hint": "Illustration of selecting top eigenvectors to form a new matrix"
+                },
+                {
+                    "id": "t304",
+                    "title": "Step 5: Projecting Data onto the New Subspace",
+                    "summary": "The final step of the algorithm: transforming the original standardized data into the new, lower-dimensional feature subspace. This is achieved by taking the dot product of the original data matrix and the projection matrix.",
+                    "key_points": [
+                        "Let X be the original standardized data matrix (n x p).",
+                        "Let W be the projection matrix (p x k).",
+                        "The new data matrix Z is calculated as Z = XW.",
+                        "The resulting matrix Z (n x k) contains the coordinates of the original data in the new subspace defined by the principal components."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "How is the final transformed dataset calculated in PCA?",
+                            "options": [
+                                "Multiplying the projection matrix by the covariance matrix",
+                                "Taking the dot product of the original standardized data and the projection matrix",
+                                "Adding the eigenvectors to the original data",
+                                "Dividing the original data by the eigenvalues"
+                            ],
+                            "answer": "Taking the dot product of the original standardized data and the projection matrix"
+                        }
+                    ],
+                    "image_hint": "Matrix multiplication diagram: Original Data * Projection Matrix = Transformed Data"
+                }
+            ]
+        },
+        {
+            "id": "ch04",
+            "title": "Strategic Applications and Considerations",
+            "description": "An overview of the practical applications of PCA across various domains, from machine learning to finance, along with a discussion of its limitations and appropriate use cases.",
+            "topics": [
+                {
+                    "id": "t401",
+                    "title": "Application: High-Dimensional Data Visualization",
+                    "summary": "PCA is a powerful tool for visualizing high-dimensional datasets. By reducing the data to its first two or three principal components, complex data structures can be plotted and inspected for clusters, outliers, and other patterns that are not apparent in the original space.",
+                    "key_points": [
+                        "Reduces dimensions to 2D or 3D for plotting.",
+                        "Reveals inherent structure, clusters, or anomalies in the data.",
+                        "Commonly used in fields like genomics and image processing for exploratory data analysis.",
+                        "The plot of PC2 vs. PC1 is a standard visualization technique."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "To visualize a 100-dimensional dataset on a 2D scatter plot, how many principal components would you typically use?",
+                            "options": [
+                                "100",
+                                "50",
+                                "10",
+                                "2"
+                            ],
+                            "answer": "2"
+                        }
+                    ],
+                    "image_hint": "2D scatter plot of PCA-transformed data showing distinct clusters"
+                },
+                {
+                    "id": "t402",
+                    "title": "Application: Feature Engineering and Noise Reduction",
+                    "summary": "PCA can serve as a potent feature engineering technique by creating a set of uncorrelated features for use in predictive models. Since components with low variance are often associated with noise, discarding them can lead to a more robust and efficient model.",
+                    "key_points": [
+                        "Principal components can be used as input features for supervised learning algorithms.",
+                        "This resolves issues of multicollinearity since the components are orthogonal.",
+                        "Discarding trailing components can effectively de-noise the data.",
+                        "Applications include image resizing/compression and signal processing."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "How does PCA help in addressing multicollinearity in a regression model?",
+                            "options": [
+                                "It removes correlated features entirely",
+                                "It transforms correlated features into a set of uncorrelated principal components",
+                                "It increases the number of features",
+                                "It standardizes the data"
+                            ],
+                            "answer": "It transforms correlated features into a set of uncorrelated principal components"
+                        }
+                    ],
+                    "image_hint": "Noisy image compared to a PCA-denoised version"
+                },
+                {
+                    "id": "t403",
+                    "title": "Application: Domain-Specific Analyses",
+                    "summary": "Examining the use of PCA in specialized fields such as healthcare and finance. In healthcare, it can identify key risk factors from numerous patient metrics. In finance, it can be used to analyze stock data, identify portfolio risk factors, and inform forecasting models.",
+                    "key_points": [
+                        "Healthcare: Identify combinations of clinical variables that contribute most to disease risk.",
+                        "Finance: Decompose stock returns into orthogonal factors representing market, sector, or style risks.",
+                        "Genomics: Analyze gene expression data to identify patterns across thousands of genes.",
+                        "The interpretation of principal components is highly domain-dependent."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "In financial analysis, a primary principal component of a portfolio of stock returns often represents what?",
+                            "options": [
+                                "Company-specific risk",
+                                "Overall market movement",
+                                "Interest rate fluctuations",
+                                "Random noise"
+                            ],
+                            "answer": "Overall market movement"
+                        }
+                    ],
+                    "image_hint": "Stock market data chart with overlayed trend lines"
+                },
+                {
+                    "id": "t404",
+                    "title": "Limitations and Advanced Alternatives",
+                    "summary": "A critical assessment of PCA's limitations, primarily its linearity assumption. For datasets with complex, non-linear structures, PCA may not be effective. This leads to a brief overview of alternative non-linear dimensionality reduction techniques like Kernel PCA, t-SNE, and Autoencoders.",
+                    "key_points": [
+                        "Limitation: PCA assumes linear relationships between features.",
+                        "Limitation: Principal components can be difficult to interpret in terms of the original features.",
+                        "Alternative: Kernel PCA extends PCA to handle non-linear structures.",
+                        "Alternative: t-SNE and UMAP are powerful techniques specifically for non-linear visualization.",
+                        "Alternative: Autoencoders can learn complex, non-linear data compressions."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "What is the primary limitation of standard PCA?",
+                            "options": [
+                                "It is computationally expensive",
+                                "It cannot handle categorical data",
+                                "It assumes the principal components are linear combinations of the original features",
+                                "It requires data to be normalized"
+                            ],
+                            "answer": "It assumes the principal components are linear combinations of the original features"
+                        }
+                    ],
+                    "image_hint": "Comparison of a Swiss roll dataset reduced by PCA vs. a non-linear method like t-SNE"
                 }
             ]
         }
@@ -51,46 +425,410 @@
         {
             "id": "slide_2",
             "type": "chapter_title",
-            "title": "Principal Component Analysis (PCA) and Eigenvalues",
-            "subtitle": "An overview of Principal Component Analysis (PCA), a technique for transforming high-dimensional feature spaces into lower-dimensional ones by identifying key directions of variance using eigenvalues and eigenvectors."
+            "title": "Foundational Concepts of PCA",
+            "subtitle": "An exploration of the theoretical underpinnings of Principal Component Analysis, focusing on its role as a premier technique for linear dimensionality reduction through variance maximization."
         },
         {
             "id": "slide_3",
             "type": "content",
-            "title": "How PCA Works",
+            "title": "PCA: The Objective of Dimensionality Reduction",
             "bullets": [
-                "First, calculate the covariance matrix of the dataset.",
-                "Next, calculate the eigenvectors and eigenvalues of the covariance matrix.",
-                "The eigenvector with the highest eigenvalue points in the direction of the highest variance, becoming the first principal component.",
-                "The top 'k' eigenvectors are selected to form the new 'k' dimensional feature space."
+                "PCA is an unsupervised linear transformation technique.",
+                "Primary goal: Reduce the number of features (dimensions) in a dataset.",
+                "The transformation seeks to create a new set of uncorrelated variables, known as principal components.",
+                "This reduction mitigates the 'curse of dimensionality' and can improve model performance."
             ],
-            "image_hint": "diagram showing data points with principal component axes"
+            "image_hint": "Abstract high-dimensional data cloud transforming into a 2D plane"
         },
         {
             "id": "slide_4",
             "type": "content",
-            "title": "Applications of PCA",
+            "title": "The Geometric Interpretation: Variance Maximization",
             "bullets": [
-                "Used to visualize multidimensional data by reducing it to 2D or 3D.",
-                "Helps resize images by capturing their most important features.",
-                "Applied in healthcare to explore risk factors for chronic diseases.",
-                "Utilized to analyze stock data, forecast trends, and find patterns in high-dimensional datasets."
+                "Principal components are orthogonal projections of the data onto a lower-dimensional subspace.",
+                "The first principal component (PC1) is the direction that maximizes the variance of the projected data.",
+                "Each subsequent principal component is orthogonal to the previous ones and maximizes the residual variance.",
+                "Geometrically, this is equivalent to fitting an n-dimensional ellipsoid to the data, where the principal components are the axes of the ellipsoid."
             ],
-            "image_hint": "montage of PCA applications like face recognition and data plots"
+            "image_hint": "3D scatter plot with orthogonal axes representing principal components"
         },
         {
             "id": "slide_5",
-            "type": "quiz",
-            "title": "Chapter 1 Quiz",
+            "type": "content",
+            "title": "Data Preprocessing: The Imperative of Standardization",
             "bullets": [
-                "What does the eigenvector with the highest eigenvalue represent in PCA?",
-                "What is the first matrix you need to calculate when performing PCA?",
-                "Name two practical applications of Principal Component Analysis.",
-                "How can PCA be used in the field of image processing?"
-            ]
+                "PCA is sensitive to the relative scaling of the original variables.",
+                "Features with larger variances will disproportionately influence the principal components.",
+                "Standardization (Z-score normalization) ensures each feature contributes equally to the analysis.",
+                "The process involves subtracting the mean and dividing by the standard deviation for each feature."
+            ],
+            "image_hint": "Side-by-side comparison of data plots before and after standardization"
         },
         {
             "id": "slide_6",
+            "type": "content",
+            "title": "Covariance Matrix: Capturing Feature Inter-relationships",
+            "bullets": [
+                "The covariance matrix is a square matrix representing the covariance between each pair of features.",
+                "Diagonal elements represent the variance of each individual feature.",
+                "Off-diagonal elements represent the covariance between pairs of features.",
+                "This matrix forms the basis for the eigen-decomposition step in PCA."
+            ],
+            "image_hint": "Heatmap of a sample covariance matrix"
+        },
+        {
+            "id": "slide_7",
+            "type": "quiz",
+            "title": "Chapter 1 Quiz",
+            "bullets": [
+                {
+                    "question": "What is the primary objective function that PCA seeks to optimize?",
+                    "options": [
+                        "Minimize the mean squared error",
+                        "Maximize the variance captured",
+                        "Maximize the feature correlation",
+                        "Minimize the number of clusters"
+                    ],
+                    "answer": "Maximize the variance captured"
+                },
+                {
+                    "question": "What geometric property must hold between any two distinct principal components?",
+                    "options": [
+                        "They must be parallel",
+                        "They must be orthogonal",
+                        "They must be of equal length",
+                        "They must intersect at the data mean"
+                    ],
+                    "answer": "They must be orthogonal"
+                },
+                {
+                    "question": "Why is feature scaling a critical preprocessing step for PCA?",
+                    "options": [
+                        "To convert categorical data to numerical",
+                        "To handle missing values",
+                        "To prevent features with large scales from dominating the analysis",
+                        "To reduce the number of features"
+                    ],
+                    "answer": "To prevent features with large scales from dominating the analysis"
+                },
+                {
+                    "question": "What do the diagonal elements of a covariance matrix represent?",
+                    "options": [
+                        "The mean of each feature",
+                        "The variance of each feature",
+                        "The correlation between features",
+                        "The standard deviation of each feature"
+                    ],
+                    "answer": "The variance of each feature"
+                }
+            ]
+        },
+        {
+            "id": "slide_8",
+            "type": "chapter_title",
+            "title": "The Mathematical Engine: Eigen-decomposition",
+            "subtitle": "A deep dive into the linear algebra at the heart of PCA. This chapter focuses on the eigen-decomposition of the covariance matrix to extract principal components and understand their significance."
+        },
+        {
+            "id": "slide_9",
+            "type": "content",
+            "title": "Eigenvectors and Eigenvalues: A Definitive Review",
+            "bullets": [
+                "For a matrix A, a non-zero vector v is an eigenvector if Av = \u03bbv.",
+                "\u03bb is the eigenvalue, a scalar that represents the scaling factor.",
+                "Eigenvectors of the covariance matrix are the principal components.",
+                "Eigenvectors are unit vectors, defining direction only."
+            ],
+            "image_hint": "Vector transformation diagram showing an eigenvector"
+        },
+        {
+            "id": "slide_10",
+            "type": "content",
+            "title": "The Core Mechanism: Eigen-decomposition of the Covariance Matrix",
+            "bullets": [
+                "The goal is to find the eigenvalues and eigenvectors of the feature covariance matrix.",
+                "This process is the computational core of PCA.",
+                "The number of eigenvector-eigenvalue pairs is equal to the number of dimensions of the data.",
+                "The resulting eigenvectors are mutually orthogonal."
+            ],
+            "image_hint": "Mathematical formula for eigen-decomposition of a matrix"
+        },
+        {
+            "id": "slide_11",
+            "type": "content",
+            "title": "Linking Eigenvalues to Variance Explained",
+            "bullets": [
+                "The eigenvalue for a principal component is the variance of the data projected onto that component.",
+                "Larger eigenvalues correspond to principal components that capture more variance.",
+                "The sum of all eigenvalues equals the total variance in the original dataset.",
+                "The proportion of variance explained by a PC is its eigenvalue divided by the sum of all eigenvalues."
+            ],
+            "image_hint": "Bar chart showing variance explained by each principal component"
+        },
+        {
+            "id": "slide_12",
+            "type": "content",
+            "title": "Component Selection: The Scree Plot and Thresholding",
+            "bullets": [
+                "Ranking eigenvectors by their corresponding eigenvalues in descending order is the first step.",
+                "A scree plot visualizes the eigenvalues, helping to identify the 'elbow' point of diminishing returns.",
+                "A common heuristic is to retain components that capture a cumulative variance of 90-99%.",
+                "The choice of 'k' (number of components) is a trade-off between dimensionality reduction and information loss."
+            ],
+            "image_hint": "Example of a scree plot with a distinct elbow"
+        },
+        {
+            "id": "slide_13",
+            "type": "quiz",
+            "title": "Chapter 2 Quiz",
+            "bullets": [
+                {
+                    "question": "In the equation Av = \u03bbv, what does the eigenvector 'v' represent?",
+                    "options": [
+                        "A scaling factor",
+                        "A direction that remains unchanged by the transformation A",
+                        "The magnitude of the transformation",
+                        "A random vector"
+                    ],
+                    "answer": "A direction that remains unchanged by the transformation A"
+                },
+                {
+                    "question": "The eigen-decomposition of which matrix is central to the PCA algorithm?",
+                    "options": [
+                        "The raw data matrix",
+                        "The correlation matrix",
+                        "The covariance matrix",
+                        "The identity matrix"
+                    ],
+                    "answer": "The covariance matrix"
+                },
+                {
+                    "question": "How do you determine the proportion of total variance explained by a single principal component?",
+                    "options": [
+                        "By its corresponding eigenvector's length",
+                        "By its corresponding eigenvalue divided by the sum of all eigenvalues",
+                        "By the number of features it represents",
+                        "By its order in the sequence (PC1, PC2, etc.)"
+                    ],
+                    "answer": "By its corresponding eigenvalue divided by the sum of all eigenvalues"
+                },
+                {
+                    "question": "What is a 'scree plot' used for in the context of PCA?",
+                    "options": [
+                        "Visualizing the covariance matrix",
+                        "Plotting the raw data",
+                        "Helping to determine the optimal number of principal components to retain",
+                        "Displaying the transformed data"
+                    ],
+                    "answer": "Helping to determine the optimal number of principal components to retain"
+                }
+            ]
+        },
+        {
+            "id": "slide_14",
+            "type": "chapter_title",
+            "title": "Algorithmic Implementation and Projection",
+            "subtitle": "A step-by-step breakdown of the PCA algorithm, from initial data preparation to the final projection of data onto the new principal component subspace."
+        },
+        {
+            "id": "slide_15",
+            "type": "content",
+            "title": "Step 1 & 2: Standardization and Covariance Computation",
+            "bullets": [
+                "Input: Original n-dimensional dataset.",
+                "Step 1: Standardize the data (mean-center and scale to unit variance).",
+                "Step 2: Calculate the (p x p) covariance matrix from the standardized data.",
+                "These steps prepare the data for identifying the principal axes."
+            ],
+            "image_hint": "Flowchart showing data standardization leading to a covariance matrix"
+        },
+        {
+            "id": "slide_16",
+            "type": "content",
+            "title": "Step 3: Eigen-decomposition and Component Ranking",
+            "bullets": [
+                "Input: The (p x p) covariance matrix.",
+                "Step 3: Compute the eigenvectors and eigenvalues of the covariance matrix.",
+                "Step 4: Sort the eigenvalue-eigenvector pairs in descending order based on the eigenvalues.",
+                "The sorted eigenvectors form the ordered set of principal components."
+            ],
+            "image_hint": "Diagram showing a list of eigenvalues being sorted"
+        },
+        {
+            "id": "slide_17",
+            "type": "content",
+            "title": "Step 4: Constructing the Projection Matrix",
+            "bullets": [
+                "Select the top 'k' eigenvectors based on a chosen variance threshold or scree plot analysis.",
+                "These 'k' eigenvectors form the new feature basis.",
+                "The projection matrix W is a (p x k) matrix where each column is one of the top 'k' eigenvectors.",
+                "This matrix defines the transformation from the original p-dimensional space to the new k-dimensional space."
+            ],
+            "image_hint": "Illustration of selecting top eigenvectors to form a new matrix"
+        },
+        {
+            "id": "slide_18",
+            "type": "content",
+            "title": "Step 5: Projecting Data onto the New Subspace",
+            "bullets": [
+                "Let X be the original standardized data matrix (n x p).",
+                "Let W be the projection matrix (p x k).",
+                "The new data matrix Z is calculated as Z = XW.",
+                "The resulting matrix Z (n x k) contains the coordinates of the original data in the new subspace defined by the principal components."
+            ],
+            "image_hint": "Matrix multiplication diagram: Original Data * Projection Matrix = Transformed Data"
+        },
+        {
+            "id": "slide_19",
+            "type": "quiz",
+            "title": "Chapter 3 Quiz",
+            "bullets": [
+                {
+                    "question": "After standardization, what is the mean of each feature?",
+                    "options": [
+                        "1",
+                        "0",
+                        "-1",
+                        "It varies"
+                    ],
+                    "answer": "0"
+                },
+                {
+                    "question": "How are principal components ordered?",
+                    "options": [
+                        "Alphabetically",
+                        "Randomly",
+                        "By the magnitude of their corresponding eigenvalues, from highest to lowest",
+                        "By the number of non-zero elements in their eigenvectors"
+                    ],
+                    "answer": "By the magnitude of their corresponding eigenvalues, from highest to lowest"
+                },
+                {
+                    "question": "If you want to reduce your data to 3 principal components, what will be the dimensions of your projection matrix W, given an original dataset with 10 features?",
+                    "options": [
+                        "10 x 3",
+                        "3 x 10",
+                        "3 x 3",
+                        "10 x 10"
+                    ],
+                    "answer": "10 x 3"
+                },
+                {
+                    "question": "How is the final transformed dataset calculated in PCA?",
+                    "options": [
+                        "Multiplying the projection matrix by the covariance matrix",
+                        "Taking the dot product of the original standardized data and the projection matrix",
+                        "Adding the eigenvectors to the original data",
+                        "Dividing the original data by the eigenvalues"
+                    ],
+                    "answer": "Taking the dot product of the original standardized data and the projection matrix"
+                }
+            ]
+        },
+        {
+            "id": "slide_20",
+            "type": "chapter_title",
+            "title": "Strategic Applications and Considerations",
+            "subtitle": "An overview of the practical applications of PCA across various domains, from machine learning to finance, along with a discussion of its limitations and appropriate use cases."
+        },
+        {
+            "id": "slide_21",
+            "type": "content",
+            "title": "Application: High-Dimensional Data Visualization",
+            "bullets": [
+                "Reduces dimensions to 2D or 3D for plotting.",
+                "Reveals inherent structure, clusters, or anomalies in the data.",
+                "Commonly used in fields like genomics and image processing for exploratory data analysis.",
+                "The plot of PC2 vs. PC1 is a standard visualization technique."
+            ],
+            "image_hint": "2D scatter plot of PCA-transformed data showing distinct clusters"
+        },
+        {
+            "id": "slide_22",
+            "type": "content",
+            "title": "Application: Feature Engineering and Noise Reduction",
+            "bullets": [
+                "Principal components can be used as input features for supervised learning algorithms.",
+                "This resolves issues of multicollinearity since the components are orthogonal.",
+                "Discarding trailing components can effectively de-noise the data.",
+                "Applications include image resizing/compression and signal processing."
+            ],
+            "image_hint": "Noisy image compared to a PCA-denoised version"
+        },
+        {
+            "id": "slide_23",
+            "type": "content",
+            "title": "Application: Domain-Specific Analyses",
+            "bullets": [
+                "Healthcare: Identify combinations of clinical variables that contribute most to disease risk.",
+                "Finance: Decompose stock returns into orthogonal factors representing market, sector, or style risks.",
+                "Genomics: Analyze gene expression data to identify patterns across thousands of genes.",
+                "The interpretation of principal components is highly domain-dependent."
+            ],
+            "image_hint": "Stock market data chart with overlayed trend lines"
+        },
+        {
+            "id": "slide_24",
+            "type": "content",
+            "title": "Limitations and Advanced Alternatives",
+            "bullets": [
+                "Limitation: PCA assumes linear relationships between features.",
+                "Limitation: Principal components can be difficult to interpret in terms of the original features.",
+                "Alternative: Kernel PCA extends PCA to handle non-linear structures.",
+                "Alternative: t-SNE and UMAP are powerful techniques specifically for non-linear visualization.",
+                "Alternative: Autoencoders can learn complex, non-linear data compressions."
+            ],
+            "image_hint": "Comparison of a Swiss roll dataset reduced by PCA vs. a non-linear method like t-SNE"
+        },
+        {
+            "id": "slide_25",
+            "type": "quiz",
+            "title": "Chapter 4 Quiz",
+            "bullets": [
+                {
+                    "question": "To visualize a 100-dimensional dataset on a 2D scatter plot, how many principal components would you typically use?",
+                    "options": [
+                        "100",
+                        "50",
+                        "10",
+                        "2"
+                    ],
+                    "answer": "2"
+                },
+                {
+                    "question": "How does PCA help in addressing multicollinearity in a regression model?",
+                    "options": [
+                        "It removes correlated features entirely",
+                        "It transforms correlated features into a set of uncorrelated principal components",
+                        "It increases the number of features",
+                        "It standardizes the data"
+                    ],
+                    "answer": "It transforms correlated features into a set of uncorrelated principal components"
+                },
+                {
+                    "question": "In financial analysis, a primary principal component of a portfolio of stock returns often represents what?",
+                    "options": [
+                        "Company-specific risk",
+                        "Overall market movement",
+                        "Interest rate fluctuations",
+                        "Random noise"
+                    ],
+                    "answer": "Overall market movement"
+                },
+                {
+                    "question": "What is the primary limitation of standard PCA?",
+                    "options": [
+                        "It is computationally expensive",
+                        "It cannot handle categorical data",
+                        "It assumes the principal components are linear combinations of the original features",
+                        "It requires data to be normalized"
+                    ],
+                    "answer": "It assumes the principal components are linear combinations of the original features"
+                }
+            ]
+        },
+        {
+            "id": "slide_26",
             "type": "thank_you",
             "title": "Thank You!",
             "subtitle": "Any Questions?"
@@ -99,5 +837,7 @@
     "design": {},
     "media": [],
     "output_path": null,
-    "input_pdf_path": "temp_uploads\\ML_ppt_7_PCA.pdf"
+    "input_pdf_path": "temp_uploads\\ML_ppt_7_PCA.pdf",
+    "tone": "Expert",
+    "slide_count": 16
 }

@@ -1,5 +1,5 @@
 # agents/presentation_agent.py
-# Final Polished PresentationAgent: Handles different layouts and cleans up the final file.
+# A more robust agent that handles failed image downloads gracefully.
 
 from .base_agent import BaseAgent
 from pptx import Presentation
@@ -13,7 +13,6 @@ class PresentationAgent(BaseAgent):
     """
 
     def _delete_initial_slide(self, prs, slides_plan):
-        """Deletes the default blank slide at the beginning of the presentation."""
         while len(prs.slides) > len(slides_plan):
             xml_slides = prs.slides._sldIdLst  
             to_remove = xml_slides[0]
@@ -35,31 +34,24 @@ class PresentationAgent(BaseAgent):
         template_path = design_config.get("template_path")
         try:
             prs = Presentation(template_path) if template_path and os.path.exists(template_path) else Presentation()
-            if template_path and os.path.exists(template_path):
-                 self.log(f"Using template from: {template_path}")
-            else:
-                 self.log("No valid template found. Creating presentation with default layouts.")
+            self.log(f"Using template from: {template_path}" if template_path and os.path.exists(template_path) else "No valid template found. Creating default presentation.")
         except Exception as e:
             self.log(f"ERROR: Failed to load template '{template_path}'. Creating blank presentation. Details: {e}")
             prs = Presentation()
 
-        layout_map = { 
-            "main_title": 0, 
-            "chapter_title": 0, 
-            "content_only": 1, 
-            "content_with_image": 8, # Use a "Two Content" layout for text and image
-            "quiz": 1, 
-            "thank_you": 5 
-        }
+        layout_map = { "main_title": 0, "chapter_title": 0, "content_only": 1, "content_with_image": 8, "quiz": 1, "thank_you": 5 }
 
         for slide_data in slides_plan:
             slide_type = slide_data.get("type", "content")
             
+            # --- THIS LOGIC IS NOW MORE ROBUST ---
+            image_path = slide_data.get("image_path")
             layout_key = "content_only"
-            if slide_type == "content" and slide_data.get("image_path"):
+            if slide_type == "content" and image_path and os.path.exists(image_path):
                 layout_key = "content_with_image"
             elif slide_type != "content":
                 layout_key = slide_type
+            # ------------------------------------
 
             layout_index = layout_map.get(layout_key, 1)
             
@@ -99,28 +91,19 @@ class PresentationAgent(BaseAgent):
                         p.level = 0
                     
                     image_placeholder = slide.placeholders[2]
-                    image_path = slide_data["image_path"]
-                    if os.path.exists(image_path):
-                        # --- THIS IS THE FIX ---
-                        # Use add_picture on the slide's shapes collection,
-                        # providing the placeholder's dimensions.
-                        slide.shapes.add_picture(
-                            image_path,
-                            image_placeholder.left,
-                            image_placeholder.top,
-                            width=image_placeholder.width,
-                            height=image_placeholder.height
-                        )
-                        # -----------------------
-                        self.log(f"Added image {image_path} to slide.")
+                    # We already confirmed image_path exists above
+                    slide.shapes.add_picture(
+                        image_path,
+                        image_placeholder.left, image_placeholder.top,
+                        width=image_placeholder.width, height=image_placeholder.height
+                    )
+                    self.log(f"Added image {image_path} to slide.")
 
         self._delete_initial_slide(prs, slides_plan)
         os.makedirs(output_dir, exist_ok=True)
         prs.save(output_path)
         self.update_state("output_path", output_path)
         self.log(f"Presentation saved successfully to: {output_path}")
-
-
 
 
 

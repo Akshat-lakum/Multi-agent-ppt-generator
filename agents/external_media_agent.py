@@ -1,62 +1,51 @@
 # agents/external_media_agent.py
-# Final Agent: Generates custom images using the free Stable Diffusion model via Replicate.
+# Agent reverted to Pexels API for free stock photos.
 
 from .base_agent import BaseAgent
 from dotenv import load_dotenv
 import os
 import requests
-import replicate # Import the new library
 
 class ExternalMediaAgent(BaseAgent):
     """
-    Generates and downloads custom images using Stable Diffusion via the Replicate API,
-    based on hints provided by the ContentAgent.
+    Searches for and downloads images from Pexels based on hints.
     """
 
     def __init__(self, name, state_manager, config=None):
         super().__init__(name, state_manager)
         load_dotenv()
-        # Set the Replicate API token
-        self.replicate_api_token = os.getenv("REPLICATE_API_TOKEN")
-        if not self.replicate_api_token:
-            self.log("ERROR: REPLICATE_API_TOKEN not found in .env file.")
-        # Replicate library automatically uses the environment variable, but good to check
-        
+        self.pexels_api_key = os.getenv("PEXELS_API_KEY")
+        if not self.pexels_api_key:
+            self.log("ERROR: PEXELS_API_KEY not found in .env file.")
         self.assets_dir = "assets"
         os.makedirs(self.assets_dir, exist_ok=True)
 
-    def _generate_image_with_sd(self, hint: str) -> str | None:
-        """Generates an image using Stable Diffusion and returns its URL."""
-        if not self.replicate_api_token:
+    def _fetch_image_url(self, query: str) -> str | None:
+        """Searches Pexels for an image and returns its URL."""
+        if not self.pexels_api_key:
             return None
         
-        # A descriptive prompt for better results with Stable Diffusion
-        sd_prompt = f"A clear, simple, minimalist educational diagram illustrating the concept of: '{hint}'. White background, infographic style, high quality."
-        self.log(f"Sending prompt to Stable Diffusion: '{sd_prompt}'")
-        
+        headers = {"Authorization": self.pexels_api_key}
+        url = f"https://api.pexels.com/v1/search?query={query}&per_page=1"
         try:
-            # This is the identifier for the Stable Diffusion 3 model on Replicate
-            model_identifier = "stability-ai/stable-diffusion-3"
-            
-            output = replicate.run(
-                model_identifier,
-                input={"prompt": sd_prompt}
-            )
-            # The output is a list of URLs, we'll take the first one
-            image_url = output[0]
-            return image_url
-        except Exception as e:
-            self.log(f"ERROR: Replicate API request failed. Details: {e}")
-            return None
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            data = response.json()
+            if data["photos"]:
+                return data["photos"][0]["src"]["medium"]
+        except requests.exceptions.RequestException as e:
+            self.log(f"ERROR: Pexels API request failed. Details: {e}")
+        return None
 
     def _download_image(self, url: str, slide_id: str) -> str | None:
         """Downloads an image from a URL and saves it to the assets folder."""
         try:
-            response = requests.get(url, timeout=20) # Add a timeout
+            response = requests.get(url)
             response.raise_for_status()
             
-            # Stable Diffusion generates PNGs
-            file_path = os.path.join(self.assets_dir, f"{slide_id}.png")
+            file_extension = url.split('.')[-1].split('?')[0]
+            if not file_extension: file_extension = 'jpg'
+            file_path = os.path.join(self.assets_dir, f"{slide_id}.{file_extension}")
             
             with open(file_path, 'wb') as f:
                 f.write(response.content)
@@ -67,7 +56,7 @@ class ExternalMediaAgent(BaseAgent):
         return None
 
     def run(self):
-        self.log("Starting AI image generation with Stable Diffusion...")
+        self.log("Starting media fetching from Pexels...")
         slides = self.sm.get("slides")
         if not slides:
             self.log("No slides found to add media to.")
@@ -76,10 +65,9 @@ class ExternalMediaAgent(BaseAgent):
         for slide in slides:
             if slide.get("type") == "content" and slide.get("image_hint"):
                 hint = slide["image_hint"]
+                self.log(f"Searching for image with hint: '{hint}'")
                 
-                # Call the new Stable Diffusion function
-                image_url = self._generate_image_with_sd(hint)
-                
+                image_url = self._fetch_image_url(hint)
                 if image_url:
                     image_path = self._download_image(image_url, slide["id"])
                     if image_path:
