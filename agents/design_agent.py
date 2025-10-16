@@ -1,44 +1,40 @@
-## full dymmy 
 # agents/design_agent.py
-# DesignAgent → sets the presentation theme and template.
+# DesignAgent → reads the user's theme choice and sets the correct template path.
 
 from .base_agent import BaseAgent
 import os
 
 class DesignAgent(BaseAgent):
     """
-    Sets the overall design theme for the presentation, primarily by specifying
-    a template .pptx file to use.
+    Sets the presentation design by reading the selected theme file
+    from the shared state and creating the full path to the template.
     """
 
     def run(self):
         self.log("Setting presentation design theme...")
 
-        # For a real implementation, this could involve more complex logic,
-        # like choosing from multiple templates. For our dummy version,
-        # we'll just define one.
-        template_path = "templates/edutor_theme.pptx"
+        # Read the selected theme filename from the shared state
+        theme_file = self.sm.get("theme_file")
+        if not theme_file:
+            self.log("WARNING: No theme file selected. Defaulting to 'edutor_theme.pptx'.")
+            theme_file = "edutor_theme.pptx"
 
-        # Check if the template exists, otherwise log a warning
+        # Construct the full path to the template
+        template_path = os.path.join("templates", theme_file)
+
         if not os.path.exists(template_path):
-            self.log(f"WARNING: Template file not found at '{template_path}'. A default presentation will be created.")
-            template_path = None # The presentation agent will handle this
+            self.log(f"WARNING: Template file '{template_path}' not found. A default presentation will be created.")
+            template_path = None
 
+        # The 'theme_name' is now dynamic based on the selected file
         design_config = {
             "template_path": template_path,
-            "theme_name": "Edutor Corporate Blue",
-            "fonts": {
-                "title": "Arial Black",
-                "body": "Calibri"
-            }
+            "theme_name": theme_file 
         }
 
         self.update_state("design", design_config)
         self.log(f"Design theme set to '{design_config['theme_name']}'.")
         self.sm.save("shared_state_after_design.json")
-
-
-
 
 
 
