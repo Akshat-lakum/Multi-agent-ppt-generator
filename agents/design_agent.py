@@ -1,42 +1,3 @@
-# # agents/design_agent.py
-# # DesignAgent → assigns dummy layouts, fonts, and color themes.
-
-# from .base_agent import BaseAgent
-
-# class DesignAgent(BaseAgent):
-#     """
-#     Dummy DesignAgent: Assigns layout, font, and color theme to each slide.
-#     """
-
-#     def run(self):
-#         self.log("Starting dummy design assignment...")
-
-#         slides = self.sm.get("slides")
-#         if not slides:
-#             self.log("No slides found! Aborting design phase.")
-#             return
-
-#         # Define dummy style templates
-#         styles = {
-#             "title": {"font": "Arial Bold", "color": "#1E90FF", "layout": "centered"},
-#             "content": {"font": "Calibri", "color": "#000000", "layout": "text-left"},
-#             "summary": {"font": "Georgia Italic", "color": "#228B22", "layout": "summary-style"}
-#         }
-
-#         design = {}
-
-#         for slide in slides:
-#             s_type = slide["type"]
-#             if s_type in styles:
-#                 design[slide["id"]] = styles[s_type]
-#             else:
-#                 design[slide["id"]] = {"font": "Times New Roman", "color": "#333333", "layout": "default"}
-
-#         # Update shared state
-#         self.update_state("design", design)
-#         self.log(f"Dummy design styles assigned for {len(design)} slides.")
-
-#_______________________________________________________________________________________
 ## full dymmy 
 # agents/design_agent.py
 # DesignAgent → sets the presentation theme and template.
@@ -75,3 +36,192 @@ class DesignAgent(BaseAgent):
         self.update_state("design", design_config)
         self.log(f"Design theme set to '{design_config['theme_name']}'.")
         self.sm.save("shared_state_after_design.json")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # agents/design_agent.py
+# # DesignAgent → assigns dummy layouts, fonts, and color themes.
+
+# from .base_agent import BaseAgent
+
+# class DesignAgent(BaseAgent):
+#     """
+#     Dummy DesignAgent: Assigns layout, font, and color theme to each slide.
+#     """
+
+#     def run(self):
+#         self.log("Starting dummy design assignment...")
+
+#         slides = self.sm.get("slides")
+#         if not slides:
+#             self.log("No slides found! Aborting design phase.")
+#             return
+
+#         # Define dummy style templates
+#         styles = {
+#             "title": {"font": "Arial Bold", "color": "#1E90FF", "layout": "centered"},
+#             "content": {"font": "Calibri", "color": "#000000", "layout": "text-left"},
+#             "summary": {"font": "Georgia Italic", "color": "#228B22", "layout": "summary-style"}
+#         }
+
+#         design = {}
+
+#         for slide in slides:
+#             s_type = slide["type"]
+#             if s_type in styles:
+#                 design[slide["id"]] = styles[s_type]
+#             else:
+#                 design[slide["id"]] = {"font": "Times New Roman", "color": "#333333", "layout": "default"}
+
+#         # Update shared state
+#         self.update_state("design", design)
+#         self.log(f"Dummy design styles assigned for {len(design)} slides.")
+
+
