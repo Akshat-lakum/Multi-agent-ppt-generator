@@ -1,10 +1,10 @@
-# Multi-Agent PPT Generator 🤖
+# Multi-Agent PPT Generator 
 
 This project is an autonomous multi-agent AI system that generates complete educational presentations from a syllabus PDF. It demonstrates a modular, collaborative AI architecture built from scratch, capable of understanding content, designing slides, and sourcing relevant visuals automatically.
 
 ---
 
-## ✨ Features
+## Features
 
 * **PDF to Presentation:** Automatically converts text from a syllabus PDF into a structured `.pptx` deck.
 * **AI-Powered Content:** Uses Google's Gemini API to analyze, summarize, and structure the content into topics, key points, and quiz questions.
@@ -14,7 +14,7 @@ This project is an autonomous multi-agent AI system that generates complete educ
 
 ---
 
-## 🏛️ Architecture
+## Architecture
 
 The system operates as a pipeline of specialized agents. Each agent performs a specific task and passes its output to the next agent through a shared state manager.
 
@@ -26,7 +26,7 @@ The system operates as a pipeline of specialized agents. Each agent performs a s
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 * **Core Language:** Python 3.11
 * **AI Model:** Google Gemini 2.5 Pro
@@ -42,7 +42,7 @@ The system operates as a pipeline of specialized agents. Each agent performs a s
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 Follow these steps to set up and run the project locally.
 
