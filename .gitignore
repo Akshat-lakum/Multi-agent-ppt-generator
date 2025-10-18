@@ -11,3 +11,8 @@ __pycache__/
 # Ignore test files (optional)
 test_content_agent.py
 check_models.py
+
+# ... (other ignored files) ...
+
+# Ignore state snapshots
+*.json
