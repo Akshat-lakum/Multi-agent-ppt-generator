@@ -2,350 +2,538 @@
     "pdf_text": null,
     "chapters": [
         {
-            "id": "ch1",
-            "title": "K-Means Clustering",
-            "description": "An introduction to the principles, mechanics, and applications of K-Means, a fundamental unsupervised learning algorithm for partitioning data.",
+            "id": "chap_01",
+            "title": "The World of Probability",
+            "description": "Let's start with the basics! This chapter introduces the fundamental concepts of probability that are the building blocks for understanding our main topic.",
             "topics": [
                 {
-                    "id": "ch1_tp1",
-                    "title": "The Core Idea of Clustering",
-                    "summary": "Clustering is a type of unsupervised machine learning that involves grouping a set of objects in such a way that objects in the same group (called a cluster) are more similar to each other than to those in other groups. The goal is to discover natural groupings or patterns within data without any predefined labels.",
+                    "id": "topic_01_01",
+                    "title": "What is a Sample Space?",
+                    "summary": "The sample space is simply a list of all possible outcomes that can happen in an experiment. For example, if you toss two coins, the sample space includes every possible combination of heads and tails.",
                     "key_points": [
-                        "An unsupervised learning technique.",
-                        "Partitions a dataset into distinct subsets or clusters.",
-                        "Objects within a cluster share common traits.",
-                        "Similarity is often determined by a distance measure (e.g., Euclidean distance)."
+                        "A sample space contains all possible results of an experiment.",
+                        "For tossing two coins, the sample space is {Heads-Heads, Heads-Tails, Tails-Heads, Tails-Tails}.",
+                        "Each item in the sample space is a unique outcome.",
+                        "Understanding the sample space is the first step to calculating probabilities."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "Is clustering a supervised or unsupervised learning method?",
-                            "answer": "Unsupervised, because it works with unlabeled data to find inherent structures."
-                        },
-                        {
-                            "question": "What is the primary goal of a clustering algorithm?",
-                            "answer": "To partition data so that items within a cluster are highly similar, while items in different clusters are dissimilar."
+                            "question": "If you roll a standard six-sided die, what is the sample space?",
+                            "options": [
+                                "{1, 2, 3}",
+                                "{1, 2, 3, 4, 5, 6}",
+                                "{Heads, Tails}",
+                                "{6}"
+                            ],
+                            "answer": "{1, 2, 3, 4, 5, 6}"
                         }
                     ],
-                    "image_hint": "A collection of scattered, multi-colored dots on the left, and the same dots circled into distinct, color-coded groups on the right."
+                    "image_hint": "An illustration showing two coins being tossed, with arrows pointing to the four possible outcomes: HH, HT, TH, TT."
                 },
                 {
-                    "id": "ch1_tp2",
-                    "title": "Introduction to K-Means Clustering",
-                    "summary": "K-Means is a popular centroid-based clustering algorithm. It aims to partition 'n' observations into 'k' clusters in which each observation belongs to the cluster with the nearest mean (cluster center or centroid), which serves as a prototype of the cluster.",
+                    "id": "topic_01_02",
+                    "title": "Calculating Basic Probabilities",
+                    "summary": "Probability is a number that tells us how likely something is to happen. We calculate it by dividing the number of ways a specific event can occur by the total number of possible outcomes.",
                     "key_points": [
-                        "An algorithm to partition 'n' objects into 'k' clusters.",
-                        "The value of 'k' is a predefined positive integer.",
-                        "It is a centroid-based algorithm, meaning clusters are represented by a central vector.",
-                        "The objective is to find the centers of natural clusters within the data."
+                        "Probability = (Number of Favorable Outcomes) / (Total Number of Outcomes).",
+                        "Example: The probability of getting two heads (HH) when tossing two coins is 1 out of 4 total outcomes, or 1/4.",
+                        "Example: The probability of getting at least one tail (HT, TH, TT) is 3 out of 4, or 3/4.",
+                        "Probabilities are always between 0 (impossible) and 1 (certain)."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "What does the 'K' in K-Means represent?",
-                            "answer": "The number of clusters you want to partition the data into."
-                        },
-                        {
-                            "question": "What is a 'centroid' in the context of K-Means?",
-                            "answer": "The center of a cluster, calculated as the average of all the data points belonging to that cluster."
+                            "question": "What is the probability of getting exactly one head when tossing two coins?",
+                            "options": [
+                                "1/4",
+                                "1/2",
+                                "3/4",
+                                "1"
+                            ],
+                            "answer": "1/2"
                         }
                     ],
-                    "image_hint": "A diagram with three distinct groups of data points, with a large 'X' or star marking the calculated center (centroid) of each group."
+                    "image_hint": "A simple pie chart divided into four equal sections, with one section labeled 'HH' and the other three labeled 'HT', 'TH', and 'TT'."
                 },
                 {
-                    "id": "ch1_tp3",
-                    "title": "The Goal: Minimizing Intra-Cluster Variance",
-                    "summary": "The core objective of the K-Means algorithm is to minimize the total intra-cluster variation, also known as the Within-Cluster Sum of Squares (WCSS). This is achieved by minimizing the sum of the squared distances between each data point and the centroid of its assigned cluster. Essentially, the algorithm tries to make the clusters as tight and dense as possible.",
+                    "id": "topic_01_03",
+                    "title": "Conditional Probability: When Things Depend on Each Other",
+                    "summary": "Conditional probability is the chance of an event happening, given that another event has already occurred. It's like asking, 'What's the probability of B, knowing that A has happened?'",
                     "key_points": [
-                        "The primary goal is to minimize the sum of squared distances.",
-                        "This metric is called the Within-Cluster Sum of Squares (WCSS).",
-                        "A lower WCSS value indicates more compact and dense clusters.",
-                        "This process iteratively refines cluster assignments to reduce the total WCSS."
+                        "This is written as P(A|B), which means 'The Probability of A given B'.",
+                        "Example: The probability of the second coin being a head, given the first was a tail, is 1/2.",
+                        "This concept is crucial for understanding how new information can change our predictions.",
+                        "The chain rule helps us find the probability of multiple events happening in a sequence: P(A and B) = P(A) * P(B|A)."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "What specific metric does K-Means try to minimize?",
-                            "answer": "The Within-Cluster Sum of Squares (WCSS), which is the sum of squared distances between data points and their cluster's centroid."
-                        },
-                        {
-                            "question": "If you have two different clustering results, how might you decide which is better using WCSS?",
-                            "answer": "The clustering result with the lower WCSS value is generally considered better, as it indicates the clusters are more compact."
+                            "question": "If you draw two cards from a deck without replacement, the probability of the second card is an example of what?",
+                            "options": [
+                                "Basic Probability",
+                                "Sample Space",
+                                "Conditional Probability",
+                                "An impossible event"
+                            ],
+                            "answer": "Conditional Probability"
                         }
                     ],
-                    "image_hint": "A single cluster of points. Lines are drawn from each point to the central centroid, visually representing the distances that are being squared and summed."
-                },
-                {
-                    "id": "ch1_tp4",
-                    "title": "The K-Means Algorithm: Step-by-Step",
-                    "summary": "The K-Means algorithm follows an iterative process to find the best cluster assignments. It begins by choosing the number of clusters 'k' and initializing their centroids. It then alternates between two main steps: assigning each data point to its closest centroid and recalculating the centroids based on the new cluster memberships. This loop continues until the cluster assignments no longer change.",
-                    "key_points": [
-                        "It is an iterative refinement algorithm.",
-                        "Consists of an initialization step and a two-step loop.",
-                        "The two repeating steps are the 'Assignment step' and the 'Update step'.",
-                        "The algorithm converges when assignments stabilize and centroids no longer move."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "What are the two main, repeating steps of the K-Means algorithm?",
-                            "answer": "The assignment step (assigning points to the nearest centroid) and the update step (recalculating centroids)."
-                        },
-                        {
-                            "question": "What is the condition for the K-Means algorithm to stop iterating?",
-                            "answer": "It stops when a full pass through the data results in no new assignments, meaning the clusters are stable."
-                        }
-                    ],
-                    "diagram_dot_code": "digraph { rankdir=TB; \"1. Choose K\" -> \"2. Initialize Centroids\"; \"2. Initialize Centroids\" -> \"3. Assignment Step: Assign points to closest centroid\"; \"3. Assignment Step: Assign points to closest centroid\" -> \"4. Update Step: Recalculate centroids\"; \"4. Update Step: Recalculate centroids\" -> \"3. Assignment Step: Assign points to closest centroid\" [label=\"Repeat until assignments are stable\"]; }",
-                    "image_hint": "A high-level flowchart illustrating the iterative cycle of assigning points and updating centroids until convergence."
-                },
-                {
-                    "id": "ch1_tp5",
-                    "title": "Choosing 'K': The Elbow Method",
-                    "summary": "Since the user must specify 'k' beforehand, a common question is how to choose the right value. The Elbow Method is a popular heuristic to help with this decision. It involves running the K-Means algorithm for a range of 'k' values and plotting the WCSS for each. The point on the graph where the rate of decrease sharply shifts (the 'elbow') is considered a good estimate for the optimal 'k'.",
-                    "key_points": [
-                        "A method to find the optimal number of clusters, 'k'.",
-                        "It runs K-Means multiple times with different values of k (e.g., 1 to 10).",
-                        "It plots the WCSS against the number of clusters (k).",
-                        "The 'elbow' of the curve represents the point of diminishing returns, suggesting the best k."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "What does the 'elbow' point in the WCSS plot signify?",
-                            "answer": "It signifies the point after which adding more clusters does not significantly reduce the total within-cluster variance."
-                        },
-                        {
-                            "question": "What is WCSS and how does it relate to the Elbow Method?",
-                            "answer": "WCSS stands for Within Cluster Sum of Squares. The Elbow Method plots WCSS for different values of k to help identify the optimal number of clusters."
-                        }
-                    ],
-                    "diagram_dot_code": "digraph { \"Run K-Means (K=1 to N)\" -> \"Calculate WCSS for each K\" -> \"Plot WCSS vs. K\" -> \"Identify 'Elbow' Point\" -> \"Select Optimal K\"; }",
-                    "image_hint": "A line graph where the Y-axis is 'WCSS' and the X-axis is 'Number of Clusters (K)'. The line should show a sharp drop that then flattens out, with the 'bend' or 'elbow' clearly circled."
-                },
-                {
-                    "id": "ch1_tp6",
-                    "title": "K-Means Example Walkthrough",
-                    "summary": "Let's trace a simple example. Starting with 8 data points and initial centroids at A1, A4, and A7. After the first assignment and update, we get new clusters and centroids. We repeat the process. By the third iteration (epoch), the clusters become {A1, A4, A8}, {A3, A5, A6}, and {A2, A7}. This demonstrates how points can switch clusters and centroids shift towards the center of their members.",
-                    "key_points": [
-                        "Initial seeds (centroids) were A1=(2,10), A4=(5,8), A7=(1,2).",
-                        "After the 2nd epoch, the clusters are {A1, A8}, {A3, A4, A5, A6}, {A2, A7}.",
-                        "After the 3rd epoch, A4 moves, and the clusters become {A1, A4, A8}, {A3, A5, A6}, {A2, A7}.",
-                        "This iterative refinement continues until the cluster memberships stabilize."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "In the example, which point switched clusters between the 2nd and 3rd epoch?",
-                            "answer": "Point A4, which moved from the second cluster to the first."
-                        },
-                        {
-                            "question": "How is the center of a new cluster, like C1=(3, 9.5), calculated?",
-                            "answer": "It's the mean of the coordinates of its member points. For cluster {A1, A8} with A1=(2,10) and A8=(4,9), the center is ((2+4)/2, (10+9)/2) = (3, 9.5)."
-                        }
-                    ],
-                    "image_hint": "A scatter plot of the 8 data points. Use color-coding to show the changing cluster assignments between the 2nd and 3rd epochs."
-                },
-                {
-                    "id": "ch1_tp7",
-                    "title": "Advantages of K-Means",
-                    "summary": "K-Means is widely used due to several key advantages. It is straightforward to understand and implement, and it is computationally efficient, making it faster than many other methods, especially on large datasets. Its iterative nature allows data points to switch clusters, leading to a more refined solution over time.",
-                    "key_points": [
-                        "Simplicity: It is very easy to understand and implement.",
-                        "Speed: Generally faster than hierarchical clustering on large datasets.",
-                        "Flexibility: An instance can change its cluster assignment as the algorithm progresses.",
-                        "Cluster Shape: Tends to produce tighter, more compact clusters."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "What is a major advantage of K-Means when working with a very large number of variables or data points?",
-                            "answer": "Its computational speed and efficiency compared to methods like hierarchical clustering."
-                        },
-                        {
-                            "question": "What does it mean that K-Means can form 'tighter clusters'?",
-                            "answer": "It means the data points within its clusters are, on average, closer to their centroid, indicating low intra-cluster variance."
-                        }
-                    ],
-                    "image_hint": "An icon representing speed (like a stopwatch) next to an icon representing simplicity (like a set of 1-2-3 building blocks)."
-                },
-                {
-                    "id": "ch1_tp8",
-                    "title": "Disadvantages of K-Means",
-                    "summary": "Despite its strengths, K-Means has notable limitations. The algorithm's output is highly sensitive to the initial, user-defined number of clusters 'k' and the initial placement of centroids. Furthermore, the order of the input data can affect the final result, and it is very sensitive to the scale of the data, often requiring normalization or standardization as a preprocessing step.",
-                    "key_points": [
-                        "Dependency on 'k': The number of clusters must be chosen beforehand.",
-                        "Sensitivity to Initialization: The final output is strongly impacted by the initial placement of centroids.",
-                        "Impact of Data Order: The sequence of data points can influence the final clusters.",
-                        "Sensitivity to Scaling: The algorithm is sensitive to feature scale; rescaling data (e.g., normalization) can completely change the result."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "Why is it often necessary to standardize your data before applying K-Means?",
-                            "answer": "Because the algorithm is based on distance, features with larger scales can disproportionately influence the clustering. Standardization gives all features equal weight."
-                        },
-                        {
-                            "question": "Name two factors that can cause K-Means to produce different results on the same dataset.",
-                            "answer": "The initial number of clusters (k) and the random initial placement of centroids."
-                        }
-                    ],
-                    "image_hint": "A diagram showing the same set of data points clustered in two very different ways, with the caption 'Different initial centroids can lead to different results'."
-                },
-                {
-                    "id": "ch1_tp9",
-                    "title": "Real-World Applications of K-Means",
-                    "summary": "K-Means is applied across numerous fields to discover patterns and segment data. In business, it's used for market and customer segmentation. In information retrieval, it helps in document clustering. In computer vision, it's used for image segmentation to separate objects from the background.",
-                    "key_points": [
-                        "Market Segmentation: Grouping customers based on purchasing behavior or demographics.",
-                        "Document Clustering: Organizing text documents into topics.",
-                        "Image Segmentation: Partitioning a digital image into multiple segments (sets of pixels).",
-                        "Trend Analysis: Analyzing trends on dynamic data by grouping similar events or time periods."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "How could a streaming service use K-Means to improve user experience?",
-                            "answer": "By clustering users based on their viewing habits (e.g., 'binge-watchers', 'weekend viewers', 'sci-fi fans') to provide more personalized recommendations."
-                        },
-                        {
-                            "question": "In image segmentation, what do the 'data points' and 'clusters' typically represent?",
-                            "answer": "The data points are the individual pixels, and the clusters represent distinct regions or objects in the image based on color and texture."
-                        }
-                    ],
-                    "image_hint": "A collage of four images: a shopping cart (market segmentation), a newspaper (document clustering), a photo of a landscape divided into regions (image segmentation), and a line graph (trend analysis)."
+                    "image_hint": "A sequence of two images: the first shows a coin landing on Tails, the second shows another coin being tossed with a question mark over it.",
+                    "diagram_dot_code": "digraph { rankdir=LR; A [label=\"First Event Occurs\"]; B [label=\"Second Event Occurs\"]; A -> B [label=\"P(B|A)\"]; }"
                 }
             ]
         },
         {
-            "id": "ch2",
-            "title": "The Apriori Algorithm",
-            "description": "Exploring the Apriori algorithm for association rule mining, used to discover frequent itemsets and relationships in transactional data.",
+            "id": "chap_02",
+            "title": "Introducing Bayes' Theorem",
+            "description": "Now for the main event! This chapter unveils Bayes' Theorem, a powerful formula for updating our beliefs based on new evidence.",
             "topics": [
                 {
-                    "id": "ch2_tp1",
-                    "title": "Foundations: Itemsets and Association",
-                    "summary": "The Apriori algorithm operates on the concept of 'itemsets'. An itemset is simply a collection of one or more items in a transactional dataset. The goal of 'frequent itemset mining' is to identify which of these combinations occur together often. For example, in a supermarket dataset, {Bread, Butter} is an itemset that is likely to be frequent.",
+                    "id": "topic_02_01",
+                    "title": "The Famous Bayes' Theorem Formula",
+                    "summary": "Bayes' Theorem is a mathematical formula that calculates a conditional probability. It lets us 'flip' the condition around, helping us find P(A|B) if we know P(B|A). It's a way to update our beliefs with new data.",
                     "key_points": [
-                        "An itemset is a set of one or more items.",
-                        "A 'k-itemset' is an itemset containing k items.",
-                        "A frequent itemset is one that appears more often than a specified minimum threshold.",
-                        "This technique is the foundation for market basket analysis."
+                        "The formula is: P(A|B) = [P(B|A) * P(A)] / P(B).",
+                        "P(A|B) is the 'Posterior Probability': what we want to find out.",
+                        "P(B|A) is the 'Likelihood': how likely is the evidence, given our belief.",
+                        "P(A) is the 'Prior Probability': how likely was our belief before the evidence.",
+                        "P(B) is the 'Evidence': the probability of the new data."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "If a transaction is {Milk, Bread, Eggs}, what are some of the 2-itemsets it contains?",
-                            "answer": "{Milk, Bread}, {Milk, Eggs}, and {Bread, Eggs}."
-                        },
-                        {
-                            "question": "What is the difference between an itemset and a frequent itemset?",
-                            "answer": "An itemset is any combination of items, while a frequent itemset is an itemset that meets a minimum support threshold, meaning it appears frequently in the data."
+                            "question": "In the Bayes' Theorem formula, what does P(A) represent?",
+                            "options": [
+                                "The Posterior Probability",
+                                "The Likelihood",
+                                "The Prior Probability",
+                                "The Evidence"
+                            ],
+                            "answer": "The Prior Probability"
                         }
                     ],
-                    "image_hint": "A simple graphic showing individual items like 'Milk', 'Bread', and 'Eggs', with braces around them to form itemsets like '{Milk, Bread}'."
+                    "image_hint": "A clean, graphical representation of the Bayes' Theorem formula with each part clearly labeled (Posterior, Likelihood, Prior, Evidence).",
+                    "diagram_dot_code": "digraph { rankdir=LR; node [shape=box]; \"Likelihood\\nP(B|A)\" -> \"Posterior\\nP(A|B)\"; \"Prior\\nP(A)\" -> \"Posterior\\nP(A|B)\"; \"Posterior\\nP(A|B)\" -> Result; Evidence [label=\"Evidence\\nP(B)\", shape=ellipse]; Evidence -> \"Posterior\\nP(A|B)\" [style=dotted, label=\"Normalizes\"]; }"
                 },
                 {
-                    "id": "ch2_tp2",
-                    "title": "Measuring Frequency: Support",
-                    "summary": "To determine if an itemset is 'frequent', we use a metric called 'Support'. Support is simply the fraction of total transactions in the dataset that contain that specific itemset. The Apriori algorithm uses a 'minimum support' threshold to filter out itemsets that are not interesting or common enough to consider.",
+                    "id": "topic_02_02",
+                    "title": "Bayes' Theorem with a Coin Toss Example",
+                    "summary": "Let's apply the formula to our coin toss example. We want to find the probability that the second coin is heads (Event A), given that the first coin was tails (Event B). Bayes' Theorem helps us formalize this calculation.",
                     "key_points": [
-                        "Support measures how frequently an itemset appears in the dataset.",
-                        "It is calculated as (Transactions containing the itemset) / (Total transactions).",
-                        "A 'minimum support' value is set as a threshold.",
-                        "Itemsets with support below this threshold are considered infrequent and are discarded."
+                        "Goal: Find P(A|B), where A = 'second coin is heads' and B = 'first coin is tails'.",
+                        "We use the formula: P(A|B) = [P(B|A) * P(A)] / P(B).",
+                        "P(B|A) = Probability the first is tails, given the second is heads = 1/2.",
+                        "P(A) = Probability the second is heads = 1/2.",
+                        "P(B) = Probability the first is tails = 1/2.",
+                        "Result: [(1/2) * (1/2)] / (1/2) = 1/2. The probability is 50%."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "If {Bread, Butter} appears in 50 out of 500 transactions, what is its support?",
-                            "answer": "The support is 50/500 = 0.1 or 10%."
-                        },
-                        {
-                            "question": "What happens to an itemset if its support is lower than the minimum support threshold?",
-                            "answer": "It is pruned or discarded and is not used to generate larger candidate itemsets."
+                            "question": "True or False: Bayes' Theorem can be used to solve simple probability problems that might also be solved intuitively.",
+                            "options": [
+                                "True",
+                                "False"
+                            ],
+                            "answer": "True"
                         }
                     ],
-                    "image_hint": "A formula on screen: Support(X) = (Number of transactions with X) / (Total Transactions), with icons for shopping carts."
+                    "image_hint": "An animation-style slide showing the Bayes' Theorem formula being populated with the values (1/2, 1/2, 1/2) from the coin toss problem to arrive at the answer."
                 },
                 {
-                    "id": "ch2_tp3",
-                    "title": "The Apriori Principle: Efficient Pruning",
-                    "summary": "The core of the Apriori algorithm's efficiency lies in the 'Apriori Principle'. This principle states that if an itemset is frequent, then all of its subsets must also be frequent. Conversely, and more importantly, if an itemset is infrequent, then all of its supersets must also be infrequent. This allows the algorithm to avoid checking countless combinations, dramatically reducing the search space.",
+                    "id": "topic_02_03",
+                    "title": "Applying the Chain Rule: The Defective Units Problem",
+                    "summary": "Let's consider a factory with 100 products, 5 of which are defective. What's the probability of picking three non-defective units in a row? This requires us to chain conditional probabilities together.",
                     "key_points": [
-                        "Core concept: All subsets of a frequent itemset must also be frequent.",
-                        "This allows for aggressive pruning of candidate itemsets.",
-                        "If {A, B} is found to be infrequent, there is no need to check {A, B, C} or {A, B, D}.",
-                        "This makes finding frequent itemsets in large datasets computationally feasible."
+                        "We need to find the probability of (1st is Good AND 2nd is Good AND 3rd is Good).",
+                        "Probability of the 1st being good: P(A1) = 95/100.",
+                        "Given the 1st was good, probability of the 2nd being good: P(A2|A1) = 94/99.",
+                        "Given the 1st and 2nd were good, probability of the 3rd being good: P(A3|A1,A2) = 93/98.",
+                        "We multiply them together: (95/100) * (94/99) * (93/98) \u2248 0.856 or 85.6%."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "If you know that the itemset {Diapers} is infrequent, what does the Apriori principle tell you about the itemset {Diapers, Beer}?",
-                            "answer": "The itemset {Diapers, Beer} must also be infrequent, so we don't need to waste time calculating its support."
-                        },
-                        {
-                            "question": "How does this principle improve the algorithm's performance?",
-                            "answer": "It significantly reduces the number of candidate itemsets that need to be checked for support, saving time and memory."
+                            "question": "In the defective units problem, why does the denominator decrease from 100 to 99 to 98?",
+                            "options": [
+                                "Because we found defective units.",
+                                "Because we are picking units without putting them back.",
+                                "It's a mistake in the calculation.",
+                                "Because the number of good units is decreasing."
+                            ],
+                            "answer": "Because we are picking units without putting them back."
                         }
                     ],
-                    "diagram_dot_code": "digraph { rankdir=TB; \"{A}\", \"{B}\", \"{C}\"; \"{A,B}\", \"{A,C}\" [style=dotted]; \"{B,C}\"; \"{A,B,C}\" [style=dotted]; {rank=same; \"{A}\", \"{B}\", \"{C}\"}; {rank=same; \"{A,B}\", \"{A,C}\", \"{B,C}\"}; \"{A}\" -> \"{A,B}\"; \"{B}\" -> \"{A,B}\"; \"{A}\" -> \"{A,C}\"; \"{C}\" -> \"{A,C}\"; \"{B}\" -> \"{B,C}\"; \"{C}\" -> \"{B,C}\"; \"{A,B}\" -> \"{A,B,C}\"; \"{A,C}\" -> \"{A,B,C}\"; \"{B,C}\" -> \"{A,B,C}\"; label=\"If {A,C} is infrequent, \\nprune {A,B,C}\"; labelloc=top; }",
-                    "image_hint": "A tree-like diagram showing how the algorithm generates 2-itemsets from frequent 1-itemsets. Show one 2-itemset being crossed out (as infrequent), which then prevents a 3-itemset below it from being generated."
+                    "image_hint": "A visual of a conveyor belt with 100 boxes. Three boxes are being picked off sequentially, and with each pick, the total number of boxes shown decreases.",
+                    "diagram_dot_code": "digraph { rankdir=LR; A1 [label=\"Pick 1 is Good\\nP=95/100\"]; A2 [label=\"Pick 2 is Good\\nP=94/99\"]; A3 [label=\"Pick 3 is Good\\nP=93/98\"]; A1 -> A2 [label=\"Given Pick 1\"]; A2 -> A3 [label=\"Given Picks 1 & 2\"]; }"
+                }
+            ]
+        },
+        {
+            "id": "chap_03",
+            "title": "From Theory to Prediction: The Na\u00efve Bayes Classifier",
+            "description": "Let's see how we can use Bayes' Theorem to build a smart system that can classify things, like telling apart spam from regular email.",
+            "topics": [
+                {
+                    "id": "topic_03_01",
+                    "title": "What is a Classifier?",
+                    "summary": "A classifier is like a sorting machine. You give it some data (an 'instance'), and it tells you which category or 'class' it belongs to. We can use Bayes' Theorem to decide which category is the most probable.",
+                    "key_points": [
+                        "Goal: To predict a class (e.g., 'male' or 'female') based on evidence (e.g., the name 'Drew').",
+                        "We ask: Is P(male | 'drew') greater or less than P(female | 'drew')?",
+                        "We use Bayes' Theorem to calculate both probabilities and compare them.",
+                        "The class with the higher probability is our prediction."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "To classify the name 'drew' as male or female, what two probabilities do we need to compare?",
+                            "options": [
+                                "P('drew'|male) and P('drew'|female)",
+                                "P(male) and P(female)",
+                                "P(male|'drew') and P(female|'drew')",
+                                "P('drew') and P(not 'drew')"
+                            ],
+                            "answer": "P(male|'drew') and P(female|'drew')"
+                        }
+                    ],
+                    "image_hint": "A simple diagram with an input 'Drew?' on the left, a black box labeled 'Classifier' in the middle, and two outputs 'Male' and 'Female' on the right, with the 'Female' output highlighted.",
+                    "diagram_dot_code": "digraph { rankdir=LR; input [label=\"Evidence\\n(e.g., 'Drew')\"]; classifier [label=\"Bayesian\\nClassifier\"]; class1 [label=\"P(Class 1 | Evidence)\"]; class2 [label=\"P(Class 2 | Evidence)\"]; input -> classifier; classifier -> class1; classifier -> class2; }"
                 },
                 {
-                    "id": "ch2_tp4",
-                    "title": "The Apriori Algorithm Process",
-                    "summary": "The Apriori algorithm works in a level-wise fashion. First, it scans the database to find all frequent 1-itemsets. Then, using this set, it generates candidate 2-itemsets. It scans the database again to count their support and find the frequent 2-itemsets. This process of 'generate and prune' continues, creating larger and larger frequent itemsets until no more can be found.",
+                    "id": "topic_03_02",
+                    "title": "The 'Na\u00efve' Assumption: A Clever Simplification",
+                    "summary": "Real-world data often has many features (e.g., height, eye color, hair length). Calculating probabilities with all of them is complex. The 'Na\u00efve' Bayes classifier makes a bold assumption: it treats every feature as completely independent of the others.",
                     "key_points": [
-                        "A 'bottom-up' or level-wise approach.",
-                        "Starts by finding frequent items of size 1 (L1).",
-                        "Uses frequent itemsets of size k-1 (Lk-1) to generate candidates of size k (Ck).",
-                        "Scans the database at each level to count support for candidates and determine Lk."
+                        "The 'Na\u00efve' assumption is that all features are independent.",
+                        "For example, it assumes a car's color has no effect on its type (e.g., SUV or Sports).",
+                        "This assumption is often not true in reality, but it simplifies the math dramatically.",
+                        "It allows us to multiply the probabilities of each individual feature: P(features|class) = P(feature1|class) * P(feature2|class) * ...",
+                        "Despite being 'na\u00efve', this method is surprisingly effective."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "What is the very first step of the Apriori algorithm?",
-                            "answer": "To scan the database and calculate the support for all individual items (1-itemsets) to find the frequent 1-itemsets (L1)."
-                        },
-                        {
-                            "question": "How are candidate 3-itemsets generated?",
-                            "answer": "They are generated by joining frequent 2-itemsets (L2) that share a common item."
+                            "question": "What does the 'Na\u00efve' in Na\u00efve Bayes mean?",
+                            "options": [
+                                "The algorithm is simple to understand.",
+                                "It assumes all features are independent of each other.",
+                                "It was invented by a person named Na\u00efve.",
+                                "It only works on simple datasets."
+                            ],
+                            "answer": "It assumes all features are independent of each other."
                         }
                     ],
-                    "diagram_dot_code": "digraph { \"Scan DB for Frequent 1-itemsets (L1)\" -> \"Generate Candidate 2-itemsets (C2)\" -> \"Scan DB to find Frequent 2-itemsets (L2)\" -> \"Generate Candidate 3-itemsets (C3)\" -> \"...and so on\"; }",
-                    "image_hint": "A flowchart showing the progression: L1 -> C2 -> L2 -> C3 -> L3."
+                    "image_hint": "Icons for 'Color', 'Type', and 'Origin' with 'no link' symbols (like a broken chain) between them, indicating independence.",
+                    "diagram_dot_code": "digraph { rankdir=LR; \"P(d|c)\" [label=\"P(data | class)\"]; p1 [label=\"P(feature1 | class)\"]; p2 [label=\"...\" shape=plaintext]; pn [label=\"P(featureN | class)\"]; \"P(d|c)\" -> p1 [label=\"=\"]; p1 -> p2 [label=\"*\"]; p2 -> pn [label=\"*\"]; }"
                 },
                 {
-                    "id": "ch2_tp5",
-                    "title": "Advantages of the Apriori Algorithm",
-                    "summary": "The main strengths of the Apriori algorithm are its simplicity and completeness. It is relatively easy to understand and implement compared to more complex algorithms. Because it explores the itemset lattice systematically, it is guaranteed to find all frequent itemsets in a dataset.",
+                    "id": "topic_03_03",
+                    "title": "The Na\u00efve Bayes Algorithm: An Overview",
+                    "summary": "Na\u00efve Bayes is a supervised learning algorithm used for classification. It's a probabilistic classifier, meaning it makes predictions based on probabilities. It's known for being simple, fast, and effective, especially with text data.",
                     "key_points": [
-                        "Easy to understand and implement.",
-                        "Can be used to mine large itemsets effectively.",
-                        "It is a complete algorithm, meaning it will always find all frequent itemsets.",
-                        "The pruning step makes it more efficient than a brute-force approach."
+                        "It is a supervised learning algorithm (it learns from labeled data).",
+                        "It's based on the principles of Bayes' Theorem.",
+                        "It incorporates the 'na\u00efve' assumption of feature independence.",
+                        "It is very fast to train and can make quick predictions.",
+                        "It works very well with high-dimensional data, like text."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "What is the main conceptual advantage of Apriori?",
-                            "answer": "Its simplicity and ease of understanding."
-                        },
-                        {
-                            "question": "What does it mean for Apriori to be a 'complete' algorithm?",
-                            "answer": "It means that if a frequent itemset exists, Apriori is guaranteed to find it; it won't miss any."
+                            "question": "Which of the following is NOT a characteristic of the Na\u00efve Bayes classifier?",
+                            "options": [
+                                "Fast to train",
+                                "Probabilistic",
+                                "Assumes features are dependent",
+                                "Supervised learning"
+                            ],
+                            "answer": "Assumes features are dependent"
                         }
                     ],
-                    "image_hint": "A checkmark icon next to the words 'Simple' and 'Complete'."
+                    "image_hint": "A flowchart showing 'Labeled Data' going into a 'Na\u00efve Bayes Model' which then outputs 'Predictions'."
                 },
                 {
-                    "id": "ch2_tp6",
-                    "title": "Disadvantages of the Apriori Algorithm",
-                    "summary": "The primary drawback of Apriori is its performance cost. It requires multiple full scans of the database, one for each level of itemsets, which can be very slow for large datasets. Additionally, if the minimum support is low or the data is dense, it can generate a massive number of candidate itemsets, consuming significant memory and CPU time.",
+                    "id": "topic_03_04",
+                    "title": "Common Applications of Na\u00efve Bayes",
+                    "summary": "Where can you find the Na\u00efve Bayes algorithm at work? It's more common than you think! Its speed and efficiency make it perfect for tasks that involve classifying text and filtering information in real-time.",
                     "key_points": [
-                        "Requires multiple database scans, which is computationally expensive.",
-                        "Can generate a huge number of candidate rules, demanding a lot of memory.",
-                        "Performance can be poor on large datasets, especially with low support thresholds.",
-                        "The 'generate and test' approach can be inefficient."
+                        "Spam Filtration: Classifying emails as 'Spam' or 'Not Spam'.",
+                        "Sentiment Analysis: Determining if a review is 'Positive', 'Negative', or 'Neutral'.",
+                        "Article Classification: Categorizing news articles into topics like 'Sports', 'Politics', or 'Technology'.",
+                        "Medical Diagnosis: Helping to predict diseases based on symptoms (features)."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "What is the main performance bottleneck of the Apriori algorithm?",
-                            "answer": "The need to perform multiple full scans of the database, one for each itemset size k."
-                        },
-                        {
-                            "question": "In what scenario would Apriori struggle the most?",
-                            "answer": "On a very large dataset with many unique items and a low minimum support threshold, as this would lead to a combinatorial explosion of candidate itemsets."
+                            "question": "Which application is a classic example of Na\u00efve Bayes in action?",
+                            "options": [
+                                "Predicting stock prices",
+                                "Creating realistic computer graphics",
+                                "Spam email filtering",
+                                "Controlling a self-driving car"
+                            ],
+                            "answer": "Spam email filtering"
                         }
                     ],
-                    "image_hint": "An icon of a database with multiple arrows pointing out of it, representing repeated scans, next to an icon of a computer with a loading symbol."
+                    "image_hint": "A collage of four icons representing spam email, a happy/sad face for sentiment, a newspaper for articles, and a medical cross."
+                }
+            ]
+        },
+        {
+            "id": "chap_04",
+            "title": "Walkthrough: The Car Theft Problem",
+            "description": "Let's get our hands dirty with a step-by-step example. We'll use Na\u00efve Bayes to predict whether a car will be stolen based on its features.",
+            "topics": [
+                {
+                    "id": "topic_04_01",
+                    "title": "Setting Up the Problem",
+                    "summary": "We have a dataset of cars. For each car, we know its Color, Type, and Origin. We also know whether it was Stolen ('Yes' or 'No'). Our goal is to train a model that can predict if a new, unseen car will be stolen.",
+                    "key_points": [
+                        "Features (the evidence): Color, Type, Origin.",
+                        "Target Class (what we predict): Stolen (Yes or No).",
+                        "Training Data: A table of past examples we use to learn from.",
+                        "Testing Data: A new car (e.g., a Red, SUV, Domestic) for which we want to make a prediction."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "In the car theft problem, what is the 'target class'?",
+                            "options": [
+                                "Color",
+                                "Type",
+                                "Origin",
+                                "Stolen (Yes/No)"
+                            ],
+                            "answer": "Stolen (Yes/No)"
+                        }
+                    ],
+                    "image_hint": "A simple table with columns 'Color', 'Type', 'Origin', 'Stolen?' and a few rows of sample data. One row at the bottom is labeled 'Test Car' with a question mark in the 'Stolen?' column."
+                },
+                {
+                    "id": "topic_04_02",
+                    "title": "Step 1: Create Frequency Tables",
+                    "summary": "The first step in training our model is to count everything. For each feature, we create a 'frequency table' that counts how many times each value appears for each outcome ('Stolen=Yes' and 'Stolen=No').",
+                    "key_points": [
+                        "A frequency table is a simple count.",
+                        "Example for Color: How many Red cars were stolen? How many Red cars were not?",
+                        "We build one table for each feature (Color, Type, Origin).",
+                        "This step summarizes our training data."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "What is the purpose of a frequency table in this context?",
+                            "options": [
+                                "To make a prediction.",
+                                "To count how often feature values occur for each class.",
+                                "To remove unnecessary features.",
+                                "To visualize the data."
+                            ],
+                            "answer": "To count how often feature values occur for each class."
+                        }
+                    ],
+                    "image_hint": "An image showing the raw data table transforming into a smaller frequency table for the 'Color' feature, with counts for 'Yes' and 'No'."
+                },
+                {
+                    "id": "topic_04_03",
+                    "title": "Step 2: Create Likelihood Tables",
+                    "summary": "Next, we turn our counts into probabilities. A 'likelihood table' shows the probability of a feature given a class. For example, 'What is the probability a car is Red, given that it was stolen?'.",
+                    "key_points": [
+                        "Likelihood is P(Feature | Class).",
+                        "We calculate this by dividing the counts in the frequency table by the total for that class.",
+                        "Example: P(Color=Red | Stolen=Yes) = (Count of Red stolen cars) / (Total stolen cars).",
+                        "These tables give us the P(B|A) part of the Bayes' Theorem formula."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "How do you convert a frequency table into a likelihood table?",
+                            "options": [
+                                "Multiply the counts by the total.",
+                                "You don't need to.",
+                                "Divide the counts for each class by the total count for that class.",
+                                "Add 1 to all counts."
+                            ],
+                            "answer": "Divide the counts for each class by the total count for that class."
+                        }
+                    ],
+                    "image_hint": "The frequency table from the previous slide being transformed into a likelihood table, showing the division calculation (e.g., 3 / 5 = 0.6)."
+                },
+                {
+                    "id": "topic_04_04",
+                    "title": "Step 3: Making a Prediction",
+                    "summary": "Now we use our likelihood tables to predict the outcome for our test car (Red, SUV, Domestic). We calculate the probability of it being 'Stolen=Yes' and 'Stolen=No' and see which is higher.",
+                    "key_points": [
+                        "We calculate two scores: one for 'Yes' and one for 'No'.",
+                        "Score(Yes) = P(Red|Yes) * P(SUV|Yes) * P(Domestic|Yes) * P(Yes).",
+                        "Score(No) = P(Red|No) * P(SUV|No) * P(Domestic|No) * P(No).",
+                        "The class with the higher score is our prediction.",
+                        "In the example, the score for 'No' (0.144) is higher than for 'Yes' (0.048), so we predict the car is NOT stolen."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "Why can we often ignore dividing by P(Evidence) when making a prediction?",
+                            "options": [
+                                "Because it's always 1.",
+                                "It's too hard to calculate.",
+                                "Because it's the same for both class calculations, so it doesn't affect the comparison.",
+                                "Because it's not part of Bayes' Theorem."
+                            ],
+                            "answer": "Because it's the same for both class calculations, so it doesn't affect the comparison."
+                        }
+                    ],
+                    "image_hint": "A visual of a scale or balance. On one side is the calculation for P(Yes|X), and on the other is the calculation for P(No|X). The 'No' side is shown as heavier, indicating the final prediction.",
+                    "diagram_dot_code": "digraph { rankdir=TB; \"Test Car\\n(Red, SUV, Dom.)\" -> \"Calculate P(Yes|Test)\"; \"Test Car\\n(Red, SUV, Dom.)\" -> \"Calculate P(No|Test)\"; \"Calculate P(Yes|Test)\" -> Compare; \"Calculate P(No|Test)\" -> Compare; Compare -> \"Prediction\\n(Higher Probability)\"; }"
+                }
+            ]
+        },
+        {
+            "id": "chap_05",
+            "title": "Handling Real-World Data Challenges",
+            "description": "Real data isn't always perfect. This chapter looks at common problems like missing data and numerical features, and how Na\u00efve Bayes can handle them.",
+            "topics": [
+                {
+                    "id": "topic_05_01",
+                    "title": "Problem: The Zero-Frequency Issue",
+                    "summary": "What happens if our training data never shows a certain feature with a certain class? For example, what if no 'Overcast' day ever resulted in 'Play=No'? The probability would be 0, which would make the entire calculation for that class zero, even if other features strongly suggest it. This is the zero-frequency problem.",
+                    "key_points": [
+                        "If a category never appears with a class in the training data, its probability is 0.",
+                        "Multiplying by zero wipes out all other evidence.",
+                        "This can lead to incorrect, overly confident predictions.",
+                        "This is a common issue, especially with small datasets."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "What is the zero-frequency problem?",
+                            "options": [
+                                "When a feature has a value of 0.",
+                                "When a feature-class combination never appears in the training data, leading to a probability of 0.",
+                                "When the final prediction is 0.",
+                                "When there is no data to train on."
+                            ],
+                            "answer": "When a feature-class combination never appears in the training data, leading to a probability of 0."
+                        }
+                    ],
+                    "image_hint": "An equation showing several numbers being multiplied, with one of them being a big, red 'x 0', resulting in '= 0'."
+                },
+                {
+                    "id": "topic_05_02",
+                    "title": "Solution: Laplace Smoothing",
+                    "summary": "To solve the zero-frequency problem, we use a simple trick called Laplace Smoothing, or 'add-one' smoothing. We pretend we've seen every possible combination at least once by adding 1 to all our counts before we calculate the likelihoods.",
+                    "key_points": [
+                        "The solution is to add a small value (usually 1) to every count in our frequency table.",
+                        "This prevents any probability from ever being exactly zero.",
+                        "We also need to adjust the total count in the denominator to account for the items we added.",
+                        "This technique makes our model more robust and less prone to being skewed by rare events."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "What is the primary goal of Laplace (add-one) smoothing?",
+                            "options": [
+                                "To make the math more complex.",
+                                "To make sure no calculated probability is ever zero.",
+                                "To speed up the algorithm.",
+                                "To handle numerical data."
+                            ],
+                            "answer": "To make sure no calculated probability is ever zero."
+                        }
+                    ],
+                    "image_hint": "A frequency table with a '0' in one cell. An arrow points to a new table where a '+1' is shown being added to every cell, changing the '0' to a '1'."
+                },
+                {
+                    "id": "topic_05_03",
+                    "title": "Handling Numerical Features",
+                    "summary": "What if our features are numbers, like height or temperature, instead of categories like 'Red' or 'SUV'? We can't make a frequency table for every possible number. Instead, we can assume the numbers for each class follow a common distribution, like a bell curve (Normal or Gaussian distribution).",
+                    "key_points": [
+                        "Categorical features have distinct groups (Red, Blue). Numerical features are continuous (Temperature).",
+                        "We can't use frequency tables for numerical data directly.",
+                        "One common method is to assume the data follows a Gaussian (Normal) distribution.",
+                        "We then calculate the mean and standard deviation for the numerical feature for each class.",
+                        "We use these values to estimate the probability of a new numerical value belonging to a class."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "How can Na\u00efve Bayes handle numerical data like 'height'?",
+                            "options": [
+                                "It can't handle numerical data.",
+                                "By ignoring it.",
+                                "By assuming the data for each class follows a statistical distribution, like a bell curve.",
+                                "By converting every number to '1'."
+                            ],
+                            "answer": "By assuming the data for each class follows a statistical distribution, like a bell curve."
+                        }
+                    ],
+                    "image_hint": "A number line with data points for 'Class A' (blue) and 'Class B' (red). A blue bell curve is drawn over the Class A points, and a red bell curve is drawn over the Class B points."
+                },
+                {
+                    "id": "topic_05_04",
+                    "title": "Numerical Example: Male or Female?",
+                    "summary": "Let's predict if a person is male or female using numerical features: height, weight, and foot size. We will calculate the average (mean) and spread (standard deviation) of these features for both males and females in our training data.",
+                    "key_points": [
+                        "We have training data with height, weight, foot size, and gender.",
+                        "For males, we find the mean height, mean weight, etc.",
+                        "For females, we find the mean height, mean weight, etc.",
+                        "Given a new person (e.g., height=6', weight=130lbs, foot size=8\"), we can calculate how well these numbers fit the 'male' distribution vs. the 'female' distribution.",
+                        "We combine these probabilities using the Na\u00efve Bayes formula to make our final prediction."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "To use a Gaussian Na\u00efve Bayes for numerical data, what two values do you need to calculate for each feature and class from the training data?",
+                            "options": [
+                                "The minimum and maximum",
+                                "The sum and the product",
+                                "The mean and the standard deviation",
+                                "The first and last value"
+                            ],
+                            "answer": "The mean and the standard deviation"
+                        }
+                    ],
+                    "image_hint": "A table showing training data for males and females. Below it, two smaller tables summarizing the 'Mean' and 'Standard Deviation' for height, weight, and foot size for each gender."
+                }
+            ]
+        },
+        {
+            "id": "chap_06",
+            "title": "Summary and Conclusion",
+            "description": "Let's recap what we've learned about the powerful and practical Na\u00efve Bayes classifier.",
+            "topics": [
+                {
+                    "id": "topic_06_01",
+                    "title": "Recap: The Na\u00efve Bayes Process",
+                    "summary": "The entire process of using a Na\u00efve Bayes classifier can be broken down into a few key steps. It starts with your data and ends with a prediction, using probabilities as its guide.",
+                    "key_points": [
+                        "Step 1: Gather and prepare your labeled training data.",
+                        "Step 2: Calculate prior probabilities for each class (e.g., P(Stolen=Yes)).",
+                        "Step 3: Calculate likelihoods for each feature given each class (P(Feature|Class)). This involves creating frequency and likelihood tables.",
+                        "Step 4: For a new data point, use the Na\u00efve Bayes formula to calculate the posterior probability for each class.",
+                        "Step 5: The class with the highest posterior probability is your prediction."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "What is the final step in the Na\u00efve Bayes classification process?",
+                            "options": [
+                                "Creating frequency tables.",
+                                "Choosing the class with the highest calculated posterior probability.",
+                                "Calculating the prior probability.",
+                                "Applying Laplace smoothing."
+                            ],
+                            "answer": "Choosing the class with the highest calculated posterior probability."
+                        }
+                    ],
+                    "image_hint": "A clean, high-level flowchart summarizing the five key steps of the Na\u00efve Bayes process.",
+                    "diagram_dot_code": "digraph { rankdir=TB; A [label=\"1. Training Data\"]; B [label=\"2. Calculate Priors P(Class)\"]; C [label=\"3. Calculate Likelihoods P(Feature|Class)\"]; D [label=\"4. Apply Bayes' Rule to New Data\"]; E [label=\"5. Predict Class with Highest Probability\"]; A -> B -> C -> D -> E; }"
+                },
+                {
+                    "id": "topic_06_02",
+                    "title": "Key Takeaways",
+                    "summary": "Na\u00efve Bayes is a simple yet powerful algorithm for classification. Its strength lies in its use of probability and a simplifying assumption that makes it fast and efficient, even with many features.",
+                    "key_points": [
+                        "It's built on the foundation of Bayes' Theorem.",
+                        "The 'Na\u00efve' assumption of feature independence is a key simplification.",
+                        "It is highly effective for text classification tasks like spam filtering.",
+                        "Techniques exist to handle challenges like zero-frequency and numerical data.",
+                        "It's a great 'first algorithm' to try on a classification problem due to its speed and simplicity."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "True or False: The 'Na\u00efve' assumption is always true in the real world, which is why the algorithm works so well.",
+                            "options": [
+                                "True",
+                                "False"
+                            ],
+                            "answer": "False"
+                        }
+                    ],
+                    "image_hint": "A summary slide with a checkmark next to key concepts: Bayes' Theorem, 'Na\u00efve' Assumption, Speed & Simplicity, and Text Classification."
                 }
             ]
         }
@@ -360,331 +548,530 @@
         {
             "id": "slide_2",
             "type": "chapter_title",
-            "title": "K-Means Clustering",
-            "subtitle": "An introduction to the principles, mechanics, and applications of K-Means, a fundamental unsupervised learning algorithm for partitioning data."
+            "title": "The World of Probability",
+            "subtitle": "Let's start with the basics! This chapter introduces the fundamental concepts of probability that are the building blocks for understanding our main topic."
         },
         {
             "id": "slide_3",
             "type": "content",
-            "title": "The Core Idea of Clustering",
+            "title": "What is a Sample Space?",
             "bullets": [
-                "An unsupervised learning technique.",
-                "Partitions a dataset into distinct subsets or clusters.",
-                "Objects within a cluster share common traits.",
-                "Similarity is often determined by a distance measure (e.g., Euclidean distance)."
+                "A sample space contains all possible results of an experiment.",
+                "For tossing two coins, the sample space is {Heads-Heads, Heads-Tails, Tails-Heads, Tails-Tails}.",
+                "Each item in the sample space is a unique outcome.",
+                "Understanding the sample space is the first step to calculating probabilities."
             ],
-            "image_hint": "A collection of scattered, multi-colored dots on the left, and the same dots circled into distinct, color-coded groups on the right."
+            "image_hint": "An illustration showing two coins being tossed, with arrows pointing to the four possible outcomes: HH, HT, TH, TT."
         },
         {
             "id": "slide_4",
             "type": "content",
-            "title": "Introduction to K-Means Clustering",
+            "title": "Calculating Basic Probabilities",
             "bullets": [
-                "An algorithm to partition 'n' objects into 'k' clusters.",
-                "The value of 'k' is a predefined positive integer.",
-                "It is a centroid-based algorithm, meaning clusters are represented by a central vector.",
-                "The objective is to find the centers of natural clusters within the data."
+                "Probability = (Number of Favorable Outcomes) / (Total Number of Outcomes).",
+                "Example: The probability of getting two heads (HH) when tossing two coins is 1 out of 4 total outcomes, or 1/4.",
+                "Example: The probability of getting at least one tail (HT, TH, TT) is 3 out of 4, or 3/4.",
+                "Probabilities are always between 0 (impossible) and 1 (certain)."
             ],
-            "image_hint": "A diagram with three distinct groups of data points, with a large 'X' or star marking the calculated center (centroid) of each group."
+            "image_hint": "A simple pie chart divided into four equal sections, with one section labeled 'HH' and the other three labeled 'HT', 'TH', and 'TT'."
         },
         {
             "id": "slide_5",
             "type": "content",
-            "title": "The Goal: Minimizing Intra-Cluster Variance",
+            "title": "Conditional Probability: When Things Depend on Each Other",
             "bullets": [
-                "The primary goal is to minimize the sum of squared distances.",
-                "This metric is called the Within-Cluster Sum of Squares (WCSS).",
-                "A lower WCSS value indicates more compact and dense clusters.",
-                "This process iteratively refines cluster assignments to reduce the total WCSS."
+                "This is written as P(A|B), which means 'The Probability of A given B'.",
+                "Example: The probability of the second coin being a head, given the first was a tail, is 1/2.",
+                "This concept is crucial for understanding how new information can change our predictions.",
+                "The chain rule helps us find the probability of multiple events happening in a sequence: P(A and B) = P(A) * P(B|A)."
             ],
-            "image_hint": "A single cluster of points. Lines are drawn from each point to the central centroid, visually representing the distances that are being squared and summed."
+            "image_hint": "A sequence of two images: the first shows a coin landing on Tails, the second shows another coin being tossed with a question mark over it."
         },
         {
             "id": "slide_6",
-            "type": "content",
-            "title": "The K-Means Algorithm: Step-by-Step",
-            "bullets": [
-                "It is an iterative refinement algorithm.",
-                "Consists of an initialization step and a two-step loop.",
-                "The two repeating steps are the 'Assignment step' and the 'Update step'.",
-                "The algorithm converges when assignments stabilize and centroids no longer move."
-            ],
-            "image_hint": "A high-level flowchart illustrating the iterative cycle of assigning points and updating centroids until convergence."
-        },
-        {
-            "id": "slide_7",
-            "type": "content",
-            "title": "Choosing 'K': The Elbow Method",
-            "bullets": [
-                "A method to find the optimal number of clusters, 'k'.",
-                "It runs K-Means multiple times with different values of k (e.g., 1 to 10).",
-                "It plots the WCSS against the number of clusters (k).",
-                "The 'elbow' of the curve represents the point of diminishing returns, suggesting the best k."
-            ],
-            "image_hint": "A line graph where the Y-axis is 'WCSS' and the X-axis is 'Number of Clusters (K)'. The line should show a sharp drop that then flattens out, with the 'bend' or 'elbow' clearly circled."
-        },
-        {
-            "id": "slide_8",
-            "type": "content",
-            "title": "K-Means Example Walkthrough",
-            "bullets": [
-                "Initial seeds (centroids) were A1=(2,10), A4=(5,8), A7=(1,2).",
-                "After the 2nd epoch, the clusters are {A1, A8}, {A3, A4, A5, A6}, {A2, A7}.",
-                "After the 3rd epoch, A4 moves, and the clusters become {A1, A4, A8}, {A3, A5, A6}, {A2, A7}.",
-                "This iterative refinement continues until the cluster memberships stabilize."
-            ],
-            "image_hint": "A scatter plot of the 8 data points. Use color-coding to show the changing cluster assignments between the 2nd and 3rd epochs."
-        },
-        {
-            "id": "slide_9",
-            "type": "content",
-            "title": "Advantages of K-Means",
-            "bullets": [
-                "Simplicity: It is very easy to understand and implement.",
-                "Speed: Generally faster than hierarchical clustering on large datasets.",
-                "Flexibility: An instance can change its cluster assignment as the algorithm progresses.",
-                "Cluster Shape: Tends to produce tighter, more compact clusters."
-            ],
-            "image_hint": "An icon representing speed (like a stopwatch) next to an icon representing simplicity (like a set of 1-2-3 building blocks)."
-        },
-        {
-            "id": "slide_10",
-            "type": "content",
-            "title": "Disadvantages of K-Means",
-            "bullets": [
-                "Dependency on 'k': The number of clusters must be chosen beforehand.",
-                "Sensitivity to Initialization: The final output is strongly impacted by the initial placement of centroids.",
-                "Impact of Data Order: The sequence of data points can influence the final clusters.",
-                "Sensitivity to Scaling: The algorithm is sensitive to feature scale; rescaling data (e.g., normalization) can completely change the result."
-            ],
-            "image_hint": "A diagram showing the same set of data points clustered in two very different ways, with the caption 'Different initial centroids can lead to different results'."
-        },
-        {
-            "id": "slide_11",
-            "type": "content",
-            "title": "Real-World Applications of K-Means",
-            "bullets": [
-                "Market Segmentation: Grouping customers based on purchasing behavior or demographics.",
-                "Document Clustering: Organizing text documents into topics.",
-                "Image Segmentation: Partitioning a digital image into multiple segments (sets of pixels).",
-                "Trend Analysis: Analyzing trends on dynamic data by grouping similar events or time periods."
-            ],
-            "image_hint": "A collage of four images: a shopping cart (market segmentation), a newspaper (document clustering), a photo of a landscape divided into regions (image segmentation), and a line graph (trend analysis)."
-        },
-        {
-            "id": "slide_12",
             "type": "quiz",
             "title": "Chapter 1 Quiz",
             "bullets": [
                 {
-                    "question": "Is clustering a supervised or unsupervised learning method?",
-                    "answer": "Unsupervised, because it works with unlabeled data to find inherent structures."
+                    "question": "If you roll a standard six-sided die, what is the sample space?",
+                    "options": [
+                        "{1, 2, 3}",
+                        "{1, 2, 3, 4, 5, 6}",
+                        "{Heads, Tails}",
+                        "{6}"
+                    ],
+                    "answer": "{1, 2, 3, 4, 5, 6}"
                 },
                 {
-                    "question": "What is the primary goal of a clustering algorithm?",
-                    "answer": "To partition data so that items within a cluster are highly similar, while items in different clusters are dissimilar."
+                    "question": "What is the probability of getting exactly one head when tossing two coins?",
+                    "options": [
+                        "1/4",
+                        "1/2",
+                        "3/4",
+                        "1"
+                    ],
+                    "answer": "1/2"
                 },
                 {
-                    "question": "What does the 'K' in K-Means represent?",
-                    "answer": "The number of clusters you want to partition the data into."
-                },
-                {
-                    "question": "What is a 'centroid' in the context of K-Means?",
-                    "answer": "The center of a cluster, calculated as the average of all the data points belonging to that cluster."
-                },
-                {
-                    "question": "What specific metric does K-Means try to minimize?",
-                    "answer": "The Within-Cluster Sum of Squares (WCSS), which is the sum of squared distances between data points and their cluster's centroid."
-                },
-                {
-                    "question": "If you have two different clustering results, how might you decide which is better using WCSS?",
-                    "answer": "The clustering result with the lower WCSS value is generally considered better, as it indicates the clusters are more compact."
-                },
-                {
-                    "question": "What are the two main, repeating steps of the K-Means algorithm?",
-                    "answer": "The assignment step (assigning points to the nearest centroid) and the update step (recalculating centroids)."
-                },
-                {
-                    "question": "What is the condition for the K-Means algorithm to stop iterating?",
-                    "answer": "It stops when a full pass through the data results in no new assignments, meaning the clusters are stable."
-                },
-                {
-                    "question": "What does the 'elbow' point in the WCSS plot signify?",
-                    "answer": "It signifies the point after which adding more clusters does not significantly reduce the total within-cluster variance."
-                },
-                {
-                    "question": "What is WCSS and how does it relate to the Elbow Method?",
-                    "answer": "WCSS stands for Within Cluster Sum of Squares. The Elbow Method plots WCSS for different values of k to help identify the optimal number of clusters."
-                },
-                {
-                    "question": "In the example, which point switched clusters between the 2nd and 3rd epoch?",
-                    "answer": "Point A4, which moved from the second cluster to the first."
-                },
-                {
-                    "question": "How is the center of a new cluster, like C1=(3, 9.5), calculated?",
-                    "answer": "It's the mean of the coordinates of its member points. For cluster {A1, A8} with A1=(2,10) and A8=(4,9), the center is ((2+4)/2, (10+9)/2) = (3, 9.5)."
-                },
-                {
-                    "question": "What is a major advantage of K-Means when working with a very large number of variables or data points?",
-                    "answer": "Its computational speed and efficiency compared to methods like hierarchical clustering."
-                },
-                {
-                    "question": "What does it mean that K-Means can form 'tighter clusters'?",
-                    "answer": "It means the data points within its clusters are, on average, closer to their centroid, indicating low intra-cluster variance."
-                },
-                {
-                    "question": "Why is it often necessary to standardize your data before applying K-Means?",
-                    "answer": "Because the algorithm is based on distance, features with larger scales can disproportionately influence the clustering. Standardization gives all features equal weight."
-                },
-                {
-                    "question": "Name two factors that can cause K-Means to produce different results on the same dataset.",
-                    "answer": "The initial number of clusters (k) and the random initial placement of centroids."
-                },
-                {
-                    "question": "How could a streaming service use K-Means to improve user experience?",
-                    "answer": "By clustering users based on their viewing habits (e.g., 'binge-watchers', 'weekend viewers', 'sci-fi fans') to provide more personalized recommendations."
-                },
-                {
-                    "question": "In image segmentation, what do the 'data points' and 'clusters' typically represent?",
-                    "answer": "The data points are the individual pixels, and the clusters represent distinct regions or objects in the image based on color and texture."
+                    "question": "If you draw two cards from a deck without replacement, the probability of the second card is an example of what?",
+                    "options": [
+                        "Basic Probability",
+                        "Sample Space",
+                        "Conditional Probability",
+                        "An impossible event"
+                    ],
+                    "answer": "Conditional Probability"
                 }
             ]
         },
         {
-            "id": "slide_13",
+            "id": "slide_7",
             "type": "chapter_title",
-            "title": "The Apriori Algorithm",
-            "subtitle": "Exploring the Apriori algorithm for association rule mining, used to discover frequent itemsets and relationships in transactional data."
+            "title": "Introducing Bayes' Theorem",
+            "subtitle": "Now for the main event! This chapter unveils Bayes' Theorem, a powerful formula for updating our beliefs based on new evidence."
         },
         {
-            "id": "slide_14",
+            "id": "slide_8",
             "type": "content",
-            "title": "Foundations: Itemsets and Association",
+            "title": "The Famous Bayes' Theorem Formula",
             "bullets": [
-                "An itemset is a set of one or more items.",
-                "A 'k-itemset' is an itemset containing k items.",
-                "A frequent itemset is one that appears more often than a specified minimum threshold.",
-                "This technique is the foundation for market basket analysis."
+                "The formula is: P(A|B) = [P(B|A) * P(A)] / P(B).",
+                "P(A|B) is the 'Posterior Probability': what we want to find out.",
+                "P(B|A) is the 'Likelihood': how likely is the evidence, given our belief.",
+                "P(A) is the 'Prior Probability': how likely was our belief before the evidence.",
+                "P(B) is the 'Evidence': the probability of the new data."
             ],
-            "image_hint": "A simple graphic showing individual items like 'Milk', 'Bread', and 'Eggs', with braces around them to form itemsets like '{Milk, Bread}'."
+            "image_hint": "A clean, graphical representation of the Bayes' Theorem formula with each part clearly labeled (Posterior, Likelihood, Prior, Evidence)."
         },
         {
-            "id": "slide_15",
+            "id": "slide_9",
             "type": "content",
-            "title": "Measuring Frequency: Support",
+            "title": "Bayes' Theorem with a Coin Toss Example",
             "bullets": [
-                "Support measures how frequently an itemset appears in the dataset.",
-                "It is calculated as (Transactions containing the itemset) / (Total transactions).",
-                "A 'minimum support' value is set as a threshold.",
-                "Itemsets with support below this threshold are considered infrequent and are discarded."
+                "Goal: Find P(A|B), where A = 'second coin is heads' and B = 'first coin is tails'.",
+                "We use the formula: P(A|B) = [P(B|A) * P(A)] / P(B).",
+                "P(B|A) = Probability the first is tails, given the second is heads = 1/2.",
+                "P(A) = Probability the second is heads = 1/2.",
+                "P(B) = Probability the first is tails = 1/2.",
+                "Result: [(1/2) * (1/2)] / (1/2) = 1/2. The probability is 50%."
             ],
-            "image_hint": "A formula on screen: Support(X) = (Number of transactions with X) / (Total Transactions), with icons for shopping carts."
+            "image_hint": "An animation-style slide showing the Bayes' Theorem formula being populated with the values (1/2, 1/2, 1/2) from the coin toss problem to arrive at the answer."
         },
         {
-            "id": "slide_16",
+            "id": "slide_10",
             "type": "content",
-            "title": "The Apriori Principle: Efficient Pruning",
+            "title": "Applying the Chain Rule: The Defective Units Problem",
             "bullets": [
-                "Core concept: All subsets of a frequent itemset must also be frequent.",
-                "This allows for aggressive pruning of candidate itemsets.",
-                "If {A, B} is found to be infrequent, there is no need to check {A, B, C} or {A, B, D}.",
-                "This makes finding frequent itemsets in large datasets computationally feasible."
+                "We need to find the probability of (1st is Good AND 2nd is Good AND 3rd is Good).",
+                "Probability of the 1st being good: P(A1) = 95/100.",
+                "Given the 1st was good, probability of the 2nd being good: P(A2|A1) = 94/99.",
+                "Given the 1st and 2nd were good, probability of the 3rd being good: P(A3|A1,A2) = 93/98.",
+                "We multiply them together: (95/100) * (94/99) * (93/98) \u2248 0.856 or 85.6%."
             ],
-            "image_hint": "A tree-like diagram showing how the algorithm generates 2-itemsets from frequent 1-itemsets. Show one 2-itemset being crossed out (as infrequent), which then prevents a 3-itemset below it from being generated."
+            "image_hint": "A visual of a conveyor belt with 100 boxes. Three boxes are being picked off sequentially, and with each pick, the total number of boxes shown decreases."
         },
         {
-            "id": "slide_17",
-            "type": "content",
-            "title": "The Apriori Algorithm Process",
-            "bullets": [
-                "A 'bottom-up' or level-wise approach.",
-                "Starts by finding frequent items of size 1 (L1).",
-                "Uses frequent itemsets of size k-1 (Lk-1) to generate candidates of size k (Ck).",
-                "Scans the database at each level to count support for candidates and determine Lk."
-            ],
-            "image_hint": "A flowchart showing the progression: L1 -> C2 -> L2 -> C3 -> L3."
-        },
-        {
-            "id": "slide_18",
-            "type": "content",
-            "title": "Advantages of the Apriori Algorithm",
-            "bullets": [
-                "Easy to understand and implement.",
-                "Can be used to mine large itemsets effectively.",
-                "It is a complete algorithm, meaning it will always find all frequent itemsets.",
-                "The pruning step makes it more efficient than a brute-force approach."
-            ],
-            "image_hint": "A checkmark icon next to the words 'Simple' and 'Complete'."
-        },
-        {
-            "id": "slide_19",
-            "type": "content",
-            "title": "Disadvantages of the Apriori Algorithm",
-            "bullets": [
-                "Requires multiple database scans, which is computationally expensive.",
-                "Can generate a huge number of candidate rules, demanding a lot of memory.",
-                "Performance can be poor on large datasets, especially with low support thresholds.",
-                "The 'generate and test' approach can be inefficient."
-            ],
-            "image_hint": "An icon of a database with multiple arrows pointing out of it, representing repeated scans, next to an icon of a computer with a loading symbol."
-        },
-        {
-            "id": "slide_20",
+            "id": "slide_11",
             "type": "quiz",
             "title": "Chapter 2 Quiz",
             "bullets": [
                 {
-                    "question": "If a transaction is {Milk, Bread, Eggs}, what are some of the 2-itemsets it contains?",
-                    "answer": "{Milk, Bread}, {Milk, Eggs}, and {Bread, Eggs}."
+                    "question": "In the Bayes' Theorem formula, what does P(A) represent?",
+                    "options": [
+                        "The Posterior Probability",
+                        "The Likelihood",
+                        "The Prior Probability",
+                        "The Evidence"
+                    ],
+                    "answer": "The Prior Probability"
                 },
                 {
-                    "question": "What is the difference between an itemset and a frequent itemset?",
-                    "answer": "An itemset is any combination of items, while a frequent itemset is an itemset that meets a minimum support threshold, meaning it appears frequently in the data."
+                    "question": "True or False: Bayes' Theorem can be used to solve simple probability problems that might also be solved intuitively.",
+                    "options": [
+                        "True",
+                        "False"
+                    ],
+                    "answer": "True"
                 },
                 {
-                    "question": "If {Bread, Butter} appears in 50 out of 500 transactions, what is its support?",
-                    "answer": "The support is 50/500 = 0.1 or 10%."
-                },
-                {
-                    "question": "What happens to an itemset if its support is lower than the minimum support threshold?",
-                    "answer": "It is pruned or discarded and is not used to generate larger candidate itemsets."
-                },
-                {
-                    "question": "If you know that the itemset {Diapers} is infrequent, what does the Apriori principle tell you about the itemset {Diapers, Beer}?",
-                    "answer": "The itemset {Diapers, Beer} must also be infrequent, so we don't need to waste time calculating its support."
-                },
-                {
-                    "question": "How does this principle improve the algorithm's performance?",
-                    "answer": "It significantly reduces the number of candidate itemsets that need to be checked for support, saving time and memory."
-                },
-                {
-                    "question": "What is the very first step of the Apriori algorithm?",
-                    "answer": "To scan the database and calculate the support for all individual items (1-itemsets) to find the frequent 1-itemsets (L1)."
-                },
-                {
-                    "question": "How are candidate 3-itemsets generated?",
-                    "answer": "They are generated by joining frequent 2-itemsets (L2) that share a common item."
-                },
-                {
-                    "question": "What is the main conceptual advantage of Apriori?",
-                    "answer": "Its simplicity and ease of understanding."
-                },
-                {
-                    "question": "What does it mean for Apriori to be a 'complete' algorithm?",
-                    "answer": "It means that if a frequent itemset exists, Apriori is guaranteed to find it; it won't miss any."
-                },
-                {
-                    "question": "What is the main performance bottleneck of the Apriori algorithm?",
-                    "answer": "The need to perform multiple full scans of the database, one for each itemset size k."
-                },
-                {
-                    "question": "In what scenario would Apriori struggle the most?",
-                    "answer": "On a very large dataset with many unique items and a low minimum support threshold, as this would lead to a combinatorial explosion of candidate itemsets."
+                    "question": "In the defective units problem, why does the denominator decrease from 100 to 99 to 98?",
+                    "options": [
+                        "Because we found defective units.",
+                        "Because we are picking units without putting them back.",
+                        "It's a mistake in the calculation.",
+                        "Because the number of good units is decreasing."
+                    ],
+                    "answer": "Because we are picking units without putting them back."
                 }
             ]
         },
         {
+            "id": "slide_12",
+            "type": "chapter_title",
+            "title": "From Theory to Prediction: The Na\u00efve Bayes Classifier",
+            "subtitle": "Let's see how we can use Bayes' Theorem to build a smart system that can classify things, like telling apart spam from regular email."
+        },
+        {
+            "id": "slide_13",
+            "type": "content",
+            "title": "What is a Classifier?",
+            "bullets": [
+                "Goal: To predict a class (e.g., 'male' or 'female') based on evidence (e.g., the name 'Drew').",
+                "We ask: Is P(male | 'drew') greater or less than P(female | 'drew')?",
+                "We use Bayes' Theorem to calculate both probabilities and compare them.",
+                "The class with the higher probability is our prediction."
+            ],
+            "image_hint": "A simple diagram with an input 'Drew?' on the left, a black box labeled 'Classifier' in the middle, and two outputs 'Male' and 'Female' on the right, with the 'Female' output highlighted."
+        },
+        {
+            "id": "slide_14",
+            "type": "content",
+            "title": "The 'Na\u00efve' Assumption: A Clever Simplification",
+            "bullets": [
+                "The 'Na\u00efve' assumption is that all features are independent.",
+                "For example, it assumes a car's color has no effect on its type (e.g., SUV or Sports).",
+                "This assumption is often not true in reality, but it simplifies the math dramatically.",
+                "It allows us to multiply the probabilities of each individual feature: P(features|class) = P(feature1|class) * P(feature2|class) * ...",
+                "Despite being 'na\u00efve', this method is surprisingly effective."
+            ],
+            "image_hint": "Icons for 'Color', 'Type', and 'Origin' with 'no link' symbols (like a broken chain) between them, indicating independence."
+        },
+        {
+            "id": "slide_15",
+            "type": "content",
+            "title": "The Na\u00efve Bayes Algorithm: An Overview",
+            "bullets": [
+                "It is a supervised learning algorithm (it learns from labeled data).",
+                "It's based on the principles of Bayes' Theorem.",
+                "It incorporates the 'na\u00efve' assumption of feature independence.",
+                "It is very fast to train and can make quick predictions.",
+                "It works very well with high-dimensional data, like text."
+            ],
+            "image_hint": "A flowchart showing 'Labeled Data' going into a 'Na\u00efve Bayes Model' which then outputs 'Predictions'."
+        },
+        {
+            "id": "slide_16",
+            "type": "content",
+            "title": "Common Applications of Na\u00efve Bayes",
+            "bullets": [
+                "Spam Filtration: Classifying emails as 'Spam' or 'Not Spam'.",
+                "Sentiment Analysis: Determining if a review is 'Positive', 'Negative', or 'Neutral'.",
+                "Article Classification: Categorizing news articles into topics like 'Sports', 'Politics', or 'Technology'.",
+                "Medical Diagnosis: Helping to predict diseases based on symptoms (features)."
+            ],
+            "image_hint": "A collage of four icons representing spam email, a happy/sad face for sentiment, a newspaper for articles, and a medical cross."
+        },
+        {
+            "id": "slide_17",
+            "type": "quiz",
+            "title": "Chapter 3 Quiz",
+            "bullets": [
+                {
+                    "question": "To classify the name 'drew' as male or female, what two probabilities do we need to compare?",
+                    "options": [
+                        "P('drew'|male) and P('drew'|female)",
+                        "P(male) and P(female)",
+                        "P(male|'drew') and P(female|'drew')",
+                        "P('drew') and P(not 'drew')"
+                    ],
+                    "answer": "P(male|'drew') and P(female|'drew')"
+                },
+                {
+                    "question": "What does the 'Na\u00efve' in Na\u00efve Bayes mean?",
+                    "options": [
+                        "The algorithm is simple to understand.",
+                        "It assumes all features are independent of each other.",
+                        "It was invented by a person named Na\u00efve.",
+                        "It only works on simple datasets."
+                    ],
+                    "answer": "It assumes all features are independent of each other."
+                },
+                {
+                    "question": "Which of the following is NOT a characteristic of the Na\u00efve Bayes classifier?",
+                    "options": [
+                        "Fast to train",
+                        "Probabilistic",
+                        "Assumes features are dependent",
+                        "Supervised learning"
+                    ],
+                    "answer": "Assumes features are dependent"
+                },
+                {
+                    "question": "Which application is a classic example of Na\u00efve Bayes in action?",
+                    "options": [
+                        "Predicting stock prices",
+                        "Creating realistic computer graphics",
+                        "Spam email filtering",
+                        "Controlling a self-driving car"
+                    ],
+                    "answer": "Spam email filtering"
+                }
+            ]
+        },
+        {
+            "id": "slide_18",
+            "type": "chapter_title",
+            "title": "Walkthrough: The Car Theft Problem",
+            "subtitle": "Let's get our hands dirty with a step-by-step example. We'll use Na\u00efve Bayes to predict whether a car will be stolen based on its features."
+        },
+        {
+            "id": "slide_19",
+            "type": "content",
+            "title": "Setting Up the Problem",
+            "bullets": [
+                "Features (the evidence): Color, Type, Origin.",
+                "Target Class (what we predict): Stolen (Yes or No).",
+                "Training Data: A table of past examples we use to learn from.",
+                "Testing Data: A new car (e.g., a Red, SUV, Domestic) for which we want to make a prediction."
+            ],
+            "image_hint": "A simple table with columns 'Color', 'Type', 'Origin', 'Stolen?' and a few rows of sample data. One row at the bottom is labeled 'Test Car' with a question mark in the 'Stolen?' column."
+        },
+        {
+            "id": "slide_20",
+            "type": "content",
+            "title": "Step 1: Create Frequency Tables",
+            "bullets": [
+                "A frequency table is a simple count.",
+                "Example for Color: How many Red cars were stolen? How many Red cars were not?",
+                "We build one table for each feature (Color, Type, Origin).",
+                "This step summarizes our training data."
+            ],
+            "image_hint": "An image showing the raw data table transforming into a smaller frequency table for the 'Color' feature, with counts for 'Yes' and 'No'."
+        },
+        {
             "id": "slide_21",
+            "type": "content",
+            "title": "Step 2: Create Likelihood Tables",
+            "bullets": [
+                "Likelihood is P(Feature | Class).",
+                "We calculate this by dividing the counts in the frequency table by the total for that class.",
+                "Example: P(Color=Red | Stolen=Yes) = (Count of Red stolen cars) / (Total stolen cars).",
+                "These tables give us the P(B|A) part of the Bayes' Theorem formula."
+            ],
+            "image_hint": "The frequency table from the previous slide being transformed into a likelihood table, showing the division calculation (e.g., 3 / 5 = 0.6)."
+        },
+        {
+            "id": "slide_22",
+            "type": "content",
+            "title": "Step 3: Making a Prediction",
+            "bullets": [
+                "We calculate two scores: one for 'Yes' and one for 'No'.",
+                "Score(Yes) = P(Red|Yes) * P(SUV|Yes) * P(Domestic|Yes) * P(Yes).",
+                "Score(No) = P(Red|No) * P(SUV|No) * P(Domestic|No) * P(No).",
+                "The class with the higher score is our prediction.",
+                "In the example, the score for 'No' (0.144) is higher than for 'Yes' (0.048), so we predict the car is NOT stolen."
+            ],
+            "image_hint": "A visual of a scale or balance. On one side is the calculation for P(Yes|X), and on the other is the calculation for P(No|X). The 'No' side is shown as heavier, indicating the final prediction."
+        },
+        {
+            "id": "slide_23",
+            "type": "quiz",
+            "title": "Chapter 4 Quiz",
+            "bullets": [
+                {
+                    "question": "In the car theft problem, what is the 'target class'?",
+                    "options": [
+                        "Color",
+                        "Type",
+                        "Origin",
+                        "Stolen (Yes/No)"
+                    ],
+                    "answer": "Stolen (Yes/No)"
+                },
+                {
+                    "question": "What is the purpose of a frequency table in this context?",
+                    "options": [
+                        "To make a prediction.",
+                        "To count how often feature values occur for each class.",
+                        "To remove unnecessary features.",
+                        "To visualize the data."
+                    ],
+                    "answer": "To count how often feature values occur for each class."
+                },
+                {
+                    "question": "How do you convert a frequency table into a likelihood table?",
+                    "options": [
+                        "Multiply the counts by the total.",
+                        "You don't need to.",
+                        "Divide the counts for each class by the total count for that class.",
+                        "Add 1 to all counts."
+                    ],
+                    "answer": "Divide the counts for each class by the total count for that class."
+                },
+                {
+                    "question": "Why can we often ignore dividing by P(Evidence) when making a prediction?",
+                    "options": [
+                        "Because it's always 1.",
+                        "It's too hard to calculate.",
+                        "Because it's the same for both class calculations, so it doesn't affect the comparison.",
+                        "Because it's not part of Bayes' Theorem."
+                    ],
+                    "answer": "Because it's the same for both class calculations, so it doesn't affect the comparison."
+                }
+            ]
+        },
+        {
+            "id": "slide_24",
+            "type": "chapter_title",
+            "title": "Handling Real-World Data Challenges",
+            "subtitle": "Real data isn't always perfect. This chapter looks at common problems like missing data and numerical features, and how Na\u00efve Bayes can handle them."
+        },
+        {
+            "id": "slide_25",
+            "type": "content",
+            "title": "Problem: The Zero-Frequency Issue",
+            "bullets": [
+                "If a category never appears with a class in the training data, its probability is 0.",
+                "Multiplying by zero wipes out all other evidence.",
+                "This can lead to incorrect, overly confident predictions.",
+                "This is a common issue, especially with small datasets."
+            ],
+            "image_hint": "An equation showing several numbers being multiplied, with one of them being a big, red 'x 0', resulting in '= 0'."
+        },
+        {
+            "id": "slide_26",
+            "type": "content",
+            "title": "Solution: Laplace Smoothing",
+            "bullets": [
+                "The solution is to add a small value (usually 1) to every count in our frequency table.",
+                "This prevents any probability from ever being exactly zero.",
+                "We also need to adjust the total count in the denominator to account for the items we added.",
+                "This technique makes our model more robust and less prone to being skewed by rare events."
+            ],
+            "image_hint": "A frequency table with a '0' in one cell. An arrow points to a new table where a '+1' is shown being added to every cell, changing the '0' to a '1'."
+        },
+        {
+            "id": "slide_27",
+            "type": "content",
+            "title": "Handling Numerical Features",
+            "bullets": [
+                "Categorical features have distinct groups (Red, Blue). Numerical features are continuous (Temperature).",
+                "We can't use frequency tables for numerical data directly.",
+                "One common method is to assume the data follows a Gaussian (Normal) distribution.",
+                "We then calculate the mean and standard deviation for the numerical feature for each class.",
+                "We use these values to estimate the probability of a new numerical value belonging to a class."
+            ],
+            "image_hint": "A number line with data points for 'Class A' (blue) and 'Class B' (red). A blue bell curve is drawn over the Class A points, and a red bell curve is drawn over the Class B points."
+        },
+        {
+            "id": "slide_28",
+            "type": "content",
+            "title": "Numerical Example: Male or Female?",
+            "bullets": [
+                "We have training data with height, weight, foot size, and gender.",
+                "For males, we find the mean height, mean weight, etc.",
+                "For females, we find the mean height, mean weight, etc.",
+                "Given a new person (e.g., height=6', weight=130lbs, foot size=8\"), we can calculate how well these numbers fit the 'male' distribution vs. the 'female' distribution.",
+                "We combine these probabilities using the Na\u00efve Bayes formula to make our final prediction."
+            ],
+            "image_hint": "A table showing training data for males and females. Below it, two smaller tables summarizing the 'Mean' and 'Standard Deviation' for height, weight, and foot size for each gender."
+        },
+        {
+            "id": "slide_29",
+            "type": "quiz",
+            "title": "Chapter 5 Quiz",
+            "bullets": [
+                {
+                    "question": "What is the zero-frequency problem?",
+                    "options": [
+                        "When a feature has a value of 0.",
+                        "When a feature-class combination never appears in the training data, leading to a probability of 0.",
+                        "When the final prediction is 0.",
+                        "When there is no data to train on."
+                    ],
+                    "answer": "When a feature-class combination never appears in the training data, leading to a probability of 0."
+                },
+                {
+                    "question": "What is the primary goal of Laplace (add-one) smoothing?",
+                    "options": [
+                        "To make the math more complex.",
+                        "To make sure no calculated probability is ever zero.",
+                        "To speed up the algorithm.",
+                        "To handle numerical data."
+                    ],
+                    "answer": "To make sure no calculated probability is ever zero."
+                },
+                {
+                    "question": "How can Na\u00efve Bayes handle numerical data like 'height'?",
+                    "options": [
+                        "It can't handle numerical data.",
+                        "By ignoring it.",
+                        "By assuming the data for each class follows a statistical distribution, like a bell curve.",
+                        "By converting every number to '1'."
+                    ],
+                    "answer": "By assuming the data for each class follows a statistical distribution, like a bell curve."
+                },
+                {
+                    "question": "To use a Gaussian Na\u00efve Bayes for numerical data, what two values do you need to calculate for each feature and class from the training data?",
+                    "options": [
+                        "The minimum and maximum",
+                        "The sum and the product",
+                        "The mean and the standard deviation",
+                        "The first and last value"
+                    ],
+                    "answer": "The mean and the standard deviation"
+                }
+            ]
+        },
+        {
+            "id": "slide_30",
+            "type": "chapter_title",
+            "title": "Summary and Conclusion",
+            "subtitle": "Let's recap what we've learned about the powerful and practical Na\u00efve Bayes classifier."
+        },
+        {
+            "id": "slide_31",
+            "type": "content",
+            "title": "Recap: The Na\u00efve Bayes Process",
+            "bullets": [
+                "Step 1: Gather and prepare your labeled training data.",
+                "Step 2: Calculate prior probabilities for each class (e.g., P(Stolen=Yes)).",
+                "Step 3: Calculate likelihoods for each feature given each class (P(Feature|Class)). This involves creating frequency and likelihood tables.",
+                "Step 4: For a new data point, use the Na\u00efve Bayes formula to calculate the posterior probability for each class.",
+                "Step 5: The class with the highest posterior probability is your prediction."
+            ],
+            "image_hint": "A clean, high-level flowchart summarizing the five key steps of the Na\u00efve Bayes process."
+        },
+        {
+            "id": "slide_32",
+            "type": "content",
+            "title": "Key Takeaways",
+            "bullets": [
+                "It's built on the foundation of Bayes' Theorem.",
+                "The 'Na\u00efve' assumption of feature independence is a key simplification.",
+                "It is highly effective for text classification tasks like spam filtering.",
+                "Techniques exist to handle challenges like zero-frequency and numerical data.",
+                "It's a great 'first algorithm' to try on a classification problem due to its speed and simplicity."
+            ],
+            "image_hint": "A summary slide with a checkmark next to key concepts: Bayes' Theorem, 'Na\u00efve' Assumption, Speed & Simplicity, and Text Classification."
+        },
+        {
+            "id": "slide_33",
+            "type": "quiz",
+            "title": "Chapter 6 Quiz",
+            "bullets": [
+                {
+                    "question": "What is the final step in the Na\u00efve Bayes classification process?",
+                    "options": [
+                        "Creating frequency tables.",
+                        "Choosing the class with the highest calculated posterior probability.",
+                        "Calculating the prior probability.",
+                        "Applying Laplace smoothing."
+                    ],
+                    "answer": "Choosing the class with the highest calculated posterior probability."
+                },
+                {
+                    "question": "True or False: The 'Na\u00efve' assumption is always true in the real world, which is why the algorithm works so well.",
+                    "options": [
+                        "True",
+                        "False"
+                    ],
+                    "answer": "False"
+                }
+            ]
+        },
+        {
+            "id": "slide_34",
             "type": "thank_you",
             "title": "Thank You!",
             "subtitle": "Any Questions?"
@@ -696,8 +1083,8 @@
     },
     "media": [],
     "output_path": null,
-    "input_pdf_path": "temp_uploads\\ML_ppt_9_K-MEANS CLUSTERING.pdf",
+    "input_pdf_path": "temp_uploads\\ML_ppt_1_NB.pdf",
     "theme_file": "minimalist.pptx",
-    "tone": "Intermediate",
-    "slide_count": 15
+    "tone": "Beginner",
+    "slide_count": 20
 }
