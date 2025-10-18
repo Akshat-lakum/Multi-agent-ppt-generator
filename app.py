@@ -1,8 +1,8 @@
 # app.py
-# The Streamlit GUI with theme selection.
+# Updated Streamlit GUI to handle both PPTX and PDF outputs.
 
 import streamlit as st
-from main import run_full_pipeline
+from main import run_full_pipeline # Import our updated pipeline function
 import os
 
 st.set_page_config(
@@ -14,39 +14,19 @@ st.set_page_config(
 st.title("🤖 AI Multi-Agent Presentation Generator")
 st.markdown("Upload a syllabus PDF and let our AI agents create a complete presentation for you. Customize the tone, length, and design to fit your needs.")
 
-# --- Dictionary of available themes ---
-# Maps user-friendly names to the actual filenames
 THEMES = {
     "Edutor Blue (Default)": "edutor_theme.pptx",
     "Dark Mode": "dark_mode.pptx",
     "Minimalist": "minimalist.pptx",
 }
 
-# --- Sidebar for Customization Options ---
 with st.sidebar:
     st.header("⚙️ Customization Options")
-    
-    # NEW: Theme selection dropdown
-    theme_name = st.selectbox(
-        "Select a presentation theme:",
-        options=list(THEMES.keys())
-    )
+    theme_name = st.selectbox("Select a presentation theme:", options=list(THEMES.keys()))
     selected_theme_file = THEMES[theme_name]
+    tone = st.selectbox("Select the content tone:", ("Beginner", "Intermediate", "Expert"), index=0)
+    slide_count = st.slider("Select approximate number of content slides:", min_value=5, max_value=20, value=10)
 
-    tone = st.selectbox(
-        "Select the content tone:",
-        ("Beginner", "Intermediate", "Expert"),
-        index=0
-    )
-
-    slide_count = st.slider(
-        "Select approximate number of content slides:",
-        min_value=5,
-        max_value=20,
-        value=10
-    )
-
-# --- File Uploader ---
 uploaded_file = st.file_uploader("Choose a syllabus PDF file", type="pdf")
 
 if uploaded_file is not None:
@@ -60,7 +40,6 @@ if uploaded_file is not None:
     st.success(f"File '{uploaded_file.name}' uploaded successfully!")
 
     if st.button("✨ Generate Presentation", type="primary"):
-        
         progress_text = st.empty()
         
         def update_progress(message):
@@ -68,26 +47,44 @@ if uploaded_file is not None:
 
         with st.spinner("The AI agents are hard at work... This may take a minute or two."):
             try:
-                # Pass the selected theme file to the pipeline
-                final_pptx_path = run_full_pipeline(
+                # --- Run the pipeline, which now returns two paths ---
+                pptx_path, pdf_path = run_full_pipeline(
                     pdf_path=temp_pdf_path,
-                    theme_file=selected_theme_file, # Pass the new theme option
+                    theme_file=selected_theme_file,
                     tone=tone,
                     slide_count=slide_count,
                     progress_callback=update_progress
                 )
                 
-                if final_pptx_path and os.path.exists(final_pptx_path):
+                # --- Provide download buttons based on generated files ---
+                if pptx_path and os.path.exists(pptx_path):
                     st.success("🎉 Presentation generated successfully!")
                     
-                    with open(final_pptx_path, "rb") as file:
-                        st.download_button(
-                            label="📥 Download Presentation",
-                            data=file,
-                            file_name=os.path.basename(final_pptx_path),
-                            mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                        )
+                    col1, col2 = st.columns(2) # Create columns for buttons
+                    
+                    with col1:
+                        with open(pptx_path, "rb") as file:
+                            st.download_button(
+                                label="📥 Download PPTX",
+                                data=file,
+                                file_name=os.path.basename(pptx_path),
+                                mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                            )
+                    
+                    if pdf_path and os.path.exists(pdf_path):
+                        with col2:
+                            with open(pdf_path, "rb") as file:
+                                st.download_button(
+                                    label="📄 Download PDF",
+                                    data=file,
+                                    file_name=os.path.basename(pdf_path),
+                                    mime="application/pdf",
+                                )
+                    else:
+                        st.warning("PDF conversion failed. Check logs for details.")
+                        
                 else:
                     st.error("Something went wrong. The presentation could not be generated.")
+
             except Exception as e:
                 st.error(f"An error occurred: {e}")

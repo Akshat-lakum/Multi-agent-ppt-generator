@@ -3,345 +3,349 @@
     "chapters": [
         {
             "id": "ch1",
-            "title": "Fundamentals of K-Nearest Neighbors",
-            "description": "An introduction to the core concepts of the K-NN algorithm, its place in supervised learning, and its unique characteristics as a non-parametric, lazy learner.",
+            "title": "K-Means Clustering",
+            "description": "An introduction to the principles, mechanics, and applications of K-Means, a fundamental unsupervised learning algorithm for partitioning data.",
             "topics": [
                 {
                     "id": "ch1_tp1",
-                    "title": "Introduction to K-NN: A Supervised Learning Approach",
-                    "summary": "K-Nearest Neighbors (K-NN) is one of the most straightforward supervised machine learning algorithms. It operates on the principle of similarity, classifying new data points based on the classifications of their closest neighbors in the feature space. It can be used for both classification and regression tasks.",
+                    "title": "The Core Idea of Clustering",
+                    "summary": "Clustering is a type of unsupervised machine learning that involves grouping a set of objects in such a way that objects in the same group (called a cluster) are more similar to each other than to those in other groups. The goal is to discover natural groupings or patterns within data without any predefined labels.",
                     "key_points": [
-                        "K-NN is a supervised learning algorithm.",
-                        "It is used for both classification and regression, but more commonly for classification.",
-                        "The algorithm assumes that similar things exist in close proximity.",
-                        "It classifies a new data point by looking at the majority class of its 'K' nearest neighbors."
+                        "An unsupervised learning technique.",
+                        "Partitions a dataset into distinct subsets or clusters.",
+                        "Objects within a cluster share common traits.",
+                        "Similarity is often determined by a distance measure (e.g., Euclidean distance)."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "K-NN is primarily which type of machine learning algorithm?",
-                            "options": [
-                                "Unsupervised Learning",
-                                "Supervised Learning",
-                                "Reinforcement Learning"
-                            ],
-                            "answer": "Supervised Learning"
+                            "question": "Is clustering a supervised or unsupervised learning method?",
+                            "answer": "Unsupervised, because it works with unlabeled data to find inherent structures."
                         },
                         {
-                            "question": "True or False: K-NN can only be used for classification problems.",
-                            "options": [
-                                "True",
-                                "False"
-                            ],
-                            "answer": "False"
+                            "question": "What is the primary goal of a clustering algorithm?",
+                            "answer": "To partition data so that items within a cluster are highly similar, while items in different clusters are dissimilar."
                         }
                     ],
-                    "image_hint": "Data points in a 2D plot with distinct clusters"
+                    "image_hint": "A collection of scattered, multi-colored dots on the left, and the same dots circled into distinct, color-coded groups on the right."
                 },
                 {
                     "id": "ch1_tp2",
-                    "title": "Key Characteristics: Non-Parametric and Lazy Learning",
-                    "summary": "K-NN is known as a non-parametric algorithm because it makes no assumptions about the underlying data distribution. It's also called a 'lazy learner' because it doesn't build a model during the training phase. Instead, it stores the entire training dataset and performs all calculations during the prediction phase.",
+                    "title": "Introduction to K-Means Clustering",
+                    "summary": "K-Means is a popular centroid-based clustering algorithm. It aims to partition 'n' observations into 'k' clusters in which each observation belongs to the cluster with the nearest mean (cluster center or centroid), which serves as a prototype of the cluster.",
                     "key_points": [
-                        "Non-parametric: No assumptions about the data's distribution.",
-                        "Lazy Learner: No explicit training phase; all work is done at prediction time.",
-                        "Stores the entire training dataset, which can be memory-intensive.",
-                        "The 'learning' is simply memorizing the training data."
+                        "An algorithm to partition 'n' objects into 'k' clusters.",
+                        "The value of 'k' is a predefined positive integer.",
+                        "It is a centroid-based algorithm, meaning clusters are represented by a central vector.",
+                        "The objective is to find the centers of natural clusters within the data."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "Why is K-NN called a 'lazy learner'?",
-                            "options": [
-                                "It is computationally inefficient.",
-                                "It defers the computation until a prediction is needed.",
-                                "It requires very little data to train."
-                            ],
-                            "answer": "It defers the computation until a prediction is needed."
+                            "question": "What does the 'K' in K-Means represent?",
+                            "answer": "The number of clusters you want to partition the data into."
                         },
                         {
-                            "question": "What does it mean for K-NN to be 'non-parametric'?",
-                            "options": [
-                                "It has no parameters to tune.",
-                                "It doesn't require numerical data.",
-                                "It makes no assumptions about the underlying data distribution."
-                            ],
-                            "answer": "It makes no assumptions about the underlying data distribution."
+                            "question": "What is a 'centroid' in the context of K-Means?",
+                            "answer": "The center of a cluster, calculated as the average of all the data points belonging to that cluster."
                         }
                     ],
-                    "image_hint": "A person relaxing in a hammock next to a large server rack"
+                    "image_hint": "A diagram with three distinct groups of data points, with a large 'X' or star marking the calculated center (centroid) of each group."
+                },
+                {
+                    "id": "ch1_tp3",
+                    "title": "The Goal: Minimizing Intra-Cluster Variance",
+                    "summary": "The core objective of the K-Means algorithm is to minimize the total intra-cluster variation, also known as the Within-Cluster Sum of Squares (WCSS). This is achieved by minimizing the sum of the squared distances between each data point and the centroid of its assigned cluster. Essentially, the algorithm tries to make the clusters as tight and dense as possible.",
+                    "key_points": [
+                        "The primary goal is to minimize the sum of squared distances.",
+                        "This metric is called the Within-Cluster Sum of Squares (WCSS).",
+                        "A lower WCSS value indicates more compact and dense clusters.",
+                        "This process iteratively refines cluster assignments to reduce the total WCSS."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "What specific metric does K-Means try to minimize?",
+                            "answer": "The Within-Cluster Sum of Squares (WCSS), which is the sum of squared distances between data points and their cluster's centroid."
+                        },
+                        {
+                            "question": "If you have two different clustering results, how might you decide which is better using WCSS?",
+                            "answer": "The clustering result with the lower WCSS value is generally considered better, as it indicates the clusters are more compact."
+                        }
+                    ],
+                    "image_hint": "A single cluster of points. Lines are drawn from each point to the central centroid, visually representing the distances that are being squared and summed."
+                },
+                {
+                    "id": "ch1_tp4",
+                    "title": "The K-Means Algorithm: Step-by-Step",
+                    "summary": "The K-Means algorithm follows an iterative process to find the best cluster assignments. It begins by choosing the number of clusters 'k' and initializing their centroids. It then alternates between two main steps: assigning each data point to its closest centroid and recalculating the centroids based on the new cluster memberships. This loop continues until the cluster assignments no longer change.",
+                    "key_points": [
+                        "It is an iterative refinement algorithm.",
+                        "Consists of an initialization step and a two-step loop.",
+                        "The two repeating steps are the 'Assignment step' and the 'Update step'.",
+                        "The algorithm converges when assignments stabilize and centroids no longer move."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "What are the two main, repeating steps of the K-Means algorithm?",
+                            "answer": "The assignment step (assigning points to the nearest centroid) and the update step (recalculating centroids)."
+                        },
+                        {
+                            "question": "What is the condition for the K-Means algorithm to stop iterating?",
+                            "answer": "It stops when a full pass through the data results in no new assignments, meaning the clusters are stable."
+                        }
+                    ],
+                    "diagram_dot_code": "digraph { rankdir=TB; \"1. Choose K\" -> \"2. Initialize Centroids\"; \"2. Initialize Centroids\" -> \"3. Assignment Step: Assign points to closest centroid\"; \"3. Assignment Step: Assign points to closest centroid\" -> \"4. Update Step: Recalculate centroids\"; \"4. Update Step: Recalculate centroids\" -> \"3. Assignment Step: Assign points to closest centroid\" [label=\"Repeat until assignments are stable\"]; }",
+                    "image_hint": "A high-level flowchart illustrating the iterative cycle of assigning points and updating centroids until convergence."
+                },
+                {
+                    "id": "ch1_tp5",
+                    "title": "Choosing 'K': The Elbow Method",
+                    "summary": "Since the user must specify 'k' beforehand, a common question is how to choose the right value. The Elbow Method is a popular heuristic to help with this decision. It involves running the K-Means algorithm for a range of 'k' values and plotting the WCSS for each. The point on the graph where the rate of decrease sharply shifts (the 'elbow') is considered a good estimate for the optimal 'k'.",
+                    "key_points": [
+                        "A method to find the optimal number of clusters, 'k'.",
+                        "It runs K-Means multiple times with different values of k (e.g., 1 to 10).",
+                        "It plots the WCSS against the number of clusters (k).",
+                        "The 'elbow' of the curve represents the point of diminishing returns, suggesting the best k."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "What does the 'elbow' point in the WCSS plot signify?",
+                            "answer": "It signifies the point after which adding more clusters does not significantly reduce the total within-cluster variance."
+                        },
+                        {
+                            "question": "What is WCSS and how does it relate to the Elbow Method?",
+                            "answer": "WCSS stands for Within Cluster Sum of Squares. The Elbow Method plots WCSS for different values of k to help identify the optimal number of clusters."
+                        }
+                    ],
+                    "diagram_dot_code": "digraph { \"Run K-Means (K=1 to N)\" -> \"Calculate WCSS for each K\" -> \"Plot WCSS vs. K\" -> \"Identify 'Elbow' Point\" -> \"Select Optimal K\"; }",
+                    "image_hint": "A line graph where the Y-axis is 'WCSS' and the X-axis is 'Number of Clusters (K)'. The line should show a sharp drop that then flattens out, with the 'bend' or 'elbow' clearly circled."
+                },
+                {
+                    "id": "ch1_tp6",
+                    "title": "K-Means Example Walkthrough",
+                    "summary": "Let's trace a simple example. Starting with 8 data points and initial centroids at A1, A4, and A7. After the first assignment and update, we get new clusters and centroids. We repeat the process. By the third iteration (epoch), the clusters become {A1, A4, A8}, {A3, A5, A6}, and {A2, A7}. This demonstrates how points can switch clusters and centroids shift towards the center of their members.",
+                    "key_points": [
+                        "Initial seeds (centroids) were A1=(2,10), A4=(5,8), A7=(1,2).",
+                        "After the 2nd epoch, the clusters are {A1, A8}, {A3, A4, A5, A6}, {A2, A7}.",
+                        "After the 3rd epoch, A4 moves, and the clusters become {A1, A4, A8}, {A3, A5, A6}, {A2, A7}.",
+                        "This iterative refinement continues until the cluster memberships stabilize."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "In the example, which point switched clusters between the 2nd and 3rd epoch?",
+                            "answer": "Point A4, which moved from the second cluster to the first."
+                        },
+                        {
+                            "question": "How is the center of a new cluster, like C1=(3, 9.5), calculated?",
+                            "answer": "It's the mean of the coordinates of its member points. For cluster {A1, A8} with A1=(2,10) and A8=(4,9), the center is ((2+4)/2, (10+9)/2) = (3, 9.5)."
+                        }
+                    ],
+                    "image_hint": "A scatter plot of the 8 data points. Use color-coding to show the changing cluster assignments between the 2nd and 3rd epochs."
+                },
+                {
+                    "id": "ch1_tp7",
+                    "title": "Advantages of K-Means",
+                    "summary": "K-Means is widely used due to several key advantages. It is straightforward to understand and implement, and it is computationally efficient, making it faster than many other methods, especially on large datasets. Its iterative nature allows data points to switch clusters, leading to a more refined solution over time.",
+                    "key_points": [
+                        "Simplicity: It is very easy to understand and implement.",
+                        "Speed: Generally faster than hierarchical clustering on large datasets.",
+                        "Flexibility: An instance can change its cluster assignment as the algorithm progresses.",
+                        "Cluster Shape: Tends to produce tighter, more compact clusters."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "What is a major advantage of K-Means when working with a very large number of variables or data points?",
+                            "answer": "Its computational speed and efficiency compared to methods like hierarchical clustering."
+                        },
+                        {
+                            "question": "What does it mean that K-Means can form 'tighter clusters'?",
+                            "answer": "It means the data points within its clusters are, on average, closer to their centroid, indicating low intra-cluster variance."
+                        }
+                    ],
+                    "image_hint": "An icon representing speed (like a stopwatch) next to an icon representing simplicity (like a set of 1-2-3 building blocks)."
+                },
+                {
+                    "id": "ch1_tp8",
+                    "title": "Disadvantages of K-Means",
+                    "summary": "Despite its strengths, K-Means has notable limitations. The algorithm's output is highly sensitive to the initial, user-defined number of clusters 'k' and the initial placement of centroids. Furthermore, the order of the input data can affect the final result, and it is very sensitive to the scale of the data, often requiring normalization or standardization as a preprocessing step.",
+                    "key_points": [
+                        "Dependency on 'k': The number of clusters must be chosen beforehand.",
+                        "Sensitivity to Initialization: The final output is strongly impacted by the initial placement of centroids.",
+                        "Impact of Data Order: The sequence of data points can influence the final clusters.",
+                        "Sensitivity to Scaling: The algorithm is sensitive to feature scale; rescaling data (e.g., normalization) can completely change the result."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "Why is it often necessary to standardize your data before applying K-Means?",
+                            "answer": "Because the algorithm is based on distance, features with larger scales can disproportionately influence the clustering. Standardization gives all features equal weight."
+                        },
+                        {
+                            "question": "Name two factors that can cause K-Means to produce different results on the same dataset.",
+                            "answer": "The initial number of clusters (k) and the random initial placement of centroids."
+                        }
+                    ],
+                    "image_hint": "A diagram showing the same set of data points clustered in two very different ways, with the caption 'Different initial centroids can lead to different results'."
+                },
+                {
+                    "id": "ch1_tp9",
+                    "title": "Real-World Applications of K-Means",
+                    "summary": "K-Means is applied across numerous fields to discover patterns and segment data. In business, it's used for market and customer segmentation. In information retrieval, it helps in document clustering. In computer vision, it's used for image segmentation to separate objects from the background.",
+                    "key_points": [
+                        "Market Segmentation: Grouping customers based on purchasing behavior or demographics.",
+                        "Document Clustering: Organizing text documents into topics.",
+                        "Image Segmentation: Partitioning a digital image into multiple segments (sets of pixels).",
+                        "Trend Analysis: Analyzing trends on dynamic data by grouping similar events or time periods."
+                    ],
+                    "quiz_questions": [
+                        {
+                            "question": "How could a streaming service use K-Means to improve user experience?",
+                            "answer": "By clustering users based on their viewing habits (e.g., 'binge-watchers', 'weekend viewers', 'sci-fi fans') to provide more personalized recommendations."
+                        },
+                        {
+                            "question": "In image segmentation, what do the 'data points' and 'clusters' typically represent?",
+                            "answer": "The data points are the individual pixels, and the clusters represent distinct regions or objects in the image based on color and texture."
+                        }
+                    ],
+                    "image_hint": "A collage of four images: a shopping cart (market segmentation), a newspaper (document clustering), a photo of a landscape divided into regions (image segmentation), and a line graph (trend analysis)."
                 }
             ]
         },
         {
             "id": "ch2",
-            "title": "The K-NN Algorithm: A Step-by-Step Guide",
-            "description": "A detailed breakdown of the sequential steps involved in the K-NN algorithm, from selecting the value of K to making a final classification based on neighbor voting.",
+            "title": "The Apriori Algorithm",
+            "description": "Exploring the Apriori algorithm for association rule mining, used to discover frequent itemsets and relationships in transactional data.",
             "topics": [
                 {
                     "id": "ch2_tp1",
-                    "title": "Step 1: Select the Number of Neighbors (K)",
-                    "summary": "The first and most critical step in the K-NN algorithm is choosing the value of 'K', which represents the number of nearest neighbors the algorithm will consider when making a prediction. This is a user-defined hyperparameter that significantly impacts the model's performance.",
+                    "title": "Foundations: Itemsets and Association",
+                    "summary": "The Apriori algorithm operates on the concept of 'itemsets'. An itemset is simply a collection of one or more items in a transactional dataset. The goal of 'frequent itemset mining' is to identify which of these combinations occur together often. For example, in a supermarket dataset, {Bread, Butter} is an itemset that is likely to be frequent.",
                     "key_points": [
-                        "K is the number of neighbors to be included in the decision-making process.",
-                        "The value of K is selected by the user.",
-                        "The choice of K affects the model's bias-variance tradeoff.",
-                        "A common starting point for K is 5."
+                        "An itemset is a set of one or more items.",
+                        "A 'k-itemset' is an itemset containing k items.",
+                        "A frequent itemset is one that appears more often than a specified minimum threshold.",
+                        "This technique is the foundation for market basket analysis."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "Who determines the value of 'K' in the K-NN algorithm?",
-                            "options": [
-                                "The algorithm automatically calculates it.",
-                                "The user specifies it.",
-                                "It is always set to the number of classes."
-                            ],
-                            "answer": "The user specifies it."
+                            "question": "If a transaction is {Milk, Bread, Eggs}, what are some of the 2-itemsets it contains?",
+                            "answer": "{Milk, Bread}, {Milk, Eggs}, and {Bread, Eggs}."
+                        },
+                        {
+                            "question": "What is the difference between an itemset and a frequent itemset?",
+                            "answer": "An itemset is any combination of items, while a frequent itemset is an itemset that meets a minimum support threshold, meaning it appears frequently in the data."
                         }
                     ],
-                    "image_hint": "A number 5 highlighted inside a circle"
+                    "image_hint": "A simple graphic showing individual items like 'Milk', 'Bread', and 'Eggs', with braces around them to form itemsets like '{Milk, Bread}'."
                 },
                 {
                     "id": "ch2_tp2",
-                    "title": "Step 2: Calculate Distances",
-                    "summary": "Once K is chosen, the next step is to calculate the distance between the new, unclassified data point and every single data point in the training set. The most commonly used distance metric for this is the Euclidean distance, which is the straight-line distance between two points in a multi-dimensional space.",
+                    "title": "Measuring Frequency: Support",
+                    "summary": "To determine if an itemset is 'frequent', we use a metric called 'Support'. Support is simply the fraction of total transactions in the dataset that contain that specific itemset. The Apriori algorithm uses a 'minimum support' threshold to filter out itemsets that are not interesting or common enough to consider.",
                     "key_points": [
-                        "Calculate the distance from the new point to all training points.",
-                        "Euclidean distance is a popular choice for this calculation.",
-                        "The formula for Euclidean distance is derived from the Pythagorean theorem.",
-                        "Other distance metrics like Manhattan or Minkowski can also be used."
+                        "Support measures how frequently an itemset appears in the dataset.",
+                        "It is calculated as (Transactions containing the itemset) / (Total transactions).",
+                        "A 'minimum support' value is set as a threshold.",
+                        "Itemsets with support below this threshold are considered infrequent and are discarded."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "What is the most common distance metric used in K-NN?",
-                            "options": [
-                                "Manhattan Distance",
-                                "Cosine Similarity",
-                                "Euclidean Distance"
-                            ],
-                            "answer": "Euclidean Distance"
+                            "question": "If {Bread, Butter} appears in 50 out of 500 transactions, what is its support?",
+                            "answer": "The support is 50/500 = 0.1 or 10%."
+                        },
+                        {
+                            "question": "What happens to an itemset if its support is lower than the minimum support threshold?",
+                            "answer": "It is pruned or discarded and is not used to generate larger candidate itemsets."
                         }
                     ],
-                    "image_hint": "Geometric diagram showing Euclidean distance formula"
+                    "image_hint": "A formula on screen: Support(X) = (Number of transactions with X) / (Total Transactions), with icons for shopping carts."
                 },
                 {
                     "id": "ch2_tp3",
-                    "title": "Steps 3-5: Find Neighbors and Make a Prediction",
-                    "summary": "After calculating all the distances, you sort them in ascending order and select the top 'K' data points with the minimum distances. Then, you count the number of data points belonging to each category among these 'K' neighbors. The new data point is assigned to the category with the highest count (majority vote).",
+                    "title": "The Apriori Principle: Efficient Pruning",
+                    "summary": "The core of the Apriori algorithm's efficiency lies in the 'Apriori Principle'. This principle states that if an itemset is frequent, then all of its subsets must also be frequent. Conversely, and more importantly, if an itemset is infrequent, then all of its supersets must also be infrequent. This allows the algorithm to avoid checking countless combinations, dramatically reducing the search space.",
                     "key_points": [
-                        "Sort all data points by their calculated distance to the new point.",
-                        "Select the top 'K' entries from the sorted list.",
-                        "Count the occurrences of each class within this selection.",
-                        "Assign the class with the highest frequency (majority vote) to the new data point."
+                        "Core concept: All subsets of a frequent itemset must also be frequent.",
+                        "This allows for aggressive pruning of candidate itemsets.",
+                        "If {A, B} is found to be infrequent, there is no need to check {A, B, C} or {A, B, D}.",
+                        "This makes finding frequent itemsets in large datasets computationally feasible."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "How does K-NN make a final classification decision for a new point?",
-                            "options": [
-                                "By averaging the features of its neighbors.",
-                                "By a majority vote of its K-nearest neighbors.",
-                                "By finding the single closest neighbor."
-                            ],
-                            "answer": "By a majority vote of its K-nearest neighbors."
-                        }
-                    ],
-                    "image_hint": "A new data point surrounded by 3 blue points and 2 red points"
-                }
-            ]
-        },
-        {
-            "id": "ch3",
-            "title": "K-NN in Practice: Examples and Calculations",
-            "description": "Applying the K-NN algorithm to practical examples. This chapter provides worked-through illustrations for classifying paper quality and predicting credit default, showing how the steps come together to produce a result.",
-            "topics": [
-                {
-                    "id": "ch3_tp1",
-                    "title": "Illustration: Simple Classification",
-                    "summary": "Let's visualize the process. Imagine a new data point on a graph. With K=5, we find its five closest neighbors. If three of them belong to 'Category A' and two belong to 'Category B', the new point is classified as 'Category A' because it represents the majority.",
-                    "key_points": [
-                        "Choose a value for K (e.g., K=5).",
-                        "Calculate Euclidean distance to all existing points.",
-                        "Identify the 5 closest points.",
-                        "Assign the new point to the majority category of its neighbors."
-                    ],
-                    "quiz_questions": [
+                            "question": "If you know that the itemset {Diapers} is infrequent, what does the Apriori principle tell you about the itemset {Diapers, Beer}?",
+                            "answer": "The itemset {Diapers, Beer} must also be infrequent, so we don't need to waste time calculating its support."
+                        },
                         {
-                            "question": "If K=3 and the nearest neighbors are 'Good', 'Bad', 'Good', what is the prediction?",
-                            "options": [
-                                "Good",
-                                "Bad",
-                                "Undetermined"
-                            ],
-                            "answer": "Good"
+                            "question": "How does this principle improve the algorithm's performance?",
+                            "answer": "It significantly reduces the number of candidate itemsets that need to be checked for support, saving time and memory."
                         }
                     ],
-                    "image_hint": "Chart with a new point being classified by its 5 neighbors"
+                    "diagram_dot_code": "digraph { rankdir=TB; \"{A}\", \"{B}\", \"{C}\"; \"{A,B}\", \"{A,C}\" [style=dotted]; \"{B,C}\"; \"{A,B,C}\" [style=dotted]; {rank=same; \"{A}\", \"{B}\", \"{C}\"}; {rank=same; \"{A,B}\", \"{A,C}\", \"{B,C}\"}; \"{A}\" -> \"{A,B}\"; \"{B}\" -> \"{A,B}\"; \"{A}\" -> \"{A,C}\"; \"{C}\" -> \"{A,C}\"; \"{B}\" -> \"{B,C}\"; \"{C}\" -> \"{B,C}\"; \"{A,B}\" -> \"{A,B,C}\"; \"{A,C}\" -> \"{A,B,C}\"; \"{B,C}\" -> \"{A,B,C}\"; label=\"If {A,C} is infrequent, \\nprune {A,B,C}\"; labelloc=top; }",
+                    "image_hint": "A tree-like diagram showing how the algorithm generates 2-itemsets from frequent 1-itemsets. Show one 2-itemset being crossed out (as infrequent), which then prevents a 3-itemset below it from being generated."
                 },
                 {
-                    "id": "ch3_tp2",
-                    "title": "Worked Example: Paper Quality Classification",
-                    "summary": "Consider a dataset where paper tissue is classified as 'GOOD' or 'BAD' based on acid durability and strength. To classify a new tissue sample P5(3,7) with K=3, we calculate its distance to existing points P1, P2, P3, and P4. By sorting these distances, we find the three nearest neighbors and use their majority class to classify P5.",
+                    "id": "ch2_tp4",
+                    "title": "The Apriori Algorithm Process",
+                    "summary": "The Apriori algorithm works in a level-wise fashion. First, it scans the database to find all frequent 1-itemsets. Then, using this set, it generates candidate 2-itemsets. It scans the database again to count their support and find the frequent 2-itemsets. This process of 'generate and prune' continues, creating larger and larger frequent itemsets until no more can be found.",
                     "key_points": [
-                        "The goal is to classify a new point P5(3,7) as 'GOOD' or 'BAD'.",
-                        "Set K=3.",
-                        "Calculate the Euclidean distance from P5 to P1, P2, P3, and P4.",
-                        "Identify the 3 points with the smallest distances and determine their majority class."
+                        "A 'bottom-up' or level-wise approach.",
+                        "Starts by finding frequent items of size 1 (L1).",
+                        "Uses frequent itemsets of size k-1 (Lk-1) to generate candidates of size k (Ck).",
+                        "Scans the database at each level to count support for candidates and determine Lk."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "In the paper quality example, what are the features used for classification?",
-                            "options": [
-                                "Paper Type and Color",
-                                "Acid Durability and Strength",
-                                "Price and Weight"
-                            ],
-                            "answer": "Acid Durability and Strength"
+                            "question": "What is the very first step of the Apriori algorithm?",
+                            "answer": "To scan the database and calculate the support for all individual items (1-itemsets) to find the frequent 1-itemsets (L1)."
+                        },
+                        {
+                            "question": "How are candidate 3-itemsets generated?",
+                            "answer": "They are generated by joining frequent 2-itemsets (L2) that share a common item."
                         }
                     ],
-                    "image_hint": "A table showing data points for paper quality"
+                    "diagram_dot_code": "digraph { \"Scan DB for Frequent 1-itemsets (L1)\" -> \"Generate Candidate 2-itemsets (C2)\" -> \"Scan DB to find Frequent 2-itemsets (L2)\" -> \"Generate Candidate 3-itemsets (C3)\" -> \"...and so on\"; }",
+                    "image_hint": "A flowchart showing the progression: L1 -> C2 -> L2 -> C3 -> L3."
                 },
                 {
-                    "id": "ch3_tp3",
-                    "title": "Worked Example: Credit Default Prediction",
-                    "summary": "K-NN can be used to predict credit default based on features like 'Age' and 'Loan' amount. For a new case (Age=48, Loan=$142,000), we find its nearest neighbors in the training data. If K=3 and two of the three closest neighbors defaulted, the prediction for the new case would be 'Default=Y'.",
+                    "id": "ch2_tp5",
+                    "title": "Advantages of the Apriori Algorithm",
+                    "summary": "The main strengths of the Apriori algorithm are its simplicity and completeness. It is relatively easy to understand and implement compared to more complex algorithms. Because it explores the itemset lattice systematically, it is guaranteed to find all frequent itemsets in a dataset.",
                     "key_points": [
-                        "Features: Age and Loan amount.",
-                        "Target: Default (Y/N).",
-                        "Using K=1, the prediction is based on the single closest neighbor.",
-                        "Using K=3, the prediction is based on the majority vote of the three closest neighbors."
+                        "Easy to understand and implement.",
+                        "Can be used to mine large itemsets effectively.",
+                        "It is a complete algorithm, meaning it will always find all frequent itemsets.",
+                        "The pruning step makes it more efficient than a brute-force approach."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "If K=3 and the neighbors are Default=Y, Default=Y, Default=N, what is the prediction?",
-                            "options": [
-                                "Default=Y",
-                                "Default=N",
-                                "Cannot be determined"
-                            ],
-                            "answer": "Default=Y"
-                        }
-                    ],
-                    "image_hint": "A spreadsheet with columns for Age, Loan, and Default"
-                }
-            ]
-        },
-        {
-            "id": "ch4",
-            "title": "Practical Considerations and Applications",
-            "description": "Exploring the nuances of implementing K-NN, including how to select the K value, the importance of data scaling, the pros and cons of the algorithm, and its diverse real-world applications.",
-            "topics": [
-                {
-                    "id": "ch4_tp1",
-                    "title": "How to Select the Value of K",
-                    "summary": "There is no single best way to determine the value of K; it often requires experimentation. A very low K (like 1 or 2) can make the model susceptible to noise and outliers. A very large K can be computationally expensive and may oversmooth the decision boundary. The most preferred value to start with is often K=5.",
-                    "key_points": [
-                        "There's no definitive rule for choosing K.",
-                        "Low values of K can lead to high variance (overfitting).",
-                        "High values of K can lead to high bias (underfitting).",
-                        "Experimentation and techniques like cross-validation are used to find an optimal K."
-                    ],
-                    "quiz_questions": [
+                            "question": "What is the main conceptual advantage of Apriori?",
+                            "answer": "Its simplicity and ease of understanding."
+                        },
                         {
-                            "question": "A very low value for K, such as K=1, can lead to what issue?",
-                            "options": [
-                                "High bias",
-                                "Effects of outliers and noise",
-                                "High computational cost"
-                            ],
-                            "answer": "Effects of outliers and noise"
+                            "question": "What does it mean for Apriori to be a 'complete' algorithm?",
+                            "answer": "It means that if a frequent itemset exists, Apriori is guaranteed to find it; it won't miss any."
                         }
                     ],
-                    "image_hint": "A graph showing different decision boundaries for k=1 and k=15"
+                    "image_hint": "A checkmark icon next to the words 'Simple' and 'Complete'."
                 },
                 {
-                    "id": "ch4_tp2",
-                    "title": "The Challenge of Data Scaling",
-                    "summary": "A major drawback of K-NN arises when features have different measurement scales (e.g., age in years and loan in thousands of dollars). Features with larger ranges can dominate the distance calculation. To prevent this, data should be standardized or normalized so that all variables contribute equally to the distance metric.",
+                    "id": "ch2_tp6",
+                    "title": "Disadvantages of the Apriori Algorithm",
+                    "summary": "The primary drawback of Apriori is its performance cost. It requires multiple full scans of the database, one for each level of itemsets, which can be very slow for large datasets. Additionally, if the minimum support is low or the data is dense, it can generate a massive number of candidate itemsets, consuming significant memory and CPU time.",
                     "key_points": [
-                        "Features on different scales can skew distance calculations.",
-                        "Variables with larger ranges can have an undue influence on the result.",
-                        "Standardization (e.g., Z-score normalization) is a common solution.",
-                        "Failing to scale data can lead to poor model robustness and performance."
+                        "Requires multiple database scans, which is computationally expensive.",
+                        "Can generate a huge number of candidate rules, demanding a lot of memory.",
+                        "Performance can be poor on large datasets, especially with low support thresholds.",
+                        "The 'generate and test' approach can be inefficient."
                     ],
                     "quiz_questions": [
                         {
-                            "question": "Why is it important to standardize variables before using K-NN?",
-                            "options": [
-                                "To make the algorithm run faster.",
-                                "To prevent variables with larger scales from dominating the distance metric.",
-                                "To convert categorical variables to numerical ones."
-                            ],
-                            "answer": "To prevent variables with larger scales from dominating the distance metric."
-                        }
-                    ],
-                    "image_hint": "A before-and-after chart showing data scaling"
-                },
-                {
-                    "id": "ch4_tp3",
-                    "title": "Advantages of K-NN",
-                    "summary": "The K-NN algorithm is popular due to its simplicity and effectiveness. It is very easy to implement and understand. It is robust to noisy training data and can be highly effective, especially when the training dataset is large and representative of the underlying data distribution.",
-                    "key_points": [
-                        "Simple to implement and interpret.",
-                        "Robust to noisy data.",
-                        "Effective with large training datasets.",
-                        "No training period is required as it's a lazy learner."
-                    ],
-                    "quiz_questions": [
+                            "question": "What is the main performance bottleneck of the Apriori algorithm?",
+                            "answer": "The need to perform multiple full scans of the database, one for each itemset size k."
+                        },
                         {
-                            "question": "Which of the following is a key advantage of the K-NN algorithm?",
-                            "options": [
-                                "Low memory usage",
-                                "Fast prediction time",
-                                "Simplicity of implementation"
-                            ],
-                            "answer": "Simplicity of implementation"
+                            "question": "In what scenario would Apriori struggle the most?",
+                            "answer": "On a very large dataset with many unique items and a low minimum support threshold, as this would lead to a combinatorial explosion of candidate itemsets."
                         }
                     ],
-                    "image_hint": "A green checkmark or a thumbs-up icon"
-                },
-                {
-                    "id": "ch4_tp4",
-                    "title": "Disadvantages of K-NN",
-                    "summary": "Despite its advantages, K-NN has significant drawbacks. The need to determine the optimal value of K can be complex. More importantly, the computational cost is very high during the prediction phase because it needs to calculate the distance to every single training point for each new prediction. It also requires a large amount of memory to store the entire dataset.",
-                    "key_points": [
-                        "Determining the optimal value of K can be challenging.",
-                        "High computational cost, especially for large datasets (slow predictions).",
-                        "Requires high memory to store the entire training set.",
-                        "Sensitive to irrelevant features and the curse of dimensionality."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "What is the main reason for the high computational cost of K-NN?",
-                            "options": [
-                                "The complex training phase.",
-                                "Calculating the distance to all training samples for each prediction.",
-                                "The need to choose K."
-                            ],
-                            "answer": "Calculating the distance to all training samples for each prediction."
-                        }
-                    ],
-                    "image_hint": "A red 'X' or a thumbs-down icon"
-                },
-                {
-                    "id": "ch4_tp5",
-                    "title": "Real-World Applications of K-NN",
-                    "summary": "K-NN is used across various domains. In banking, it can predict loan approvals by comparing applicants to past defaulters. It's used for calculating credit ratings, classifying voters in politics, and in technical fields like handwriting detection, image recognition, and speech recognition where pattern similarity is key.",
-                    "key_points": [
-                        "Banking System: Predicting loan eligibility and credit ratings.",
-                        "Politics: Classifying potential voters.",
-                        "Recommendation Systems: Suggesting products based on similar users.",
-                        "Pattern Recognition: Used in handwriting, speech, and image recognition."
-                    ],
-                    "quiz_questions": [
-                        {
-                            "question": "Which of the following is a suitable application for K-NN?",
-                            "options": [
-                                "Forecasting stock market prices for the next 5 years.",
-                                "Classifying a potential voter into 'Will Vote' or 'Will not Vote'.",
-                                "Training a deep neural network."
-                            ],
-                            "answer": "Classifying a potential voter into 'Will Vote' or 'Will not Vote'."
-                        }
-                    ],
-                    "image_hint": "A collage of icons representing banking, voting, and image recognition"
+                    "image_hint": "An icon of a database with multiple arrows pointing out of it, representing repeated scans, next to an icon of a computer with a loading symbol."
                 }
             ]
         }
@@ -350,8 +354,8 @@
     "design": {},
     "media": [],
     "output_path": null,
-    "input_pdf_path": "temp_uploads\\ML_ppt_3_KNN_classifier.pdf",
-    "theme_file": "dark_mode.pptx",
+    "input_pdf_path": "temp_uploads\\ML_ppt_9_K-MEANS CLUSTERING.pdf",
+    "theme_file": "minimalist.pptx",
     "tone": "Intermediate",
     "slide_count": 15
 }
