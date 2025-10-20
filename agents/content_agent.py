@@ -1,14 +1,14 @@
 # agents/content_agent.py
-# ContentAgent updated to request speaker notes from the AI.
+# ContentAgent updated with layout-aware PDF text extraction.
 
 from .base_agent import BaseAgent
-import fitz
+import fitz # PyMuPDF
 import google.generativeai as genai
 from dotenv import load_dotenv
 import os
 import json
 
-# --- Function to split text into chunks (remains the same) ---
+# Function to split text into chunks (remains the same)
 def chunk_text(text: str, chunk_size: int = 10000, overlap: int = 500) -> list[str]:
     chunks = []
     start = 0
@@ -22,8 +22,8 @@ def chunk_text(text: str, chunk_size: int = 10000, overlap: int = 500) -> list[s
 
 class ContentAgent(BaseAgent):
     """
-    Reads text from a PDF, chunks it, uses the Gemini API (requesting speaker notes),
-    and combines the results to structure the content.
+    Uses layout-aware text extraction and the Gemini API (with speaker notes)
+    to structure content.
     """
     def __init__(self, name, state_manager, config=None):
         super().__init__(name, state_manager)
@@ -37,32 +37,42 @@ class ContentAgent(BaseAgent):
         self.chunk_size = 12000
         self.overlap = 500
 
+    # --- UPDATED TEXT EXTRACTION METHOD ---
     def _extract_text_from_pdf(self, pdf_path: str) -> str:
-        # ... (This function remains unchanged)
+        """Extracts text content from a PDF, attempting to preserve layout."""
         if not os.path.exists(pdf_path):
             self.log(f"ERROR: PDF file not found at {pdf_path}")
             return ""
         try:
             doc = fitz.open(pdf_path)
-            text = ""
-            for page in doc:
-                text += page.get_text()
+            full_text = ""
+            for page_num, page in enumerate(doc):
+                # Use get_text("blocks") which includes positional info, then sort roughly by reading order
+                blocks = page.get_text("blocks")
+                # Sort blocks primarily by vertical position, then horizontal
+                blocks.sort(key=lambda b: (b[1], b[0])) 
+                
+                page_text = ""
+                for b in blocks:
+                    # b[4] contains the text block content
+                    page_text += b[4] 
+                
+                # Add page separators for context (optional, but can help AI)
+                full_text += f"\n--- Page {page_num + 1} ---\n" + page_text
+
             doc.close()
-            self.log(f"Extracted {len(text)} characters from {pdf_path}")
-            return text
+            self.log(f"Extracted {len(full_text)} characters (layout-aware) from {pdf_path}")
+            return full_text
         except Exception as e:
             self.log(f"ERROR: Failed to extract text from PDF. Details: {e}")
             return ""
+    # ------------------------------------
 
     def _get_structured_content_from_llm(self, text_chunk: str, tone: str, slide_count: int) -> dict:
-        """Sends a text chunk to the Gemini API, now requesting speaker notes."""
+        # ... (This function remains unchanged from the speaker notes version)
         if not text_chunk: return {}
-
         self.log(f"Sending chunk (length: {len(text_chunk)}) to Gemini API...")
-
         model = genai.GenerativeModel('models/gemini-2.5-pro')
-
-        # --- UPDATED PROMPT ---
         prompt = f"""
         You are an expert educational content designer. Analyze the following text chunk from a syllabus and convert it into a structured JSON format for a presentation. Your output must be ONLY a well-formed JSON object.
 
@@ -70,71 +80,53 @@ class ContentAgent(BaseAgent):
         1.  **Audience Tone**: Tailor for a '{tone}' audience.
         2.  **Output Format**: ONLY JSON with a top-level "chapters" key (list of chapter objects).
         3.  Each chapter: "id", "title", "description", "topics" list.
-        4.  Each topic: "id", "title", "summary", "key_points", "quiz_questions", "image_hint".
-        5.  **Speaker Notes**: For each topic, add a "speaker_notes" field containing a detailed script (2-4 sentences) that a presenter could read or use for talking points related to the slide's content.
-        6.  **Diagrams**: If a topic describes a clear process/flow, include a "diagram_dot_code" field with simple Graphviz DOT code. Omit otherwise.
+        4.  Each topic: "id", "title", "summary", "key_points", "quiz_questions", "image_hint", "speaker_notes".
+        5.  **Speaker Notes**: For each topic, add detailed script (2-4 sentences).
+        6.  **Diagrams**: If a topic describes a clear process/flow, include "diagram_dot_code" field with simple Graphviz DOT code. Omit otherwise.
 
-        Here is the text chunk:
+        Here is the text chunk (potentially including page markers):
         ---
         {text_chunk}
         ---
         """
-
         try:
             response = model.generate_content(prompt)
-            if not response.parts:
-                self.log("WARNING: Gemini API returned an empty response for this chunk.")
-                return {}
+            if not response.parts: return {}
             response_text = response.text.strip().lstrip('```json').rstrip('```')
-            if not response_text:
-                 self.log("WARNING: Gemini API returned empty text after stripping.")
-                 return {}
+            if not response_text: return {}
             structured_data = json.loads(response_text)
             self.log("Successfully received and parsed structured content for chunk.")
             return structured_data
         except json.JSONDecodeError as e:
-            self.log(f"ERROR: Failed to parse JSON from Gemini API response for chunk. Details: {e}")
-            self.log(f"Raw response text: {response_text[:500]}...")
+            self.log(f"ERROR: Failed to parse JSON from chunk. Details: {e}\nRaw text: {response_text[:500]}...")
             return {}
         except Exception as e:
-            self.log(f"ERROR: Failed to get structured content from Gemini API for chunk. Details: {e}")
+            self.log(f"ERROR: Failed to get structured content for chunk. Details: {e}")
             return {}
 
     def run(self):
+        # ... (This function remains unchanged from the speaker notes version)
         self.log("Starting real content extraction with chunking...")
         pdf_path = self.sm.get("input_pdf_path")
         tone = self.sm.get("tone") or "Beginner"
         slide_count = self.sm.get("slide_count") or 10
-
-        if not pdf_path:
-            self.log("ERROR: No input_pdf_path found. Aborting.")
-            return
-
+        if not pdf_path: self.log("ERROR: No input_pdf_path found."); return
         full_text = self._extract_text_from_pdf(pdf_path)
         if not full_text: return
-
         text_chunks = chunk_text(full_text, chunk_size=self.chunk_size, overlap=self.overlap)
         self.log(f"Split text into {len(text_chunks)} chunks.")
-
         all_chapters = []
         for i, chunk in enumerate(text_chunks):
             self.log(f"Processing chunk {i+1}/{len(text_chunks)}...")
             structured_content = self._get_structured_content_from_llm(chunk, tone, slide_count)
-            
             if structured_content and "chapters" in structured_content:
                 all_chapters.extend(structured_content["chapters"])
-            else:
-                self.log(f"No valid 'chapters' structure returned for chunk {i+1}.")
-
+            else: self.log(f"No valid 'chapters' structure returned for chunk {i+1}.")
         if all_chapters:
             self.update_state("chapters", all_chapters)
-            self.log(f"Content processed from all chunks. Found {len(all_chapters)} chapters in total.")
+            self.log(f"Content processed. Found {len(all_chapters)} chapters total.")
             self.sm.save("shared_state_after_content.json")
-        else:
-            self.log("ERROR: No chapters were successfully processed from any chunk.")
-
-
-
+        else: self.log("ERROR: No chapters processed from any chunk.")
 
 
 
