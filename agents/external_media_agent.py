@@ -1,5 +1,5 @@
 # agents/external_media_agent.py
-# MediaAgent can now generate Mind Maps, Charts, Diagrams, or fetch photos.
+# MediaAgent can now generate REAL charts from data, diagrams, mind maps, or fetch photos.
 
 from .base_agent import BaseAgent
 from dotenv import load_dotenv
@@ -15,7 +15,7 @@ class ExternalMediaAgent(BaseAgent):
     """
     Chooses the best visual for a slide, prioritizing:
     1. Generates a Mind Map from DOT code.
-    2. Generates a placeholder chart from AI suggestion.
+    2. Generates a real chart from provided data.
     3. Generates a diagram from DOT code.
     4. Fetches a stock photo from Pexels.
     """
@@ -29,94 +29,100 @@ class ExternalMediaAgent(BaseAgent):
         sns.set_theme(style="whitegrid")
 
     def _generate_mind_map_from_dot(self, dot_code: str, slide_id: str) -> str | None:
-        """Renders Graphviz DOT code into a PNG image suitable for a mind map."""
+        # ... (This function remains unchanged)
         self.log(f"Attempting to generate mind map for slide {slide_id}...")
         try:
-            # Use 'neato' or 'fdp' layout engines which are often better for mind maps
-            # Wrap dot_code in graph {} if it's not already
-            if not dot_code.strip().lower().startswith("graph"):
-                 dot_code = f"graph G {{ layout=neato; overlap=scale; {dot_code} }}"
+            if not dot_code.strip().lower().startswith("graph"): dot_code = f"graph G {{ layout=neato; overlap=scale; {dot_code} }}"
             else:
-                 # Inject layout engine if graph {} exists but no layout specified
-                 if 'layout=' not in dot_code:
-                      dot_code = dot_code.replace('{', '{ layout=neato; overlap=scale; ', 1)
-
-
+                 if 'layout=' not in dot_code: dot_code = dot_code.replace('{', '{ layout=neato; overlap=scale; ', 1)
             source = graphviz.Source(dot_code)
-            output_path = os.path.join(self.assets_dir, f"{slide_id}_mindmap") # Distinct name
+            output_path = os.path.join(self.assets_dir, f"{slide_id}_mindmap")
             rendered_path = source.render(output_path, format='png', cleanup=True)
-            self.log(f"Mind map saved successfully to {rendered_path}")
-            return rendered_path
-        except graphviz.backend.execute.CalledProcessError as e:
-            self.log(f"ERROR: Graphviz execution failed for mind map. Is Graphviz installed/PATH ok? Error: {e}")
-            return None
-        except Exception as e:
-            self.log(f"ERROR: Failed to generate mind map. Details: {e}")
-            return None
+            self.log(f"Mind map saved successfully to {rendered_path}"); return rendered_path
+        except graphviz.backend.execute.CalledProcessError as e: self.log(f"ERROR: Graphviz failed for mind map. {e}"); return None
+        except Exception as e: self.log(f"ERROR: Failed to generate mind map. {e}"); return None
 
-    def _generate_placeholder_chart(self, suggestion: dict, slide_id: str) -> str | None:
-        # ... (This function remains unchanged)
+    # --- UPDATED: Generates chart from actual data provided by AI ---
+    def _generate_real_chart(self, suggestion: dict, data: dict, slide_id: str) -> str | None:
+        """Generates a chart image based on AI suggestion AND extracted data."""
         chart_type = suggestion.get("type", "bar")
-        title = suggestion.get("title", "Placeholder Chart")
-        self.log(f"Generating placeholder '{chart_type}' chart for slide {slide_id}: '{title}'")
-        try:
-            plt.figure(figsize=(8, 4))
-            if chart_type == "bar":
-                categories = ['Category A', 'Category B', 'Category C', 'Category D']
-                values = np.random.randint(20, 100, size=len(categories))
-                sns.barplot(x=categories, y=values, palette="viridis")
-            elif chart_type == "line":
-                x_values = np.arange(1, 11); y_values = np.random.rand(10) * 50 + 50
-                sns.lineplot(x=x_values, y=y_values, marker='o'); plt.xlabel("Time/Sequence"); plt.ylabel("Value")
-            else:
-                categories = ['Cat A', 'Cat B', 'Cat C']; values = np.random.randint(20, 100, size=len(categories))
-                sns.barplot(x=categories, y=values)
-            plt.title(title); plt.tight_layout()
-            output_path = os.path.join(self.assets_dir, f"{slide_id}_chart.png")
-            plt.savefig(output_path); plt.close()
-            self.log(f"Placeholder chart saved successfully to {output_path}")
-            return output_path
-        except Exception as e:
-            self.log(f"ERROR: Failed to generate placeholder chart. Details: {e}"); plt.close(); return None
+        title = suggestion.get("title", "Chart")
+        labels = data.get("labels")
+        values = data.get("values")
 
+        # Basic validation
+        if not labels or not values or len(labels) != len(values):
+            self.log(f"ERROR: Invalid or mismatched chart data for slide {slide_id}. Labels: {labels}, Values: {values}")
+            return None
+        # Ensure values are numeric
+        try:
+             numeric_values = [float(v) for v in values]
+        except (ValueError, TypeError):
+             self.log(f"ERROR: Chart values are not numeric for slide {slide_id}. Values: {values}")
+             return None
+
+        self.log(f"Generating '{chart_type}' chart for slide {slide_id}: '{title}' using provided data.")
+
+        try:
+            plt.figure(figsize=(8, 4.5)) # Adjusted size slightly
+
+            if chart_type == "bar":
+                sns.barplot(x=labels, y=numeric_values, palette="viridis")
+                plt.xticks(rotation=45, ha='right') # Rotate labels if they overlap
+            elif chart_type == "line":
+                sns.lineplot(x=labels, y=numeric_values, marker='o')
+                plt.xticks(rotation=45, ha='right')
+                # Assuming labels might be time/sequence if it's a line chart
+                # plt.xlabel("Category/Time")
+                plt.ylabel("Value")
+            else: # Default to bar
+                sns.barplot(x=labels, y=numeric_values)
+                plt.xticks(rotation=45, ha='right')
+
+            plt.title(title)
+            plt.tight_layout()
+
+            output_path = os.path.join(self.assets_dir, f"{slide_id}_chart.png")
+            plt.savefig(output_path)
+            plt.close()
+            self.log(f"Chart saved successfully to {output_path}")
+            return output_path
+
+        except Exception as e:
+            self.log(f"ERROR: Failed to generate real chart. Details: {e}")
+            plt.close()
+            return None
+    # -------------------------------------------------------------------
 
     def _generate_diagram_from_dot(self, dot_code: str, slide_id: str) -> str | None:
         # ... (This function remains unchanged)
         self.log(f"Attempting to generate diagram for slide {slide_id}...")
         try:
-            # Ensure it's treated as a directed graph
-            if not dot_code.strip().lower().startswith("digraph"):
-                 dot_code = f"digraph G {{ {dot_code} }}"
+            if not dot_code.strip().lower().startswith("digraph"): dot_code = f"digraph G {{ {dot_code} }}"
             source = graphviz.Source(dot_code)
-            output_path = os.path.join(self.assets_dir, f"{slide_id}_diagram") # Distinct name
+            output_path = os.path.join(self.assets_dir, f"{slide_id}_diagram")
             rendered_path = source.render(output_path, format='png', cleanup=True)
-            self.log(f"Diagram saved successfully to {rendered_path}")
-            return rendered_path
-        except graphviz.backend.execute.CalledProcessError as e:
-            self.log(f"ERROR: Graphviz execution failed for diagram. Error: {e}"); return None
-        except Exception as e:
-            self.log(f"ERROR: Failed to generate diagram. Details: {e}"); return None
+            self.log(f"Diagram saved successfully to {rendered_path}"); return rendered_path
+        except graphviz.backend.execute.CalledProcessError as e: self.log(f"ERROR: Graphviz failed for diagram. {e}"); return None
+        except Exception as e: self.log(f"ERROR: Failed to generate diagram. {e}"); return None
 
     def _fetch_image_from_pexels(self, query: str, slide_id: str) -> str | None:
         # ... (This function remains unchanged)
         if not self.pexels_api_key: return None
-        headers = {"Authorization": self.pexels_api_key}
-        url = f"https://api.pexels.com/v1/search?query={query}&per_page=1"
+        headers = {"Authorization": self.pexels_api_key}; url = f"https://api.pexels.com/v1/search?query={query}&per_page=1"
         try:
-            response = requests.get(url, headers=headers); response.raise_for_status()
-            data = response.json()
+            response = requests.get(url, headers=headers); response.raise_for_status(); data = response.json()
             if data["photos"]:
                 image_url = data["photos"][0]["src"]["medium"]
                 image_response = requests.get(image_url, timeout=20); image_response.raise_for_status()
                 file_extension = image_url.split('.')[-1].split('?')[0] or 'jpeg'
-                file_path = os.path.join(self.assets_dir, f"{slide_id}_photo.{file_extension}") # Add type to name
+                file_path = os.path.join(self.assets_dir, f"{slide_id}_photo.{file_extension}")
                 with open(file_path, 'wb') as f: f.write(image_response.content)
-                self.log(f"Image downloaded successfully to {file_path}")
-                return file_path
-        except requests.exceptions.RequestException as e:
-            self.log(f"ERROR: Pexels API request failed. Details: {e}")
+                self.log(f"Image downloaded successfully to {file_path}"); return file_path
+        except requests.exceptions.RequestException as e: self.log(f"ERROR: Pexels API request failed. {e}")
         return None
 
+    # --- UPDATED: Run method includes real chart generation ---
     def run(self):
         self.log("Starting visual asset generation (Mind Maps > Charts > Diagrams > Photos)...")
         slides = self.sm.get("slides")
@@ -126,9 +132,10 @@ class ExternalMediaAgent(BaseAgent):
             if slide.get("type") == "content":
                 image_path = None
                 
-                # --- NEW PRIORITIZED LOGIC ---
+                # Check for all potential visual types in order of priority
                 mind_map_code = slide.get("mind_map_dot_code")
                 chart_suggestion = slide.get("chart_suggestion")
+                chart_data = slide.get("chart_data") # Get the chart data
                 diagram_code = slide.get("diagram_dot_code")
                 image_hint = slide.get("image_hint")
 
@@ -136,18 +143,18 @@ class ExternalMediaAgent(BaseAgent):
                     self.log(f"Found Mind Map code for slide {slide['id']}")
                     image_path = self._generate_mind_map_from_dot(mind_map_code, slide["id"])
 
-                if not image_path and chart_suggestion:
-                    self.log(f"No mind map. Found chart suggestion for slide {slide['id']}")
-                    image_path = self._generate_placeholder_chart(chart_suggestion, slide["id"])
+                # Generate real chart if suggestion AND data are present
+                elif chart_suggestion and chart_data:
+                    self.log(f"Found chart suggestion and data for slide {slide['id']}")
+                    image_path = self._generate_real_chart(chart_suggestion, chart_data, slide["id"])
                 
-                if not image_path and diagram_code:
+                elif diagram_code:
                     self.log(f"No mind map or chart. Found diagram code for slide {slide['id']}")
                     image_path = self._generate_diagram_from_dot(diagram_code, slide["id"])
                 
-                if not image_path and image_hint:
+                elif image_hint:
                     self.log(f"No mind map, chart, or diagram. Searching Pexels for hint: '{image_hint}'")
                     image_path = self._fetch_image_from_pexels(image_hint, slide["id"])
-                # --------------------------------
 
                 if image_path:
                     slide["image_path"] = image_path
