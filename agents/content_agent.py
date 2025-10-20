@@ -1,8 +1,8 @@
 # agents/content_agent.py
-# ContentAgent updated with layout-aware PDF text extraction.
+# ContentAgent updated to suggest simple charts based on text content.
 
 from .base_agent import BaseAgent
-import fitz # PyMuPDF
+import fitz
 import google.generativeai as genai
 from dotenv import load_dotenv
 import os
@@ -22,10 +22,11 @@ def chunk_text(text: str, chunk_size: int = 10000, overlap: int = 500) -> list[s
 
 class ContentAgent(BaseAgent):
     """
-    Uses layout-aware text extraction and the Gemini API (with speaker notes)
-    to structure content.
+    Uses layout-aware text extraction and Gemini API to structure content,
+    including speaker notes, diagram code, and suggestions for simple charts.
     """
     def __init__(self, name, state_manager, config=None):
+        # ... (init remains the same as speaker notes version)
         super().__init__(name, state_manager)
         load_dotenv()
         try:
@@ -37,9 +38,8 @@ class ContentAgent(BaseAgent):
         self.chunk_size = 12000
         self.overlap = 500
 
-    # --- UPDATED TEXT EXTRACTION METHOD ---
     def _extract_text_from_pdf(self, pdf_path: str) -> str:
-        """Extracts text content from a PDF, attempting to preserve layout."""
+        # ... (This function remains unchanged from advanced parsing version)
         if not os.path.exists(pdf_path):
             self.log(f"ERROR: PDF file not found at {pdf_path}")
             return ""
@@ -47,49 +47,44 @@ class ContentAgent(BaseAgent):
             doc = fitz.open(pdf_path)
             full_text = ""
             for page_num, page in enumerate(doc):
-                # Use get_text("blocks") which includes positional info, then sort roughly by reading order
                 blocks = page.get_text("blocks")
-                # Sort blocks primarily by vertical position, then horizontal
-                blocks.sort(key=lambda b: (b[1], b[0])) 
-                
-                page_text = ""
-                for b in blocks:
-                    # b[4] contains the text block content
-                    page_text += b[4] 
-                
-                # Add page separators for context (optional, but can help AI)
+                blocks.sort(key=lambda b: (b[1], b[0]))
+                page_text = "".join([b[4] for b in blocks])
                 full_text += f"\n--- Page {page_num + 1} ---\n" + page_text
-
             doc.close()
             self.log(f"Extracted {len(full_text)} characters (layout-aware) from {pdf_path}")
             return full_text
         except Exception as e:
             self.log(f"ERROR: Failed to extract text from PDF. Details: {e}")
             return ""
-    # ------------------------------------
 
     def _get_structured_content_from_llm(self, text_chunk: str, tone: str, slide_count: int) -> dict:
-        # ... (This function remains unchanged from the speaker notes version)
+        """Sends text chunk to Gemini, requesting speaker notes, diagrams, and chart suggestions."""
         if not text_chunk: return {}
         self.log(f"Sending chunk (length: {len(text_chunk)}) to Gemini API...")
         model = genai.GenerativeModel('models/gemini-2.5-pro')
+
+        # --- UPDATED PROMPT ---
         prompt = f"""
         You are an expert educational content designer. Analyze the following text chunk from a syllabus and convert it into a structured JSON format for a presentation. Your output must be ONLY a well-formed JSON object.
 
         Specifications:
         1.  **Audience Tone**: Tailor for a '{tone}' audience.
-        2.  **Output Format**: ONLY JSON with a top-level "chapters" key (list of chapter objects).
+        2.  **Output Format**: ONLY JSON with a top-level "chapters" key (list).
         3.  Each chapter: "id", "title", "description", "topics" list.
         4.  Each topic: "id", "title", "summary", "key_points", "quiz_questions", "image_hint", "speaker_notes".
-        5.  **Speaker Notes**: For each topic, add detailed script (2-4 sentences).
-        6.  **Diagrams**: If a topic describes a clear process/flow, include "diagram_dot_code" field with simple Graphviz DOT code. Omit otherwise.
+        5.  **Speaker Notes**: For each topic, add a detailed script (2-4 sentences).
+        6.  **Diagrams**: If a topic describes a clear process/flow (e.g., A -> B), include "diagram_dot_code" field with simple Graphviz DOT code. Omit otherwise.
+        7.  **Charts**: If the text clearly implies a comparison, trend, or distribution that could be visualized with a simple bar chart or line chart, add a "chart_suggestion" field. This should be a dictionary like {{"type": "bar", "title": "Comparison of X and Y"}} or {{"type": "line", "title": "Trend of Z over Time"}}. Do NOT attempt to extract actual data. Omit this field if no simple chart seems appropriate.
 
-        Here is the text chunk (potentially including page markers):
+        Here is the text chunk:
         ---
         {text_chunk}
         ---
         """
+
         try:
+            # ... (Rest of the try/except block remains the same as speaker notes version)
             response = model.generate_content(prompt)
             if not response.parts: return {}
             response_text = response.text.strip().lstrip('```json').rstrip('```')
@@ -105,7 +100,7 @@ class ContentAgent(BaseAgent):
             return {}
 
     def run(self):
-        # ... (This function remains unchanged from the speaker notes version)
+        # ... (This function remains unchanged from speaker notes version)
         self.log("Starting real content extraction with chunking...")
         pdf_path = self.sm.get("input_pdf_path")
         tone = self.sm.get("tone") or "Beginner"
@@ -127,7 +122,6 @@ class ContentAgent(BaseAgent):
             self.log(f"Content processed. Found {len(all_chapters)} chapters total.")
             self.sm.save("shared_state_after_content.json")
         else: self.log("ERROR: No chapters processed from any chunk.")
-
 
 
 
