@@ -52,12 +52,16 @@ The system operates as a pipeline of specialized agents orchestrated by `main.py
     * `streamlit`: Web UI creation.
     * `graphviz`: Diagram rendering library.
     * `matplotlib`, `seaborn`, `pandas`, `numpy`: Chart generation and data handling.
+    * `pytesseract`: Python wrapper for Tesseract OCR.
+    * `Pillow`: Image processing library (dependency for pytesseract).
 * **External APIs:**
     * Google AI (Gemini)
     * Pexels API
 * **External Software (Optional):**
     * LibreOffice (for PDF conversion)
+* **OCR:** Tesseract OCR (via Pytesseract)
 
+  
 ---
 
 ## Getting Started

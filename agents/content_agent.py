@@ -1,12 +1,15 @@
 # agents/content_agent.py
-# ContentAgent updated to suggest simple charts based on text content.
+# ContentAgent updated with OCR integration for scanned PDFs.
 
 from .base_agent import BaseAgent
-import fitz
+import fitz # PyMuPDF
 import google.generativeai as genai
 from dotenv import load_dotenv
 import os
 import json
+import pytesseract # <-- New import
+from PIL import Image # <-- New import (Pillow for image handling)
+import io # <-- New import
 
 # Function to split text into chunks (remains the same)
 def chunk_text(text: str, chunk_size: int = 10000, overlap: int = 500) -> list[str]:
@@ -22,11 +25,9 @@ def chunk_text(text: str, chunk_size: int = 10000, overlap: int = 500) -> list[s
 
 class ContentAgent(BaseAgent):
     """
-    Uses layout-aware text extraction and Gemini API to structure content,
-    including speaker notes, diagram code, and suggestions for simple charts.
+    Uses layout-aware text extraction (with OCR fallback) and Gemini API to structure content.
     """
     def __init__(self, name, state_manager, config=None):
-        # ... (init remains the same as speaker notes version)
         super().__init__(name, state_manager)
         load_dotenv()
         try:
@@ -37,34 +38,75 @@ class ContentAgent(BaseAgent):
         self.config = config or {}
         self.chunk_size = 12000
         self.overlap = 500
+        # Configure Tesseract path if it's not in your system PATH (Windows specific sometimes)
+        # For example: pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+        # On Linux/macOS, it's usually found automatically if installed via package manager.
 
+    # --- UPDATED TEXT EXTRACTION METHOD WITH OCR FALLBACK ---
     def _extract_text_from_pdf(self, pdf_path: str) -> str:
-        # ... (This function remains unchanged from advanced parsing version)
+        """Extracts text from a PDF, trying PyMuPDF first, then OCR if needed."""
         if not os.path.exists(pdf_path):
             self.log(f"ERROR: PDF file not found at {pdf_path}")
             return ""
+
+        full_text = ""
+        doc = None # Initialize doc outside try block
+
         try:
             doc = fitz.open(pdf_path)
-            full_text = ""
+            
+            # --- Attempt 1: PyMuPDF's layout-aware text extraction ---
+            pymu_text_check = ""
             for page_num, page in enumerate(doc):
                 blocks = page.get_text("blocks")
-                blocks.sort(key=lambda b: (b[1], b[0]))
+                blocks.sort(key=lambda b: (b[1], b[0])) 
                 page_text = "".join([b[4] for b in blocks])
-                full_text += f"\n--- Page {page_num + 1} ---\n" + page_text
-            doc.close()
-            self.log(f"Extracted {len(full_text)} characters (layout-aware) from {pdf_path}")
-            return full_text
+                # Only add if substantial text, otherwise it's probably an image-based page
+                if len(page_text.strip()) > 50: # Threshold to decide if text was effectively extracted
+                    pymu_text_check += f"\n--- Page {page_num + 1} ---\n" + page_text
+            
+            if len(pymu_text_check.strip()) > 100: # If PyMuPDF found significant text
+                self.log(f"Extracted {len(pymu_text_check)} characters (layout-aware PyMuPDF) from {pdf_path}")
+                return pymu_text_check
+            else:
+                self.log("PyMuPDF found minimal text. Attempting OCR fallback...")
+                
+                # --- Attempt 2: OCR Fallback for scanned PDFs ---
+                ocr_full_text = ""
+                for page_num, page in enumerate(doc):
+                    pix = page.get_pixmap()
+                    img = Image.open(io.BytesIO(pix.pil_tobytes("png")))
+                    
+                    try:
+                        # Use Tesseract to get text from image
+                        page_ocr_text = pytesseract.image_to_string(img, lang='eng')
+                        ocr_full_text += f"\n--- OCR Page {page_num + 1} ---\n" + page_ocr_text
+                    except pytesseract.TesseractNotFoundError:
+                        self.log("ERROR: Tesseract OCR engine not found. Please install it and ensure it's in your PATH.")
+                        return ""
+                    except Exception as ocr_e:
+                        self.log(f"ERROR: OCR failed for page {page_num+1}. Details: {ocr_e}")
+                
+                if len(ocr_full_text.strip()) > 100:
+                    self.log(f"Extracted {len(ocr_full_text)} characters (OCR) from {pdf_path}")
+                    return ocr_full_text
+                else:
+                    self.log("OCR also found minimal text. The PDF might be empty or too complex to parse.")
+                    return ""
+
         except Exception as e:
-            self.log(f"ERROR: Failed to extract text from PDF. Details: {e}")
+            self.log(f"ERROR: Failed to extract text from PDF (general error). Details: {e}")
             return ""
+        finally:
+            if doc:
+                doc.close()
+    # ------------------------------------
 
     def _get_structured_content_from_llm(self, text_chunk: str, tone: str, slide_count: int) -> dict:
-        """Sends text chunk to Gemini, requesting speaker notes, diagrams, and chart suggestions."""
+        # ... (This function remains unchanged from chart suggestions version)
         if not text_chunk: return {}
         self.log(f"Sending chunk (length: {len(text_chunk)}) to Gemini API...")
         model = genai.GenerativeModel('models/gemini-2.5-pro')
-
-        # --- UPDATED PROMPT ---
         prompt = f"""
         You are an expert educational content designer. Analyze the following text chunk from a syllabus and convert it into a structured JSON format for a presentation. Your output must be ONLY a well-formed JSON object.
 
@@ -82,9 +124,7 @@ class ContentAgent(BaseAgent):
         {text_chunk}
         ---
         """
-
         try:
-            # ... (Rest of the try/except block remains the same as speaker notes version)
             response = model.generate_content(prompt)
             if not response.parts: return {}
             response_text = response.text.strip().lstrip('```json').rstrip('```')
@@ -100,7 +140,7 @@ class ContentAgent(BaseAgent):
             return {}
 
     def run(self):
-        # ... (This function remains unchanged from speaker notes version)
+        # ... (This function remains unchanged)
         self.log("Starting real content extraction with chunking...")
         pdf_path = self.sm.get("input_pdf_path")
         tone = self.sm.get("tone") or "Beginner"
@@ -122,8 +162,6 @@ class ContentAgent(BaseAgent):
             self.log(f"Content processed. Found {len(all_chapters)} chapters total.")
             self.sm.save("shared_state_after_content.json")
         else: self.log("ERROR: No chapters processed from any chunk.")
-
-
 
 
 
