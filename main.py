@@ -1,5 +1,5 @@
 # main.py
-# Final pipeline: Includes PDF conversion using LibreOffice.
+# Final pipeline: Includes the new QA Agent.
 
 from state_manager import StateManager
 from agents.content_agent import ContentAgent
@@ -7,15 +7,16 @@ from agents.format_agent import FormatAgent
 from agents.design_agent import DesignAgent
 from agents.external_media_agent import ExternalMediaAgent
 from agents.presentation_agent import PresentationAgent
+from agents.qa_agent import QAAgent # <-- Import the new QA Agent
 import os
 import time
-import subprocess # Import the subprocess module
+import subprocess
 
-# The main pipeline function remains the same
+# The main pipeline function remains mostly the same, just adding the QA step
 def run_full_pipeline(pdf_path: str, theme_file: str, tone: str, slide_count: int, progress_callback=None):
     if not os.path.exists(pdf_path):
         print(f"ERROR: Input PDF not found at '{pdf_path}'.")
-        return None
+        return None, None # Return None for both paths
 
     start_time = time.time()
 
@@ -25,71 +26,74 @@ def run_full_pipeline(pdf_path: str, theme_file: str, tone: str, slide_count: in
     sm.update("tone", tone)
     sm.update("slide_count", slide_count)
 
+    # Instantiate all agents, including QA
     content_agent = ContentAgent("ContentAgent", sm)
     format_agent = FormatAgent("FormatAgent", sm)
     design_agent = DesignAgent("DesignAgent", sm)
     media_agent = ExternalMediaAgent("MediaAgent", sm)
     presentation_agent = PresentationAgent("PresentationAgent", sm)
+    qa_agent = QAAgent("QAAgent", sm) # <-- Instantiate QA Agent
 
-    if progress_callback: progress_callback("Step 1/5: Understanding content with AI...")
+    # Run agents sequentially
+    if progress_callback: progress_callback("Step 1/6: Understanding content with AI...")
     content_agent.run()
 
-    if progress_callback: progress_callback("Step 2/5: Planning slide structure...")
+    if progress_callback: progress_callback("Step 2/6: Planning slide structure...")
     format_agent.run()
 
-    if progress_callback: progress_callback("Step 3/5: Applying design theme...")
+    if progress_callback: progress_callback("Step 3/6: Applying design theme...")
     design_agent.run()
 
-    if progress_callback: progress_callback("Step 4/5: Generating/Fetching visuals...")
+    if progress_callback: progress_callback("Step 4/6: Generating/Fetching visuals...")
     media_agent.run()
 
-    if progress_callback: progress_callback("Step 5/5: Building final presentation...")
+    if progress_callback: progress_callback("Step 5/6: Building final presentation...")
     presentation_agent.run()
+    
+    # Check if presentation agent actually produced slides before running QA
+    if sm.get("slides"):
+        if progress_callback: progress_callback("Step 6/6: Performing AI Quality Check...")
+        qa_agent.run() # <-- Run the QA Agent
+    else:
+        print("Skipping QA step as slide generation failed earlier.")
 
-    # --- RE-ADD PDF CONVERSION STEP using LibreOffice ---
+
+    # PDF Conversion Step (remains the same)
     pptx_path = sm.get("output_path")
-    pdf_output_path = None # Variable to store the final PDF path
+    pdf_output_path = None
+    command_success = False # Flag for successful conversion
     if pptx_path and os.path.exists(pptx_path):
         if progress_callback: progress_callback("Converting to PDF...")
         else: print("Converting to PDF using LibreOffice...")
         
         output_dir = os.path.dirname(pptx_path)
         try:
-            # On Windows, the command might be 'soffice' instead of 'libreoffice'
             commands_to_try = [
                 ['soffice', '--headless', '--convert-to', 'pdf', pptx_path, '--outdir', output_dir],
                 ['libreoffice', '--headless', '--convert-to', 'pdf', pptx_path, '--outdir', output_dir]
             ]
             
-            command_success = False
             for cmd in commands_to_try:
                 try:
-                    # Run the command, wait for it to complete, capture output
-                    result = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60) # Added timeout
+                    result = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60)
                     pdf_output_path = pptx_path.replace(".pptx", ".pdf")
-                    if progress_callback: progress_callback(f"Successfully converted to PDF: {os.path.basename(pdf_output_path)}")
+                    if progress_callback: progress_callback(f"Successfully converted to PDF.")
                     else: print(f"Successfully converted to PDF: {pdf_output_path}")
                     command_success = True
-                    break # Exit loop if a command succeeds
-                except FileNotFoundError:
-                    # This means the command (soffice or libreoffice) wasn't found in PATH
-                    continue
-                except subprocess.TimeoutExpired:
-                     print(f"Conversion timed out with '{cmd[0]}'.")
-                     continue
-                except subprocess.CalledProcessError as e:
-                    # This means the command ran but reported an error
-                    print(f"Error during conversion with '{cmd[0]}': {e.stderr.decode()}")
-                    continue
+                    break
+                except FileNotFoundError: continue
+                except subprocess.TimeoutExpired: print(f"Conversion timed out with '{cmd[0]}'."); continue
+                except subprocess.CalledProcessError as e: print(f"Error during conversion with '{cmd[0]}': {e.stderr.decode()}"); continue
 
             if not command_success:
-                 if progress_callback: progress_callback("PDF Conversion Failed: LibreOffice not found or PATH not set correctly.")
-                 else: print("Could not convert to PDF. Ensure LibreOffice is installed and its 'program' directory is in your system PATH.")
+                 message = "PDF Conversion Failed: LibreOffice not found or PATH not set correctly."
+                 if progress_callback: progress_callback(message)
+                 else: print(message)
 
         except Exception as e:
-            if progress_callback: progress_callback(f"PDF Conversion Failed: An unexpected error occurred.")
-            else: print(f"An unexpected error occurred during PDF conversion: {e}")
-    # -----------------------------
+            message = f"PDF Conversion Failed: An unexpected error occurred: {e}"
+            if progress_callback: progress_callback(message)
+            else: print(message)
 
     end_time = time.time()
     print(f"Pipeline finished in {end_time - start_time:.2f} seconds.")
@@ -112,10 +116,7 @@ if __name__ == "__main__":
         print(f"Final presentation available at: {pptx_file}")
     if pdf_file:
         print(f"PDF version available at: {pdf_file}")
-    print("========================================\n") 
-    
-    
-    
+    print("========================================\n")
     
     
     
