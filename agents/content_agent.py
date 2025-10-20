@@ -1,5 +1,5 @@
 # agents/content_agent.py
-# ContentAgent updated to handle large PDFs using chunking.
+# ContentAgent updated to request speaker notes from the AI.
 
 from .base_agent import BaseAgent
 import fitz
@@ -8,9 +8,8 @@ from dotenv import load_dotenv
 import os
 import json
 
-# --- NEW: Function to split text into chunks ---
+# --- Function to split text into chunks (remains the same) ---
 def chunk_text(text: str, chunk_size: int = 10000, overlap: int = 500) -> list[str]:
-    """Splits text into overlapping chunks."""
     chunks = []
     start = 0
     while start < len(text):
@@ -20,11 +19,10 @@ def chunk_text(text: str, chunk_size: int = 10000, overlap: int = 500) -> list[s
         if end >= len(text):
             break
     return chunks
-# ---------------------------------------------
 
 class ContentAgent(BaseAgent):
     """
-    Reads text from a PDF, chunks it, uses the Gemini API on each chunk,
+    Reads text from a PDF, chunks it, uses the Gemini API (requesting speaker notes),
     and combines the results to structure the content.
     """
     def __init__(self, name, state_manager, config=None):
@@ -36,9 +34,8 @@ class ContentAgent(BaseAgent):
         except Exception as e:
             self.log(f"ERROR: Failed to configure Gemini API. Details: {e}")
         self.config = config or {}
-        # Define chunk size here (can be adjusted)
-        self.chunk_size = 12000 # Max characters per chunk
-        self.overlap = 500     # Overlap to maintain context between chunks
+        self.chunk_size = 12000
+        self.overlap = 500
 
     def _extract_text_from_pdf(self, pdf_path: str) -> str:
         # ... (This function remains unchanged)
@@ -57,36 +54,34 @@ class ContentAgent(BaseAgent):
             self.log(f"ERROR: Failed to extract text from PDF. Details: {e}")
             return ""
 
-    # --- UPDATED: No more slicing needed here ---
     def _get_structured_content_from_llm(self, text_chunk: str, tone: str, slide_count: int) -> dict:
-        """Sends a text chunk to the Gemini API."""
+        """Sends a text chunk to the Gemini API, now requesting speaker notes."""
         if not text_chunk: return {}
 
         self.log(f"Sending chunk (length: {len(text_chunk)}) to Gemini API...")
 
         model = genai.GenerativeModel('models/gemini-2.5-pro')
 
-        # Prompt remains largely the same, but it processes a chunk
+        # --- UPDATED PROMPT ---
         prompt = f"""
-        You are an expert educational content designer. Analyze the following text chunk from a larger syllabus and convert it into a structured JSON format suitable for a presentation. Your output must be ONLY a well-formed JSON object.
+        You are an expert educational content designer. Analyze the following text chunk from a syllabus and convert it into a structured JSON format for a presentation. Your output must be ONLY a well-formed JSON object.
 
         Specifications:
         1.  **Audience Tone**: Tailor for a '{tone}' audience.
-        2.  **Output Format**: ONLY a well-formed JSON object with a top-level "chapters" key (list of chapter objects).
+        2.  **Output Format**: ONLY JSON with a top-level "chapters" key (list of chapter objects).
         3.  Each chapter: "id", "title", "description", "topics" list.
         4.  Each topic: "id", "title", "summary", "key_points", "quiz_questions", "image_hint".
-        5.  **Diagrams**: If a topic describes a clear process/flow (e.g., A -> B -> C), include a "diagram_dot_code" field with simple Graphviz DOT code (e.g., 'digraph {{ A -> B -> C; }}'). Omit otherwise.
+        5.  **Speaker Notes**: For each topic, add a "speaker_notes" field containing a detailed script (2-4 sentences) that a presenter could read or use for talking points related to the slide's content.
+        6.  **Diagrams**: If a topic describes a clear process/flow, include a "diagram_dot_code" field with simple Graphviz DOT code. Omit otherwise.
 
         Here is the text chunk:
         ---
         {text_chunk}
         ---
         """
-        # Note: slide_count is less directly applicable per chunk, but kept for context.
 
         try:
             response = model.generate_content(prompt)
-            # Add more robust error handling for potentially empty/invalid responses
             if not response.parts:
                 self.log("WARNING: Gemini API returned an empty response for this chunk.")
                 return {}
@@ -99,19 +94,17 @@ class ContentAgent(BaseAgent):
             return structured_data
         except json.JSONDecodeError as e:
             self.log(f"ERROR: Failed to parse JSON from Gemini API response for chunk. Details: {e}")
-            self.log(f"Raw response text: {response_text[:500]}...") # Log beginning of raw response
+            self.log(f"Raw response text: {response_text[:500]}...")
             return {}
         except Exception as e:
             self.log(f"ERROR: Failed to get structured content from Gemini API for chunk. Details: {e}")
             return {}
 
-    # --- UPDATED: Main run method now handles chunking ---
     def run(self):
         self.log("Starting real content extraction with chunking...")
-
         pdf_path = self.sm.get("input_pdf_path")
         tone = self.sm.get("tone") or "Beginner"
-        slide_count = self.sm.get("slide_count") or 10 # Used more as a general guide now
+        slide_count = self.sm.get("slide_count") or 10
 
         if not pdf_path:
             self.log("ERROR: No input_pdf_path found. Aborting.")
@@ -120,34 +113,25 @@ class ContentAgent(BaseAgent):
         full_text = self._extract_text_from_pdf(pdf_path)
         if not full_text: return
 
-        # Split the text into chunks
         text_chunks = chunk_text(full_text, chunk_size=self.chunk_size, overlap=self.overlap)
         self.log(f"Split text into {len(text_chunks)} chunks.")
 
         all_chapters = []
-        # Process each chunk individually
         for i, chunk in enumerate(text_chunks):
             self.log(f"Processing chunk {i+1}/{len(text_chunks)}...")
             structured_content = self._get_structured_content_from_llm(chunk, tone, slide_count)
             
-            # Append chapters found in this chunk's result
             if structured_content and "chapters" in structured_content:
-                # Basic merging: just add all chapters from all chunks.
-                # More advanced merging could try to combine topics under existing chapter titles.
                 all_chapters.extend(structured_content["chapters"])
             else:
                 self.log(f"No valid 'chapters' structure returned for chunk {i+1}.")
 
-        # Update the state with the combined chapters from all chunks
         if all_chapters:
-            # Simple de-duplication based on title might be useful here if chapters overlap chunks
-            # For now, just combine them all.
             self.update_state("chapters", all_chapters)
             self.log(f"Content processed from all chunks. Found {len(all_chapters)} chapters in total.")
             self.sm.save("shared_state_after_content.json")
         else:
             self.log("ERROR: No chapters were successfully processed from any chunk.")
-
 
 
 

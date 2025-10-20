@@ -1,5 +1,5 @@
 # agents/presentation_agent.py
-# Final version: Handles complex quiz data and generates the complete presentation.
+# PresentationAgent updated to add speaker notes to slides.
 
 from .base_agent import BaseAgent
 from pptx import Presentation
@@ -8,8 +8,7 @@ import os
 
 class PresentationAgent(BaseAgent):
     """
-    Generates the final .pptx presentation, handling all slide types, layouts,
-    images, and cleaning up the presentation before saving.
+    Generates the final .pptx presentation, including speaker notes.
     """
 
     def _delete_initial_slide(self, prs, slides_plan):
@@ -61,6 +60,17 @@ class PresentationAgent(BaseAgent):
                 slide_layout = prs.slide_layouts[1]
                 slide = prs.slides.add_slide(slide_layout)
 
+            # --- ADD SPEAKER NOTES ---
+            # Check if the slide has a notes placeholder and if notes exist in data
+            if slide.has_notes_slide and slide_data.get("speaker_notes"):
+                notes_slide = slide.notes_slide
+                text_frame = notes_slide.notes_text_frame
+                text_frame.clear() # Clear existing placeholder text in notes
+                p = text_frame.add_paragraph()
+                p.text = slide_data.get("speaker_notes", "")
+                self.log(f"Added speaker notes to slide '{slide_data.get('title', '')}'.")
+            # -------------------------
+
             if hasattr(slide.shapes, 'title') and slide.shapes.title is not None:
                 slide.shapes.title.text = slide_data.get("title", "")
 
@@ -75,13 +85,10 @@ class PresentationAgent(BaseAgent):
                     tf.clear()
                     for bullet in slide_data.get("bullets", []):
                         p = tf.add_paragraph()
-                        # --- THIS IS THE FIX ---
-                        # Check if the bullet is a dictionary (for quizzes) or a simple string
                         if isinstance(bullet, dict):
-                            p.text = bullet.get('question', '') # Use only the question text
+                            p.text = bullet.get('question', '') 
                         else:
-                            p.text = str(bullet) # Handle simple string bullets
-                        # -----------------------
+                            p.text = str(bullet)
                         p.level = 0
             
             elif layout_key == "content_with_image":
@@ -91,7 +98,7 @@ class PresentationAgent(BaseAgent):
                     tf.clear()
                     for bullet in slide_data.get("bullets", []):
                         p = tf.add_paragraph()
-                        p.text = str(bullet)
+                        p.text = str(bullet) # Assuming simple bullets here
                         p.level = 0
                     
                     image_placeholder = slide.placeholders[2]
@@ -108,8 +115,6 @@ class PresentationAgent(BaseAgent):
         prs.save(output_path)
         self.update_state("output_path", output_path)
         self.log(f"Presentation saved successfully to: {output_path}")
-
-
 
 
 
