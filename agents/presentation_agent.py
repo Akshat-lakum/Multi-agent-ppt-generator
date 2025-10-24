@@ -5,6 +5,7 @@ from .base_agent import BaseAgent
 from pptx import Presentation
 from pptx.util import Inches, Pt # Import Pt for font size manipulation if needed
 from pptx.enum.text import MsoAutoSize # Import AutoSize options
+from pptx.enum.shapes import MsoAutoSize # Import AutoSize options
 import os
 import streamlit as st
 
