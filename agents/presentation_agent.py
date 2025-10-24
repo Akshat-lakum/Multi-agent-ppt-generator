@@ -1,13 +1,12 @@
 # agents/presentation_agent.py
-# Updated PresentationAgent with text auto-fitting.
+# Updated PresentationAgent with text auto-fitting and correct import.
 
 from .base_agent import BaseAgent
 from pptx import Presentation
-from pptx.util import Inches, Pt # Import Pt for font size manipulation if needed
-from pptx.enum.text import MsoAutoSize # Import AutoSize options
-from pptx.enum.shapes import MsoAutoSize # Import AutoSize options
+from pptx.util import Inches, Pt
+from pptx.enum.shapes import MsoAutoSize # <-- CORRECTED IMPORT
 import os
-import streamlit as st
+import streamlit as st # Import streamlit for error messages
 
 class PresentationAgent(BaseAgent):
     """
@@ -74,36 +73,31 @@ class PresentationAgent(BaseAgent):
             # Populate Title
             if hasattr(slide.shapes, 'title') and slide.shapes.title is not None:
                 slide.shapes.title.text = slide_data.get("title", "")
+                # Optionally add auto-fit for title too
+                # slide.shapes.title.text_frame.auto_size = MsoAutoSize.TEXT_TO_FIT_SHAPE
 
             # Populate Content Placeholders
             if layout_key in ["main_title", "chapter_title"]:
                 if len(slide.placeholders) > 1:
                     subtitle_placeholder = slide.placeholders[1]
                     subtitle_placeholder.text = slide_data.get("subtitle", "")
-                    # --- ADD AUTO-FIT FOR SUBTITLE ---
-                    subtitle_placeholder.text_frame.auto_size = MsoAutoSize.TEXT_TO_FIT_SHAPE
-                    # ---------------------------------
+                    subtitle_placeholder.text_frame.auto_size = MsoAutoSize.TEXT_TO_FIT_SHAPE # Use TEXT_TO_FIT_SHAPE
 
             elif layout_key in ["content_only", "quiz"]:
                 if len(slide.placeholders) > 1:
                     body_shape = slide.placeholders[1]
                     tf = body_shape.text_frame
                     tf.clear()
-                    # --- ADD AUTO-FIT FOR BODY TEXT ---
-                    # Better to set word_wrap true if not default
                     tf.word_wrap = True
-                    tf.auto_size = MsoAutoSize.TEXT_TO_FIT_SHAPE
-                    # Optionally set a slightly smaller default font size
-                    # for p in tf.paragraphs:
-                    #      p.font.size = Pt(16) # Adjust base size if needed
-                    # ----------------------------------
+                    tf.auto_size = MsoAutoSize.TEXT_TO_FIT_SHAPE # Use TEXT_TO_FIT_SHAPE
+                    # Optionally adjust font size if auto-size isn't enough
+                    # for p in tf.paragraphs: p.font.size = Pt(16) # Example starting size
                     for bullet in slide_data.get("bullets", []):
                         p = tf.add_paragraph()
                         if isinstance(bullet, dict): p.text = bullet.get('question', '')
                         else: p.text = str(bullet)
                         p.level = 0
-                        # Ensure font size is consistent if you changed default
-                        # p.font.size = Pt(16)
+                        # p.font.size = Pt(16) # Match size if set above
 
 
             elif layout_key == "content_with_image":
@@ -112,12 +106,10 @@ class PresentationAgent(BaseAgent):
                     text_placeholder = slide.placeholders[1]
                     tf = text_placeholder.text_frame
                     tf.clear()
-                    # --- ADD AUTO-FIT FOR TEXT IN TWO-COLUMN ---
                     tf.word_wrap = True
-                    tf.auto_size = MsoAutoSize.TEXT_TO_FIT_SHAPE
-                    # Optionally set smaller font
+                    tf.auto_size = MsoAutoSize.TEXT_TO_FIT_SHAPE # Use TEXT_TO_FIT_SHAPE
+                    # Optionally adjust font size
                     # for p in tf.paragraphs: p.font.size = Pt(14)
-                    # -------------------------------------------
                     for bullet in slide_data.get("bullets", []):
                         p = tf.add_paragraph()
                         p.text = str(bullet)
@@ -127,14 +119,13 @@ class PresentationAgent(BaseAgent):
                     # Image placeholder (usually index 2)
                     image_placeholder = slide.placeholders[2]
                     if image_path and os.path.exists(image_path):
-                        # Use add_picture with placeholder dimensions
                         try:
                             slide.shapes.add_picture(
                                 image_path,
                                 image_placeholder.left, image_placeholder.top,
                                 width=image_placeholder.width, height=image_placeholder.height
                             )
-                            self.log(f"Added image {image_path} to slide.")
+                            # self.log(f"Added image {image_path} to slide.") # Optional log
                         except Exception as img_e:
                              self.log(f"ERROR: Could not add picture {image_path}. {img_e}")
 
@@ -146,15 +137,10 @@ class PresentationAgent(BaseAgent):
             self.log(f"Presentation saved successfully to: {output_path}")
         except PermissionError:
              self.log(f"ERROR: Permission denied saving {output_path}. Is the file open?")
-             st.error(f"Save failed: Please close {os.path.basename(output_path)} if it's open and try again.") # Show error in UI
-             # Need to import streamlit as st at the top for this error message
+             st.error(f"Save failed: Please close {os.path.basename(output_path)} if it's open and try again.")
         except Exception as save_e:
              self.log(f"ERROR: Failed to save presentation. {save_e}")
-             st.error(f"Failed to save presentation: {save_e}") # Show error in UI
-
-
-
-
+             st.error(f"Failed to save presentation: {save_e}")
 
 
 
