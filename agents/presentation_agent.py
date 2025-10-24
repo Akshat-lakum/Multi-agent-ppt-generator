@@ -1,22 +1,26 @@
 # agents/presentation_agent.py
-# PresentationAgent updated to add speaker notes to slides.
+# Updated PresentationAgent with text auto-fitting.
 
 from .base_agent import BaseAgent
 from pptx import Presentation
-from pptx.util import Inches
+from pptx.util import Inches, Pt # Import Pt for font size manipulation if needed
+from pptx.enum.text import MsoAutoSize # Import AutoSize options
 import os
 
 class PresentationAgent(BaseAgent):
     """
-    Generates the final .pptx presentation, including speaker notes.
+    Generates the final .pptx presentation, handling layouts, images, notes,
+    and attempting to auto-fit overflowing text.
     """
 
     def _delete_initial_slide(self, prs, slides_plan):
+        # ... (delete_initial_slide remains the same)
         while len(prs.slides) > len(slides_plan):
-            xml_slides = prs.slides._sldIdLst  
+            xml_slides = prs.slides._sldIdLst
             to_remove = xml_slides[0]
             xml_slides.remove(to_remove)
             self.log("Removed an initial blank slide.")
+
 
     def run(self):
         self.log("Starting final presentation generation...")
@@ -27,97 +31,124 @@ class PresentationAgent(BaseAgent):
         output_path = os.path.join(output_dir, output_filename)
 
         if not slides_plan:
-            self.log("ERROR: No slides plan found. Aborting.")
-            return
+            self.log("ERROR: No slides plan found. Aborting."); return
 
         template_path = design_config.get("template_path")
         try:
             prs = Presentation(template_path) if template_path and os.path.exists(template_path) else Presentation()
             self.log(f"Using template from: {template_path}" if template_path and os.path.exists(template_path) else "No valid template found. Creating default presentation.")
         except Exception as e:
-            self.log(f"ERROR: Failed to load template '{template_path}'. Creating blank presentation. Details: {e}")
-            prs = Presentation()
+            self.log(f"ERROR: Failed to load template '{template_path}'. {e}"); prs = Presentation()
 
         layout_map = { "main_title": 0, "chapter_title": 0, "content_only": 1, "content_with_image": 8, "quiz": 1, "thank_you": 5 }
 
         for slide_data in slides_plan:
             slide_type = slide_data.get("type", "content")
-            
             image_path = slide_data.get("image_path")
             layout_key = "content_only"
+            # Determine layout (robust check)
             if slide_type == "content" and image_path and os.path.exists(image_path):
-                layout_key = "content_with_image"
+                 layout_key = "content_with_image"
             elif slide_type != "content":
-                layout_key = slide_type
+                 layout_key = slide_type
 
-            layout_index = layout_map.get(layout_key, 1)
-            
+            layout_index = layout_map.get(layout_key, 1) # Default to content_only (layout 1)
+
             try:
                 slide_layout = prs.slide_layouts[layout_index]
                 slide = prs.slides.add_slide(slide_layout)
             except IndexError:
-                self.log(f"WARNING: Layout index {layout_index} not found. Using default layout 1.")
-                slide_layout = prs.slide_layouts[1]
-                slide = prs.slides.add_slide(slide_layout)
+                self.log(f"WARNING: Layout index {layout_index} not found for type '{layout_key}'. Using default layout 1.");
+                slide_layout = prs.slide_layouts[1]; slide = prs.slides.add_slide(slide_layout)
 
-            # --- ADD SPEAKER NOTES ---
-            # Check if the slide has a notes placeholder and if notes exist in data
+            # Add Speaker Notes (remains the same)
             if slide.has_notes_slide and slide_data.get("speaker_notes"):
                 notes_slide = slide.notes_slide
                 text_frame = notes_slide.notes_text_frame
-                text_frame.clear() # Clear existing placeholder text in notes
-                p = text_frame.add_paragraph()
+                text_frame.clear(); p = text_frame.add_paragraph()
                 p.text = slide_data.get("speaker_notes", "")
-                self.log(f"Added speaker notes to slide '{slide_data.get('title', '')}'.")
-            # -------------------------
+                # self.log(f"Added speaker notes to slide '{slide_data.get('title', '')}'.") # Optional log
 
+            # Populate Title
             if hasattr(slide.shapes, 'title') and slide.shapes.title is not None:
                 slide.shapes.title.text = slide_data.get("title", "")
 
+            # Populate Content Placeholders
             if layout_key in ["main_title", "chapter_title"]:
                 if len(slide.placeholders) > 1:
-                    slide.placeholders[1].text = slide_data.get("subtitle", "")
-            
+                    subtitle_placeholder = slide.placeholders[1]
+                    subtitle_placeholder.text = slide_data.get("subtitle", "")
+                    # --- ADD AUTO-FIT FOR SUBTITLE ---
+                    subtitle_placeholder.text_frame.auto_size = MsoAutoSize.TEXT_TO_FIT_SHAPE
+                    # ---------------------------------
+
             elif layout_key in ["content_only", "quiz"]:
                 if len(slide.placeholders) > 1:
                     body_shape = slide.placeholders[1]
                     tf = body_shape.text_frame
                     tf.clear()
+                    # --- ADD AUTO-FIT FOR BODY TEXT ---
+                    # Better to set word_wrap true if not default
+                    tf.word_wrap = True
+                    tf.auto_size = MsoAutoSize.TEXT_TO_FIT_SHAPE
+                    # Optionally set a slightly smaller default font size
+                    # for p in tf.paragraphs:
+                    #      p.font.size = Pt(16) # Adjust base size if needed
+                    # ----------------------------------
                     for bullet in slide_data.get("bullets", []):
                         p = tf.add_paragraph()
-                        if isinstance(bullet, dict):
-                            p.text = bullet.get('question', '') 
-                        else:
-                            p.text = str(bullet)
+                        if isinstance(bullet, dict): p.text = bullet.get('question', '')
+                        else: p.text = str(bullet)
                         p.level = 0
-            
+                        # Ensure font size is consistent if you changed default
+                        # p.font.size = Pt(16)
+
+
             elif layout_key == "content_with_image":
                 if len(slide.placeholders) > 2:
+                    # Text placeholder (usually index 1)
                     text_placeholder = slide.placeholders[1]
                     tf = text_placeholder.text_frame
                     tf.clear()
+                    # --- ADD AUTO-FIT FOR TEXT IN TWO-COLUMN ---
+                    tf.word_wrap = True
+                    tf.auto_size = MsoAutoSize.TEXT_TO_FIT_SHAPE
+                    # Optionally set smaller font
+                    # for p in tf.paragraphs: p.font.size = Pt(14)
+                    # -------------------------------------------
                     for bullet in slide_data.get("bullets", []):
                         p = tf.add_paragraph()
-                        p.text = str(bullet) # Assuming simple bullets here
+                        p.text = str(bullet)
                         p.level = 0
-                    
+                        # p.font.size = Pt(14)
+
+                    # Image placeholder (usually index 2)
                     image_placeholder = slide.placeholders[2]
                     if image_path and os.path.exists(image_path):
-                        slide.shapes.add_picture(
-                            image_path,
-                            image_placeholder.left, image_placeholder.top,
-                            width=image_placeholder.width, height=image_placeholder.height
-                        )
-                        self.log(f"Added image {image_path} to slide.")
+                        # Use add_picture with placeholder dimensions
+                        try:
+                            slide.shapes.add_picture(
+                                image_path,
+                                image_placeholder.left, image_placeholder.top,
+                                width=image_placeholder.width, height=image_placeholder.height
+                            )
+                            self.log(f"Added image {image_path} to slide.")
+                        except Exception as img_e:
+                             self.log(f"ERROR: Could not add picture {image_path}. {img_e}")
 
         self._delete_initial_slide(prs, slides_plan)
         os.makedirs(output_dir, exist_ok=True)
-        prs.save(output_path)
-        self.update_state("output_path", output_path)
-        self.log(f"Presentation saved successfully to: {output_path}")
-
-
-
+        try:
+            prs.save(output_path)
+            self.update_state("output_path", output_path)
+            self.log(f"Presentation saved successfully to: {output_path}")
+        except PermissionError:
+             self.log(f"ERROR: Permission denied saving {output_path}. Is the file open?")
+             st.error(f"Save failed: Please close {os.path.basename(output_path)} if it's open and try again.") # Show error in UI
+             # Need to import streamlit as st at the top for this error message
+        except Exception as save_e:
+             self.log(f"ERROR: Failed to save presentation. {save_e}")
+             st.error(f"Failed to save presentation: {save_e}") # Show error in UI
 
 
 
