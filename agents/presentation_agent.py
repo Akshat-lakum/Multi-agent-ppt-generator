@@ -1,10 +1,10 @@
 # agents/presentation_agent.py
-# Updated PresentationAgent with text auto-fitting and correct import.
+# Corrected PresentationAgent with the proper MsoAutoSize import.
 
 from .base_agent import BaseAgent
 from pptx import Presentation
 from pptx.util import Inches, Pt
-from pptx.enum.shapes import MsoAutoSize # <-- CORRECTED IMPORT
+from pptx.enum.text import MsoAutoSize # <-- CORRECTED IMPORT (Back to text)
 import os
 import streamlit as st # Import streamlit for error messages
 
@@ -81,7 +81,8 @@ class PresentationAgent(BaseAgent):
                 if len(slide.placeholders) > 1:
                     subtitle_placeholder = slide.placeholders[1]
                     subtitle_placeholder.text = slide_data.get("subtitle", "")
-                    subtitle_placeholder.text_frame.auto_size = MsoAutoSize.TEXT_TO_FIT_SHAPE # Use TEXT_TO_FIT_SHAPE
+                    # Use MsoAutoSize.SHAPE_TO_FIT_TEXT which might be more reliable
+                    subtitle_placeholder.text_frame.auto_size = MsoAutoSize.SHAPE_TO_FIT_TEXT
 
             elif layout_key in ["content_only", "quiz"]:
                 if len(slide.placeholders) > 1:
@@ -89,7 +90,8 @@ class PresentationAgent(BaseAgent):
                     tf = body_shape.text_frame
                     tf.clear()
                     tf.word_wrap = True
-                    tf.auto_size = MsoAutoSize.TEXT_TO_FIT_SHAPE # Use TEXT_TO_FIT_SHAPE
+                    # Use MsoAutoSize.SHAPE_TO_FIT_TEXT
+                    tf.auto_size = MsoAutoSize.SHAPE_TO_FIT_TEXT
                     # Optionally adjust font size if auto-size isn't enough
                     # for p in tf.paragraphs: p.font.size = Pt(16) # Example starting size
                     for bullet in slide_data.get("bullets", []):
@@ -107,7 +109,8 @@ class PresentationAgent(BaseAgent):
                     tf = text_placeholder.text_frame
                     tf.clear()
                     tf.word_wrap = True
-                    tf.auto_size = MsoAutoSize.TEXT_TO_FIT_SHAPE # Use TEXT_TO_FIT_SHAPE
+                    # Use MsoAutoSize.SHAPE_TO_FIT_TEXT
+                    tf.auto_size = MsoAutoSize.SHAPE_TO_FIT_TEXT
                     # Optionally adjust font size
                     # for p in tf.paragraphs: p.font.size = Pt(14)
                     for bullet in slide_data.get("bullets", []):
@@ -141,7 +144,6 @@ class PresentationAgent(BaseAgent):
         except Exception as save_e:
              self.log(f"ERROR: Failed to save presentation. {save_e}")
              st.error(f"Failed to save presentation: {save_e}")
-
 
 
 
