@@ -1,10 +1,10 @@
 # agents/presentation_agent.py
-# Corrected PresentationAgent with the proper MsoAutoSize import.
+# Final correction for MSO_AUTO_SIZE import and usage.
 
 from .base_agent import BaseAgent
 from pptx import Presentation
 from pptx.util import Inches, Pt
-from pptx.enum.text import MsoAutoSize # <-- CORRECTED IMPORT (Back to text)
+from pptx.enum.text import MSO_AUTO_SIZE # <-- CORRECT ENUMERATION IMPORT
 import os
 import streamlit as st # Import streamlit for error messages
 
@@ -53,7 +53,7 @@ class PresentationAgent(BaseAgent):
             elif slide_type != "content":
                  layout_key = slide_type
 
-            layout_index = layout_map.get(layout_key, 1) # Default to content_only (layout 1)
+            layout_index = layout_map.get(layout_key, 1)
 
             try:
                 slide_layout = prs.slide_layouts[layout_index]
@@ -62,75 +62,55 @@ class PresentationAgent(BaseAgent):
                 self.log(f"WARNING: Layout index {layout_index} not found for type '{layout_key}'. Using default layout 1.");
                 slide_layout = prs.slide_layouts[1]; slide = prs.slides.add_slide(slide_layout)
 
-            # Add Speaker Notes (remains the same)
+            # Add Speaker Notes
             if slide.has_notes_slide and slide_data.get("speaker_notes"):
-                notes_slide = slide.notes_slide
-                text_frame = notes_slide.notes_text_frame
+                notes_slide = slide.notes_slide; text_frame = notes_slide.notes_text_frame
                 text_frame.clear(); p = text_frame.add_paragraph()
                 p.text = slide_data.get("speaker_notes", "")
-                # self.log(f"Added speaker notes to slide '{slide_data.get('title', '')}'.") # Optional log
 
             # Populate Title
             if hasattr(slide.shapes, 'title') and slide.shapes.title is not None:
                 slide.shapes.title.text = slide_data.get("title", "")
-                # Optionally add auto-fit for title too
-                # slide.shapes.title.text_frame.auto_size = MsoAutoSize.TEXT_TO_FIT_SHAPE
+                # Optional: slide.shapes.title.text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
 
             # Populate Content Placeholders
             if layout_key in ["main_title", "chapter_title"]:
                 if len(slide.placeholders) > 1:
                     subtitle_placeholder = slide.placeholders[1]
                     subtitle_placeholder.text = slide_data.get("subtitle", "")
-                    # Use MsoAutoSize.SHAPE_TO_FIT_TEXT which might be more reliable
-                    subtitle_placeholder.text_frame.auto_size = MsoAutoSize.SHAPE_TO_FIT_TEXT
+                    # --- CORRECT USAGE ---
+                    subtitle_placeholder.text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
 
             elif layout_key in ["content_only", "quiz"]:
                 if len(slide.placeholders) > 1:
                     body_shape = slide.placeholders[1]
-                    tf = body_shape.text_frame
-                    tf.clear()
-                    tf.word_wrap = True
-                    # Use MsoAutoSize.SHAPE_TO_FIT_TEXT
-                    tf.auto_size = MsoAutoSize.SHAPE_TO_FIT_TEXT
-                    # Optionally adjust font size if auto-size isn't enough
-                    # for p in tf.paragraphs: p.font.size = Pt(16) # Example starting size
+                    tf = body_shape.text_frame; tf.clear(); tf.word_wrap = True
+                    # --- CORRECT USAGE ---
+                    tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
                     for bullet in slide_data.get("bullets", []):
                         p = tf.add_paragraph()
                         if isinstance(bullet, dict): p.text = bullet.get('question', '')
                         else: p.text = str(bullet)
                         p.level = 0
-                        # p.font.size = Pt(16) # Match size if set above
-
 
             elif layout_key == "content_with_image":
                 if len(slide.placeholders) > 2:
-                    # Text placeholder (usually index 1)
                     text_placeholder = slide.placeholders[1]
-                    tf = text_placeholder.text_frame
-                    tf.clear()
-                    tf.word_wrap = True
-                    # Use MsoAutoSize.SHAPE_TO_FIT_TEXT
-                    tf.auto_size = MsoAutoSize.SHAPE_TO_FIT_TEXT
-                    # Optionally adjust font size
-                    # for p in tf.paragraphs: p.font.size = Pt(14)
+                    tf = text_placeholder.text_frame; tf.clear(); tf.word_wrap = True
+                    # --- CORRECT USAGE ---
+                    tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
                     for bullet in slide_data.get("bullets", []):
                         p = tf.add_paragraph()
-                        p.text = str(bullet)
-                        p.level = 0
-                        # p.font.size = Pt(14)
+                        p.text = str(bullet); p.level = 0
 
-                    # Image placeholder (usually index 2)
                     image_placeholder = slide.placeholders[2]
                     if image_path and os.path.exists(image_path):
                         try:
                             slide.shapes.add_picture(
-                                image_path,
-                                image_placeholder.left, image_placeholder.top,
+                                image_path, image_placeholder.left, image_placeholder.top,
                                 width=image_placeholder.width, height=image_placeholder.height
                             )
-                            # self.log(f"Added image {image_path} to slide.") # Optional log
-                        except Exception as img_e:
-                             self.log(f"ERROR: Could not add picture {image_path}. {img_e}")
+                        except Exception as img_e: self.log(f"ERROR: Could not add picture {image_path}. {img_e}")
 
         self._delete_initial_slide(prs, slides_plan)
         os.makedirs(output_dir, exist_ok=True)
@@ -144,8 +124,6 @@ class PresentationAgent(BaseAgent):
         except Exception as save_e:
              self.log(f"ERROR: Failed to save presentation. {save_e}")
              st.error(f"Failed to save presentation: {save_e}")
-
-
 
 
 
