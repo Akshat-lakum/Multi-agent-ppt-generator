@@ -1,27 +1,31 @@
 # agents/presentation_agent.py
-# Final correction for MSO_AUTO_SIZE import and usage.
+# PresentationAgent refined for better text fitting.
 
 from .base_agent import BaseAgent
 from pptx import Presentation
-from pptx.util import Inches, Pt
-from pptx.enum.text import MSO_AUTO_SIZE # <-- CORRECT ENUMERATION IMPORT
+from pptx.util import Inches, Pt # Import Pt
+from pptx.enum.text import MSO_AUTO_SIZE # Correct Enum import
 import os
-import streamlit as st # Import streamlit for error messages
+import streamlit as st
 
 class PresentationAgent(BaseAgent):
     """
-    Generates the final .pptx presentation, handling layouts, images, notes,
-    and attempting to auto-fit overflowing text.
+    Generates the final .pptx presentation, applying auto-fit more broadly
+    and setting smaller default font sizes.
     """
 
     def _delete_initial_slide(self, prs, slides_plan):
-        # ... (delete_initial_slide remains the same)
+        # ... (remains the same)
         while len(prs.slides) > len(slides_plan):
             xml_slides = prs.slides._sldIdLst
-            to_remove = xml_slides[0]
-            xml_slides.remove(to_remove)
+            to_remove = xml_slides[0]; xml_slides.remove(to_remove)
             self.log("Removed an initial blank slide.")
 
+    def _set_font_size(self, text_frame, size_pt):
+        """Helper to set font size for all paragraphs in a text frame."""
+        for paragraph in text_frame.paragraphs:
+            for run in paragraph.runs:
+                run.font.size = Pt(size_pt)
 
     def run(self):
         self.log("Starting final presentation generation...")
@@ -32,14 +36,14 @@ class PresentationAgent(BaseAgent):
         output_path = os.path.join(output_dir, output_filename)
 
         if not slides_plan:
-            self.log("ERROR: No slides plan found. Aborting."); return
+            self.log("ERROR: No slides plan found."); return
 
         template_path = design_config.get("template_path")
         try:
             prs = Presentation(template_path) if template_path and os.path.exists(template_path) else Presentation()
-            self.log(f"Using template from: {template_path}" if template_path and os.path.exists(template_path) else "No valid template found. Creating default presentation.")
+            self.log(f"Using template: {template_path}" if template_path and os.path.exists(template_path) else "Default presentation.")
         except Exception as e:
-            self.log(f"ERROR: Failed to load template '{template_path}'. {e}"); prs = Presentation()
+            self.log(f"ERROR: Failed loading template '{template_path}'. {e}"); prs = Presentation()
 
         layout_map = { "main_title": 0, "chapter_title": 0, "content_only": 1, "content_with_image": 8, "quiz": 1, "thank_you": 5 }
 
@@ -47,11 +51,8 @@ class PresentationAgent(BaseAgent):
             slide_type = slide_data.get("type", "content")
             image_path = slide_data.get("image_path")
             layout_key = "content_only"
-            # Determine layout (robust check)
-            if slide_type == "content" and image_path and os.path.exists(image_path):
-                 layout_key = "content_with_image"
-            elif slide_type != "content":
-                 layout_key = slide_type
+            if slide_type == "content" and image_path and os.path.exists(image_path): layout_key = "content_with_image"
+            elif slide_type != "content": layout_key = slide_type
 
             layout_index = layout_map.get(layout_key, 1)
 
@@ -59,73 +60,78 @@ class PresentationAgent(BaseAgent):
                 slide_layout = prs.slide_layouts[layout_index]
                 slide = prs.slides.add_slide(slide_layout)
             except IndexError:
-                self.log(f"WARNING: Layout index {layout_index} not found for type '{layout_key}'. Using default layout 1.");
+                self.log(f"WARN: Layout index {layout_index} not found. Using layout 1.");
                 slide_layout = prs.slide_layouts[1]; slide = prs.slides.add_slide(slide_layout)
 
             # Add Speaker Notes
             if slide.has_notes_slide and slide_data.get("speaker_notes"):
-                notes_slide = slide.notes_slide; text_frame = notes_slide.notes_text_frame
-                text_frame.clear(); p = text_frame.add_paragraph()
-                p.text = slide_data.get("speaker_notes", "")
+                notes_tf = slide.notes_slide.notes_text_frame; notes_tf.clear()
+                p = notes_tf.add_paragraph(); p.text = slide_data.get("speaker_notes", "")
 
             # Populate Title
             if hasattr(slide.shapes, 'title') and slide.shapes.title is not None:
-                slide.shapes.title.text = slide_data.get("title", "")
-                # Optional: slide.shapes.title.text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+                title_shape = slide.shapes.title
+                title_shape.text = slide_data.get("title", "")
+                # --- APPLY AUTO-FIT TO TITLE ---
+                title_shape.text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+                title_shape.text_frame.word_wrap = True
+                # -----------------------------
 
             # Populate Content Placeholders
             if layout_key in ["main_title", "chapter_title"]:
                 if len(slide.placeholders) > 1:
-                    subtitle_placeholder = slide.placeholders[1]
-                    subtitle_placeholder.text = slide_data.get("subtitle", "")
-                    # --- CORRECT USAGE ---
-                    subtitle_placeholder.text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+                    sub_ph = slide.placeholders[1]; sub_ph.text = slide_data.get("subtitle", "")
+                    sub_ph.text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+                    sub_ph.text_frame.word_wrap = True
 
             elif layout_key in ["content_only", "quiz"]:
                 if len(slide.placeholders) > 1:
-                    body_shape = slide.placeholders[1]
-                    tf = body_shape.text_frame; tf.clear(); tf.word_wrap = True
-                    # --- CORRECT USAGE ---
-                    tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+                    body_ph = slide.placeholders[1]; tf = body_ph.text_frame; tf.clear()
+                    tf.word_wrap = True; tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+                    # --- SET SMALLER BASE FONT SIZE ---
+                    self._set_font_size(tf, 16) # Try 16pt as base before auto-fit
+                    # --------------------------------
                     for bullet in slide_data.get("bullets", []):
                         p = tf.add_paragraph()
                         if isinstance(bullet, dict): p.text = bullet.get('question', '')
                         else: p.text = str(bullet)
                         p.level = 0
+                        # Ensure font size is consistent if base was changed
+                        for run in p.runs: run.font.size = Pt(16)
 
             elif layout_key == "content_with_image":
                 if len(slide.placeholders) > 2:
-                    text_placeholder = slide.placeholders[1]
-                    tf = text_placeholder.text_frame; tf.clear(); tf.word_wrap = True
-                    # --- CORRECT USAGE ---
-                    tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+                    text_ph = slide.placeholders[1]; tf = text_ph.text_frame; tf.clear()
+                    tf.word_wrap = True; tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+                    # --- SET SMALLER BASE FONT SIZE ---
+                    self._set_font_size(tf, 14) # Try 14pt for two-column layout
+                    # --------------------------------
                     for bullet in slide_data.get("bullets", []):
                         p = tf.add_paragraph()
                         p.text = str(bullet); p.level = 0
+                        for run in p.runs: run.font.size = Pt(14)
 
-                    image_placeholder = slide.placeholders[2]
+                    # Add Image
+                    img_ph = slide.placeholders[2]
                     if image_path and os.path.exists(image_path):
                         try:
                             slide.shapes.add_picture(
-                                image_path, image_placeholder.left, image_placeholder.top,
-                                width=image_placeholder.width, height=image_placeholder.height
-                            )
-                        except Exception as img_e: self.log(f"ERROR: Could not add picture {image_path}. {img_e}")
+                                image_path, img_ph.left, img_ph.top,
+                                width=img_ph.width, height=img_ph.height)
+                        except Exception as img_e: self.log(f"ERROR adding picture {image_path}: {img_e}")
 
         self._delete_initial_slide(prs, slides_plan)
         os.makedirs(output_dir, exist_ok=True)
         try:
             prs.save(output_path)
             self.update_state("output_path", output_path)
-            self.log(f"Presentation saved successfully to: {output_path}")
+            self.log(f"Presentation saved successfully: {output_path}")
         except PermissionError:
-             self.log(f"ERROR: Permission denied saving {output_path}. Is the file open?")
-             st.error(f"Save failed: Please close {os.path.basename(output_path)} if it's open and try again.")
+             self.log(f"ERROR: Permission denied saving {output_path}. Is file open?")
+             st.error(f"Save failed: Close {os.path.basename(output_path)} and retry.")
         except Exception as save_e:
-             self.log(f"ERROR: Failed to save presentation. {save_e}")
+             self.log(f"ERROR saving presentation: {save_e}")
              st.error(f"Failed to save presentation: {save_e}")
-
-
 
 
 
