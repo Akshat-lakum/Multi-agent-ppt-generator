@@ -1,21 +1,21 @@
 # agents/content_agent.py
 # ContentAgent updated to include table data in prompts and request chart data extraction.
 
-from .base_agent import BaseAgent
-import fitz # PyMuPDF
-import google.generativeai as genai
-from dotenv import load_dotenv
-import os
-import json
-import pytesseract
-from PIL import Image
-import io
-import camelot
-import pandas as pd
+from .base_agent import BaseAgent # Imports the BaseAgent blueprint we discussed earlier.
+import fitz # PyMuPDF library for reading text and images from PDFs.
+import google.generativeai as genai # Google's library to talk to the Gemini AI model.
+from dotenv import load_dotenv # Used to load secret API keys from the .env file.
+import os # Provides tools for interacting with the operating system (like checking file paths).
+import json # Used for handling JSON data (parsing the AI's response).
+import pytesseract # Python wrapper for the Tesseract OCR engine (reads text from images).
+from PIL import Image # Pillow library, used for opening and handling image data for OCR.
+import io # Used to handle image data in memory (converting PDF page image bytes to something PIL can read).
+import camelot # Library specifically designed to find and extract tables from PDFs.
+import pandas as pd # Library for handling data structures like tables (DataFrames), used by Camelot.
 
-# Function to split text into chunks (remains the same)
-def chunk_text(text: str, chunk_size: int = 10000, overlap: int = 500) -> list[str]:
-    # ... (code remains the same)
+# This function takes a long string of text (text) and breaks it into smaller pieces (chunks)
+def chunk_text(text: str, chunk_size: int = 10000, overlap: int = 500) -> list[str]: # default 10,000 characters
+    # overlap = How many characters from the end of one chunk should also be included at the beginning of the next chunk (default 500).
     chunks = []
     start = 0
     while start < len(text):
