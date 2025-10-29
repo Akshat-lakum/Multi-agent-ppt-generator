@@ -1,28 +1,28 @@
 # agents/presentation_agent.py
-# PresentationAgent refined for better text fitting.
+# PresentationAgent updated to add speaker notes to slides.
 
 from .base_agent import BaseAgent
 from pptx import Presentation
-from pptx.util import Inches, Pt # Import Pt
+from pptx.util import Inches, Pt
 from pptx.enum.text import MSO_AUTO_SIZE # Correct Enum import
 import os
 import streamlit as st
 
 class PresentationAgent(BaseAgent):
     """
-    Generates the final .pptx presentation, applying auto-fit more broadly
-    and setting smaller default font sizes.
+    Generates the final .pptx presentation, including speaker notes,
+    handling layouts, images, and attempting to auto-fit text.
     """
 
     def _delete_initial_slide(self, prs, slides_plan):
-        # ... (remains the same)
+        # ... (delete_initial_slide remains the same)
         while len(prs.slides) > len(slides_plan):
             xml_slides = prs.slides._sldIdLst
             to_remove = xml_slides[0]; xml_slides.remove(to_remove)
             self.log("Removed an initial blank slide.")
 
     def _set_font_size(self, text_frame, size_pt):
-        """Helper to set font size for all paragraphs in a text frame."""
+        # ... (set_font_size remains the same)
         for paragraph in text_frame.paragraphs:
             for run in paragraph.runs:
                 run.font.size = Pt(size_pt)
@@ -63,21 +63,25 @@ class PresentationAgent(BaseAgent):
                 self.log(f"WARN: Layout index {layout_index} not found. Using layout 1.");
                 slide_layout = prs.slide_layouts[1]; slide = prs.slides.add_slide(slide_layout)
 
-            # Add Speaker Notes
+            # --- ADD SPEAKER NOTES ---
+            # Check if the slide object supports notes (most layouts do)
+            # and if speaker notes data exists in our slide_data dictionary.
             if slide.has_notes_slide and slide_data.get("speaker_notes"):
-                notes_tf = slide.notes_slide.notes_text_frame; notes_tf.clear()
-                p = notes_tf.add_paragraph(); p.text = slide_data.get("speaker_notes", "")
+                notes_slide = slide.notes_slide # Get the notes slide object associated with this main slide.
+                text_frame = notes_slide.notes_text_frame # Get the text frame within the notes slide.
+                text_frame.clear() # Clear any default placeholder text in the notes.
+                p = text_frame.add_paragraph() # Add a new paragraph to the notes.
+                p.text = slide_data.get("speaker_notes", "") # Set the paragraph text to the notes from slide_data.
+                self.log(f"Added speaker notes to slide '{slide_data.get('title', 'Untitled')}'.") # Log confirmation.
+            # -------------------------
 
-            # Populate Title
+            # Populate Title (remains the same)
             if hasattr(slide.shapes, 'title') and slide.shapes.title is not None:
-                title_shape = slide.shapes.title
-                title_shape.text = slide_data.get("title", "")
-                # --- APPLY AUTO-FIT TO TITLE ---
+                title_shape = slide.shapes.title; title_shape.text = slide_data.get("title", "")
                 title_shape.text_frame.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
                 title_shape.text_frame.word_wrap = True
-                # -----------------------------
 
-            # Populate Content Placeholders
+            # Populate Content Placeholders (remains the same)
             if layout_key in ["main_title", "chapter_title"]:
                 if len(slide.placeholders) > 1:
                     sub_ph = slide.placeholders[1]; sub_ph.text = slide_data.get("subtitle", "")
@@ -88,30 +92,23 @@ class PresentationAgent(BaseAgent):
                 if len(slide.placeholders) > 1:
                     body_ph = slide.placeholders[1]; tf = body_ph.text_frame; tf.clear()
                     tf.word_wrap = True; tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-                    # --- SET SMALLER BASE FONT SIZE ---
-                    self._set_font_size(tf, 16) # Try 16pt as base before auto-fit
-                    # --------------------------------
+                    self._set_font_size(tf, 16)
                     for bullet in slide_data.get("bullets", []):
                         p = tf.add_paragraph()
                         if isinstance(bullet, dict): p.text = bullet.get('question', '')
                         else: p.text = str(bullet)
                         p.level = 0
-                        # Ensure font size is consistent if base was changed
                         for run in p.runs: run.font.size = Pt(16)
 
             elif layout_key == "content_with_image":
                 if len(slide.placeholders) > 2:
                     text_ph = slide.placeholders[1]; tf = text_ph.text_frame; tf.clear()
                     tf.word_wrap = True; tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-                    # --- SET SMALLER BASE FONT SIZE ---
-                    self._set_font_size(tf, 14) # Try 14pt for two-column layout
-                    # --------------------------------
+                    self._set_font_size(tf, 14)
                     for bullet in slide_data.get("bullets", []):
-                        p = tf.add_paragraph()
-                        p.text = str(bullet); p.level = 0
+                        p = tf.add_paragraph(); p.text = str(bullet); p.level = 0
                         for run in p.runs: run.font.size = Pt(14)
 
-                    # Add Image
                     img_ph = slide.placeholders[2]
                     if image_path and os.path.exists(image_path):
                         try:
@@ -132,7 +129,6 @@ class PresentationAgent(BaseAgent):
         except Exception as save_e:
              self.log(f"ERROR saving presentation: {save_e}")
              st.error(f"Failed to save presentation: {save_e}")
-
 
 
 

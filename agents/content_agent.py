@@ -13,9 +13,9 @@ import io # Used to handle image data in memory (converting PDF page image bytes
 import camelot # Library specifically designed to find and extract tables from PDFs.
 import pandas as pd # Library for handling data structures like tables (DataFrames), used by Camelot.
 
-# This function takes a long string of text (text) and breaks it into smaller pieces (chunks)
-def chunk_text(text: str, chunk_size: int = 10000, overlap: int = 500) -> list[str]: # default 10,000 characters
-    # overlap = How many characters from the end of one chunk should also be included at the beginning of the next chunk (default 500).
+# Function to split text into chunks (remains the same)
+def chunk_text(text: str, chunk_size: int = 10000, overlap: int = 500) -> list[str]:
+    # ... (code for chunk_text remains the same)
     chunks = []
     start = 0
     while start < len(text):
@@ -28,8 +28,8 @@ def chunk_text(text: str, chunk_size: int = 10000, overlap: int = 500) -> list[s
 
 class ContentAgent(BaseAgent):
     """
-    Extracts text and tables, includes table representations in prompts,
-    and asks Gemini to extract chart data alongside other content structures.
+    Uses layout-aware text extraction (with OCR fallback), attempts table extraction,
+    and uses Gemini API (requesting speaker notes) to structure content.
     """
     def __init__(self, name, state_manager, config=None):
         # ... (init remains the same)
@@ -45,15 +45,10 @@ class ContentAgent(BaseAgent):
         self.overlap = 500
 
     def _extract_text_and_tables_from_pdf(self, pdf_path: str) -> tuple[str, list[pd.DataFrame]]:
-        # ... (This function remains the same as the Camelot version)
-        # ... (It extracts text using PyMuPDF+OCR and tables using Camelot) ...
-        # ... (It should return: full_text_string, list_of_table_dataframes) ...
+        # ... (This function remains unchanged from the Camelot version)
         if not os.path.exists(pdf_path): return "", []
-        full_text = ""
-        extracted_tables = []
-        doc = None
+        full_text = ""; extracted_tables = []; doc = None
         try:
-            # (PyMuPDF + OCR logic here)
             doc = fitz.open(pdf_path); pymu_text_check = ""
             for page_num, page in enumerate(doc):
                 blocks = page.get_text("blocks"); blocks.sort(key=lambda b: (b[1], b[0]))
@@ -61,9 +56,7 @@ class ContentAgent(BaseAgent):
                 if len(page_text.strip()) > 50: pymu_text_check += f"\n--- Page {page_num + 1} ---\n" + page_text
             if len(pymu_text_check.strip()) > 100: full_text = pymu_text_check; self.log(f"Extracted {len(full_text)} chars (PyMuPDF)")
             else:
-                self.log("PyMuPDF found minimal text. Attempting OCR...")
-                ocr_full_text = ""
-                # (OCR logic here)
+                self.log("PyMuPDF found minimal text. Attempting OCR..."); ocr_full_text = ""
                 for page_num, page in enumerate(doc):
                      pix = page.get_pixmap(); img = Image.open(io.BytesIO(pix.pil_tobytes("png")))
                      try: page_ocr_text = pytesseract.image_to_string(img, lang='eng'); ocr_full_text += f"\n--- OCR Page {page_num + 1} ---\n" + page_ocr_text
@@ -72,14 +65,12 @@ class ContentAgent(BaseAgent):
                 if len(ocr_full_text.strip()) > 100: full_text = ocr_full_text; self.log(f"Extracted {len(full_text)} chars (OCR)")
                 else: self.log("OCR also found minimal text."); full_text = ""
 
-            # (Camelot Table Extraction logic here)
             self.log("Attempting table extraction with Camelot...")
             tables = camelot.read_pdf(pdf_path, pages='all', flavor='lattice', suppress_stdout=True)
             if tables:
                 self.log(f"Camelot found {tables.n} potential tables.")
                 for i, table in enumerate(tables):
-                    self.log(f"--- Table {i+1} (Page {table.page}) ---")
-                    print(table.df.head().to_string())
+                    self.log(f"--- Table {i+1} (Page {table.page}) ---"); print(table.df.head().to_string())
                     extracted_tables.append(table.df)
             else: self.log("Camelot found no tables.")
         except ImportError: self.log("WARNING: Camelot library missing. Skipping table extraction.")
@@ -88,22 +79,23 @@ class ContentAgent(BaseAgent):
              if doc: doc.close()
         return full_text, extracted_tables
 
-
-    # --- UPDATED: Includes table text in prompt, asks for chart_data ---
+    # --- UPDATED: Prompt now explicitly asks for speaker_notes ---
     def _get_structured_content_from_llm(self, text_chunk: str, tables_in_chunk: list[str], tone: str, slide_count: int) -> dict:
-        """Sends text chunk (potentially with table data) to Gemini, requesting chart data extraction."""
+        """Sends text chunk to Gemini, requesting speaker notes and other structures."""
         if not text_chunk and not tables_in_chunk: return {}
 
         self.log(f"Sending chunk (length: {len(text_chunk)}) to Gemini API...")
         model = genai.GenerativeModel('models/gemini-2.5-pro')
 
-        # Combine text and table representations for the prompt
         prompt_content = text_chunk
+        # (Combine table markdown logic remains the same)
+        # ... [omitted for brevity, assume table markdown is added here if tables_in_chunk exists] ...
         if tables_in_chunk:
             prompt_content += "\n\n--- Extracted Tables in this Section ---\n"
             for i, table_md in enumerate(tables_in_chunk):
                 prompt_content += f"\nTable {i+1}:\n{table_md}\n"
             prompt_content += "--- End of Extracted Tables ---\n"
+
 
         prompt = f"""
         You are an expert educational content designer. Analyze the following text chunk (which might include text representations of tables) from a syllabus and convert it into a structured JSON format for a presentation. Your output must be ONLY a well-formed JSON object.
@@ -112,20 +104,17 @@ class ContentAgent(BaseAgent):
         1.  **Audience Tone**: Tailor for a '{tone}' audience.
         2.  **Output Format**: ONLY JSON with a top-level "chapters" key (list).
         3.  Each chapter: "id", "title", "description", "topics" list.
-        4.  Each topic: "id", "title", "summary", "key_points", "quiz_questions", "image_hint", "speaker_notes".
-        5.  **Speaker Notes**: For each topic, add a detailed script (2-4 sentences).
+        4.  Each topic: "id", "title", "summary", "key_points", "quiz_questions", "image_hint".
+        5.  **Speaker Notes**: For each topic, add a "speaker_notes" field containing a detailed script (2-4 sentences) that a presenter could read or use for talking points related to the slide's content. Ensure these notes add value beyond just repeating the summary.
         6.  **Diagrams**: If a topic describes a clear LINEAR process/flow, include "diagram_dot_code" field with simple Graphviz DOT code. Omit otherwise.
         7.  **Mind Maps**: If a topic explores relationships (hierarchical/non-linear), include "mind_map_dot_code" field with undirected Graphviz DOT code. Prioritize Mind Maps over Diagrams if conceptual. Omit otherwise.
-        8.  **Charts**: If the text or included table data clearly represents information suitable for a simple bar or line chart (e.g., comparison, trend), add BOTH:
-            * `"chart_suggestion"`: A dictionary like {{"type": "bar", "title": "Comparison of X and Y"}}.
-            * `"chart_data"`: A dictionary containing the actual data needed for the chart, extracted or summarized from the text/table. It MUST have "labels" (list of strings) and "values" (list of numbers). Example: {{"labels": ["A", "B", "C"], "values": [50, 80, 30]}}.
-            Omit BOTH fields if no simple chart is appropriate or if you cannot reliably extract the labels and values.
+        8.  **Charts**: If the text or included table data clearly represents information suitable for a simple bar or line chart, add BOTH `"chart_suggestion"` and `"chart_data"` (with "labels" and "values"). Omit BOTH fields if not appropriate or data extraction is unreliable.
 
         Here is the text chunk (potentially including table data):
         ---
         {prompt_content[:15000]}
         ---
-        """ # Increased context slightly for tables
+        """
 
         try:
             # ... (Rest of the try/except block remains the same)
@@ -139,53 +128,26 @@ class ContentAgent(BaseAgent):
         except json.JSONDecodeError as e: self.log(f"ERROR: Failed to parse JSON. {e}\nRaw: {response_text[:500]}..."); return {}
         except Exception as e: self.log(f"ERROR: LLM call failed. {e}"); return {}
 
-    # --- UPDATED: Processes tables before chunking and sends table text to LLM ---
     def run(self):
+        # ... (Run method remains the same)
         self.log("Starting content extraction (Text, Tables)...")
-        pdf_path = self.sm.get("input_pdf_path")
-        tone = self.sm.get("tone") or "Beginner"
-        slide_count = self.sm.get("slide_count") or 10
+        pdf_path = self.sm.get("input_pdf_path"); tone = self.sm.get("tone") or "Beginner"; slide_count = self.sm.get("slide_count") or 10
         if not pdf_path: self.log("ERROR: No input_pdf_path found."); return
-
-        # Extract text and table DataFrames
         full_text, extracted_tables = self._extract_text_and_tables_from_pdf(pdf_path)
-
-        # Convert tables to Markdown strings for easier inclusion in prompts
         table_markdowns = [table.to_markdown(index=False) for table in extracted_tables] if extracted_tables else []
-
-        if not full_text and not table_markdowns:
-             self.log("No text or tables extracted. Cannot proceed.")
-             return
-
-        # Combine text and table markdown for chunking (or decide how to associate tables with text chunks)
-        # Simple approach: append all table text at the end of the document text before chunking.
+        if not full_text and not table_markdowns: self.log("No text or tables extracted."); return
         combined_content = full_text
-        if table_markdowns:
-            combined_content += "\n\n=== Appendix: Extracted Tables ===\n"
-            for i, md in enumerate(table_markdowns):
-                combined_content += f"\n--- Table {i+1} ---\n{md}\n"
-
-        # Chunk the combined content
-        content_chunks = chunk_text(combined_content, chunk_size=self.chunk_size, overlap=self.overlap)
-        self.log(f"Split content into {len(content_chunks)} chunks.")
-
+        if table_markdowns: combined_content += "\n\n=== Appendix: Extracted Tables ===\n"; [combined_content := combined_content + f"\n--- Table {i+1} ---\n{md}\n" for i, md in enumerate(table_markdowns)]
+        content_chunks = chunk_text(combined_content, chunk_size=self.chunk_size, overlap=self.overlap); self.log(f"Split content into {len(content_chunks)} chunks.")
         all_chapters = []
         for i, chunk in enumerate(content_chunks):
             self.log(f"Processing chunk {i+1}/{len(content_chunks)}...")
-            # For this simple approach, we pass an empty list for tables_in_chunk
-            # as table data is now part of the main chunk text.
-            # A more advanced approach would track which tables belong to which text chunk.
+            # Pass empty list for tables_in_chunk as they are embedded in main text now
             structured_content = self._get_structured_content_from_llm(chunk, [], tone, slide_count)
-            if structured_content and "chapters" in structured_content:
-                all_chapters.extend(structured_content["chapters"])
+            if structured_content and "chapters" in structured_content: all_chapters.extend(structured_content["chapters"])
             else: self.log(f"No valid 'chapters' structure returned for chunk {i+1}.")
-
-        if all_chapters:
-            self.update_state("chapters", all_chapters)
-            self.log(f"Content processed. Found {len(all_chapters)} chapters total.")
-            # self.sm.save("shared_state_after_content.json")
+        if all_chapters: self.update_state("chapters", all_chapters); self.log(f"Content processed. Found {len(all_chapters)} chapters total.")
         else: self.log("ERROR: No chapters processed from any chunk.")
-
 
 
 
