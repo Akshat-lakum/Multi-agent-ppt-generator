@@ -1,5 +1,5 @@
 # agents/format_agent.py
-# FormatAgent updated for better control over the TOTAL slide count.
+# FormatAgent updated to prioritize content slides over chapter titles.
 
 from .base_agent import BaseAgent
 import math
@@ -7,27 +7,25 @@ import math
 class FormatAgent(BaseAgent):
     """
     Converts the chapter/topic structure into a slide plan,
-    attempting to adhere to the requested TOTAL number of slides.
+    prioritizing content slides based on the requested slide count.
     """
 
     def run(self):
         self.log("Starting slide skeleton creation...")
 
         chapters = self.sm.get("chapters")
-        # Rename for clarity: this is the desired TOTAL slide count (approx)
-        requested_total_slides = self.sm.get("slide_count") or 15 # Default to 15 if not set
+        # This is the desired number of CONTENT slides
+        requested_content_slides = self.sm.get("slide_count") or 10 
 
         if not chapters:
             self.log("ERROR: No chapters found in state. Aborting.")
             return
 
         # --- Generate candidates for each slide type ---
-        slide_counter = 1 # Use for unique IDs initially
+        slide_counter = 1
         main_title_slides = []
-        chapter_title_slides = []
         content_slide_candidates = []
-        quiz_slide_candidates = []
-        thank_you_slides = []
+        all_quiz_questions = []
 
         main_title_slides.append({
             "id": f"slide_{slide_counter}", "type": "main_title",
@@ -36,20 +34,13 @@ class FormatAgent(BaseAgent):
         })
         slide_counter += 1
 
+        # Collect ALL content topics and ALL quiz questions from all chapters
         for ch_idx, ch in enumerate(chapters):
-            chapter_title_slides.append({
-                "id": f"slide_{slide_counter}", "type": "chapter_title",
-                "title": ch.get("title", f"Chapter {ch_idx+1}"),
-                "subtitle": ch.get("description", "")
-            })
-            slide_counter += 1
-
-            chapter_quiz_questions = []
             for topic in ch.get("topics", []):
                 content_slide_candidates.append({
                     "id": f"slide_{slide_counter}", "type": "content",
                     "title": topic.get("title", "Untitled Topic"),
-                    "summary": topic.get("summary"), # Include summary for potential use
+                    "summary": topic.get("summary"),
                     "bullets": topic.get("key_points", []),
                     "image_hint": topic.get("image_hint"),
                     "diagram_dot_code": topic.get("diagram_dot_code"),
@@ -58,56 +49,31 @@ class FormatAgent(BaseAgent):
                     "speaker_notes": topic.get("speaker_notes")
                 })
                 slide_counter += 1
-                chapter_quiz_questions.extend(topic.get("quiz_questions", []))
+                all_quiz_questions.extend(topic.get("quiz_questions", []))
 
-            if chapter_quiz_questions:
-                 quiz_slide_candidates.append({
-                    "id": f"slide_{slide_counter}", "type": "quiz",
-                    "title": f"{ch.get('title', f'Chapter {ch_idx+1}')} Quiz",
-                    "bullets": chapter_quiz_questions
-                 })
-                 slide_counter += 1
+        # --- Select slides based on requested CONTENT count ---
+        final_slides = []
+        final_slides.extend(main_title_slides) # Add the main title
 
-        thank_you_slides.append({
+        # Add the requested number of content slides
+        num_content_to_add = min(requested_content_slides, len(content_slide_candidates))
+        self.log(f"Requested {requested_content_slides} content slides. Found {len(content_slide_candidates)} topics. Adding {num_content_to_add}.")
+        final_slides.extend(content_slide_candidates[:num_content_to_add])
+        
+        # Add ONE quiz slide at the end if questions were found
+        if all_quiz_questions:
+            final_slides.append({
+                "id": f"slide_{slide_counter}", "type": "quiz",
+                "title": "Quiz",
+                "bullets": all_quiz_questions # Add all collected questions
+            })
+            slide_counter += 1
+
+        # Add the Thank You slide
+        final_slides.append({
             "id": f"slide_{slide_counter}", "type": "thank_you",
             "title": "Thank You!", "subtitle": "Any Questions?"
         })
-
-        # --- Select slides based on requested TOTAL count ---
-        final_slides = []
-        final_slides.extend(main_title_slides)
-        final_slides.extend(chapter_title_slides)
-
-        # Calculate remaining slides available for content and quizzes
-        fixed_slides_count = len(main_title_slides) + len(chapter_title_slides) + len(thank_you_slides)
-        remaining_slots = requested_total_slides - fixed_slides_count
-
-        # Prioritize content slides, then add quizzes if space allows
-        num_content_to_add = 0
-        num_quizzes_to_add = 0
-
-        if remaining_slots > 0:
-            # Try to fill roughly 80% of remaining slots with content, 20% with quizzes
-            target_content = math.ceil(remaining_slots * 0.8)
-            target_quizzes = remaining_slots - target_content
-
-            num_content_to_add = min(target_content, len(content_slide_candidates))
-            # If we added fewer content slides than targeted, fill remaining slots with quizzes
-            remaining_slots_after_content = remaining_slots - num_content_to_add
-            num_quizzes_to_add = min(remaining_slots_after_content, len(quiz_slide_candidates))
-
-            # If still slots left (e.g., few quizzes generated), fill with more content if possible
-            if (num_content_to_add + num_quizzes_to_add) < remaining_slots:
-                 extra_content_needed = remaining_slots - (num_content_to_add + num_quizzes_to_add)
-                 num_content_to_add += min(extra_content_needed, len(content_slide_candidates) - num_content_to_add)
-
-        self.log(f"Requested ~{requested_total_slides} total slides.")
-        self.log(f"Adding {len(main_title_slides)} main title, {len(chapter_title_slides)} chapter titles.")
-        self.log(f"Adding {num_content_to_add} content slides and {num_quizzes_to_add} quiz slides.")
-
-        final_slides.extend(content_slide_candidates[:num_content_to_add])
-        final_slides.extend(quiz_slide_candidates[:num_quizzes_to_add])
-        final_slides.extend(thank_you_slides)
 
         # Re-assign sequential IDs
         for idx, slide in enumerate(final_slides):
@@ -115,9 +81,6 @@ class FormatAgent(BaseAgent):
 
         self.update_state("slides", final_slides)
         self.log(f"Final slide skeleton created with {len(final_slides)} slides total.")
-        # self.sm.save("shared_state_after_format.json") # Keep commented unless debugging
-          
-          
           
           
           
