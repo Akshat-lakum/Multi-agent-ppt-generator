@@ -1,5 +1,5 @@
 # app.py
-# Updated Streamlit GUI to handle both PPTX and PDF outputs.
+# Updated Streamlit GUI to display the QA Agent's feedback.
 
 import streamlit as st
 from main import run_full_pipeline # Import our updated pipeline function
@@ -47,8 +47,8 @@ if uploaded_file is not None:
 
         with st.spinner("The AI agents are hard at work... This may take a minute or two."):
             try:
-                # --- Run the pipeline, which now returns two paths ---
-                pptx_path, pdf_path = run_full_pipeline(
+                # --- Run the pipeline, which now returns three values ---
+                pptx_path, pdf_path, qa_report = run_full_pipeline(
                     pdf_path=temp_pdf_path,
                     theme_file=selected_theme_file,
                     tone=tone,
@@ -56,11 +56,10 @@ if uploaded_file is not None:
                     progress_callback=update_progress
                 )
                 
-                # --- Provide download buttons based on generated files ---
                 if pptx_path and os.path.exists(pptx_path):
                     st.success("🎉 Presentation generated successfully!")
                     
-                    col1, col2 = st.columns(2) # Create columns for buttons
+                    col1, col2 = st.columns(2)
                     
                     with col1:
                         with open(pptx_path, "rb") as file:
@@ -80,8 +79,15 @@ if uploaded_file is not None:
                                     file_name=os.path.basename(pdf_path),
                                     mime="application/pdf",
                                 )
-                    else:
-                        st.warning("PDF conversion failed. Check logs for details.")
+                    elif not pdf_path and pptx_path: # Show warning only if pptx succeeded but pdf failed
+                        with col2:
+                            st.warning("PDF conversion failed. PPTX available.")
+                    
+                    # --- NEW: Display QA Feedback ---
+                    if qa_report:
+                        with st.expander("Show AI Quality Review..."):
+                            st.markdown(qa_report)
+                    # ------------------------------
                         
                 else:
                     st.error("Something went wrong. The presentation could not be generated.")

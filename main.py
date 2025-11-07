@@ -1,5 +1,5 @@
 # main.py
-# Final pipeline: Includes the new QA Agent.
+# Updated pipeline to return the QA feedback.
 
 from state_manager import StateManager
 from agents.content_agent import ContentAgent
@@ -7,16 +7,16 @@ from agents.format_agent import FormatAgent
 from agents.design_agent import DesignAgent
 from agents.external_media_agent import ExternalMediaAgent
 from agents.presentation_agent import PresentationAgent
-from agents.qa_agent import QAAgent # <-- Import the new QA Agent
+from agents.qa_agent import QAAgent
 import os
 import time
 import subprocess
 
-# The main pipeline function remains mostly the same, just adding the QA step
+# The function now returns three values: pptx_path, pdf_path, qa_feedback
 def run_full_pipeline(pdf_path: str, theme_file: str, tone: str, slide_count: int, progress_callback=None):
     if not os.path.exists(pdf_path):
         print(f"ERROR: Input PDF not found at '{pdf_path}'.")
-        return None, None # Return None for both paths
+        return None, None, None # Return None for all three paths/values
 
     start_time = time.time()
 
@@ -26,15 +26,14 @@ def run_full_pipeline(pdf_path: str, theme_file: str, tone: str, slide_count: in
     sm.update("tone", tone)
     sm.update("slide_count", slide_count)
 
-    # Instantiate all agents, including QA
     content_agent = ContentAgent("ContentAgent", sm)
     format_agent = FormatAgent("FormatAgent", sm)
     design_agent = DesignAgent("DesignAgent", sm)
     media_agent = ExternalMediaAgent("MediaAgent", sm)
     presentation_agent = PresentationAgent("PresentationAgent", sm)
-    qa_agent = QAAgent("QAAgent", sm) # <-- Instantiate QA Agent
+    qa_agent = QAAgent("QAAgent", sm)
 
-    # Run agents sequentially
+    # --- Run agent pipeline (remains the same) ---
     if progress_callback: progress_callback("Step 1/6: Understanding content with AI...")
     content_agent.run()
 
@@ -50,29 +49,25 @@ def run_full_pipeline(pdf_path: str, theme_file: str, tone: str, slide_count: in
     if progress_callback: progress_callback("Step 5/6: Building final presentation...")
     presentation_agent.run()
     
-    # Check if presentation agent actually produced slides before running QA
     if sm.get("slides"):
         if progress_callback: progress_callback("Step 6/6: Performing AI Quality Check...")
-        qa_agent.run() # <-- Run the QA Agent
+        qa_agent.run()
     else:
         print("Skipping QA step as slide generation failed earlier.")
 
-
-    # PDF Conversion Step (remains the same)
+    # --- PDF Conversion Step (remains the same) ---
     pptx_path = sm.get("output_path")
     pdf_output_path = None
-    command_success = False # Flag for successful conversion
+    command_success = False
     if pptx_path and os.path.exists(pptx_path):
         if progress_callback: progress_callback("Converting to PDF...")
         else: print("Converting to PDF using LibreOffice...")
-        
         output_dir = os.path.dirname(pptx_path)
         try:
             commands_to_try = [
                 ['soffice', '--headless', '--convert-to', 'pdf', pptx_path, '--outdir', output_dir],
                 ['libreoffice', '--headless', '--convert-to', 'pdf', pptx_path, '--outdir', output_dir]
             ]
-            
             for cmd in commands_to_try:
                 try:
                     result = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60)
@@ -84,12 +79,10 @@ def run_full_pipeline(pdf_path: str, theme_file: str, tone: str, slide_count: in
                 except FileNotFoundError: continue
                 except subprocess.TimeoutExpired: print(f"Conversion timed out with '{cmd[0]}'."); continue
                 except subprocess.CalledProcessError as e: print(f"Error during conversion with '{cmd[0]}': {e.stderr.decode()}"); continue
-
             if not command_success:
                  message = "PDF Conversion Failed: LibreOffice not found or PATH not set correctly."
                  if progress_callback: progress_callback(message)
                  else: print(message)
-
         except Exception as e:
             message = f"PDF Conversion Failed: An unexpected error occurred: {e}"
             if progress_callback: progress_callback(message)
@@ -98,14 +91,17 @@ def run_full_pipeline(pdf_path: str, theme_file: str, tone: str, slide_count: in
     end_time = time.time()
     print(f"Pipeline finished in {end_time - start_time:.2f} seconds.")
     
-    # Return both paths if conversion was successful, otherwise just the pptx path
-    return pptx_path, pdf_output_path if command_success else None
+    # --- UPDATED RETURN STATEMENT ---
+    # Get the QA feedback from the state
+    qa_feedback_report = sm.get("qa_feedback")
+    # Return all three results
+    return pptx_path, pdf_output_path if command_success else None, qa_feedback_report
 
-# Update the main execution block if needed
+# --- Main execution block updated to handle three return values ---
 if __name__ == "__main__":
     default_pdf = "data/syllabus.pdf"
     print("--- Running Multi-Agent PPT Generation Pipeline (from command line) ---")
-    pptx_file, pdf_file = run_full_pipeline(
+    pptx_file, pdf_file, qa_report = run_full_pipeline(
         pdf_path=default_pdf,
         theme_file="edutor_theme.pptx", 
         tone="Beginner", 
@@ -116,8 +112,11 @@ if __name__ == "__main__":
         print(f"Final presentation available at: {pptx_file}")
     if pdf_file:
         print(f"PDF version available at: {pdf_file}")
+    if qa_report:
+        print("\n--- AI Quality Assurance Feedback ---")
+        print(qa_report)
+        print("------------------------------------\n")
     print("========================================\n")
-    
     
     
     
